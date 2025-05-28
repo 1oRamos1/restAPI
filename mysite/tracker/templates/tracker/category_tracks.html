@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4">🎯 Tracks in "{{ category.name }}"</h2>
+  {% if tracks %}
+    <div class="list-group">
+      {% for track in tracks %}
+        <a href="{% url 'track-tasks' track.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+          {{ track.title }}
+          <span class="badge bg-primary rounded-pill">{{ track.progression }}%</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">No tracks in this category yet.</div>
+  {% endif %}
+</div>
+{% endblock %}

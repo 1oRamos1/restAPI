@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+db.sqlite3
+.env
+
+# Django
+/static/
+media/
+
+# Node/React
+node_modules/
+build/
+.env
+
+# General
+*.log
