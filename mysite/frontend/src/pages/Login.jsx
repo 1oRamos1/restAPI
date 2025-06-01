@@ -1,54 +1,42 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');  // <-- add error state
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://localhost:8000/api/token/', {
-        username,
-        password,
-      });
-
-      // Save JWT tokens
-      localStorage.setItem('access', res.data.access);
-      localStorage.setItem('refresh', res.data.refresh);
-
+      await api.post('auth/login/', { username, password });
       alert('Login successful!');
+      setError(''); // clear error if any
       navigate('/');
     } catch (err) {
-      alert('Login failed.');
+      setError('Login failed. Please check your credentials.');
       console.error(err);
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
+    <div>
+      <h1>Login</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}  {/* show error message */}
       <input
         type="text"
         placeholder="Username"
-        className="border p-2 block mb-2"
         value={username}
-        onChange={e => setUsername(e.target.value)}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <input
         type="password"
         placeholder="Password"
-        className="border p-2 block mb-2"
         value={password}
-        onChange={e => setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)}
       />
-      <button
-        onClick={handleLogin}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
-      >
-        Login
-      </button>
+      <button onClick={handleLogin}>Login</button>
     </div>
   );
 }
