@@ -1,4 +1,10 @@
+import json
+from django.middleware.csrf import get_token
+from django.contrib.auth import authenticate, login
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveAPIView,
@@ -10,7 +16,10 @@ from rest_framework.generics import (
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import status
+import logging
+import re
+from rest_framework.authentication import SessionAuthentication
 from .models import LearningTrack, Task, Note, Category, UserLearningTrack
 from .serializers import (
     LearningTrackListSerializer,
@@ -22,8 +31,51 @@ from .serializers import (
     CategorySerializer
 )
 import logging
-
+from django.views.decorators.csrf import ensure_csrf_cookie
 import ollama
+from ollama import chat
+
+
+# 🔒 Set CSRF cookie on GET
+@api_view(['GET'])
+@permission_classes([AllowAny])
+@ensure_csrf_cookie
+def set_csrf_cookie(request):
+    csrf_token = get_token(request)
+    return JsonResponse({"csrfToken": csrf_token})
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
+    try:
+        data = request.data  # Use DRF's request.data instead of json.loads(request.body)
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            return JsonResponse({"error": "Username and password are required"}, status=400)
+
+        user = authenticate(request, username=username, password=password)
+        if user:
+            if not user.is_active:
+                return JsonResponse({"error": "Account is inactive"}, status=403)
+            login(request, user)
+            return JsonResponse({"message": "Logged in"})
+        return JsonResponse({"error": "Invalid credentials"}, status=403)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_current_user(request):
+    user = request.user
+    return Response({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email
+    })
 
 
 class CategoryList(ListAPIView):
@@ -38,19 +90,12 @@ class LearningTracksByCategory(ListAPIView):
 
     def get_queryset(self):
         category_id = self.kwargs['category_id']
-        tracks = LearningTrack.objects.filter(category_id=category_id)
+        return LearningTrack.objects.filter(category_id=category_id)
 
-        user = self.request.user
-        if user.is_authenticated:
-            for track in tracks:
-                track.user_track_for_user = UserLearningTrack.objects.filter(
-                    user=user, learning_track=track
-                ).first()
-        else:
-            for track in tracks:
-                track.user_track_for_user = None
-
-        return tracks
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request  # Ensure user reaches the serializer
+        return context
 
 
 class UserLearningTrackList(ListAPIView):
@@ -71,22 +116,20 @@ class UserLearningTrackCreateDelete(CreateAPIView, DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user_learning_track_id = self.request.query_params.get('user_learning_track_id')
+        if user_learning_track_id:
+            return UserLearningTrack.objects.filter(user=self.request.user, learning_track_pk=user_learning_track_id)
         return UserLearningTrack.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user_learning_track_id = self.request.data.get('user_learning_track_id')
+        user_learning_track = get_object_or_404(LearningTrack, pk=user_learning_track_id)
+        serializer.save(user=self.request.user, user_learning_track=user_learning_track)
 
-
-class LearningTrackDetail(RetrieveAPIView):
-    serializer_class = LearningTrackDetailSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        return get_object_or_404(
-            UserLearningTrack,
-            user=self.request.user,
-            pk=self.kwargs['pk']
-        )
+    def perform_destroy(self, instance):
+        user_learning_track_id = self.request.query_params.get('user_learning_track_id')
+        user_track = get_object_or_404(UserLearningTrack, user=self.request.user, learning_track_pk=user_learning_track_id)
+        user_track.delete()
 
 
 class TaskDetail(RetrieveUpdateDestroyAPIView):
@@ -96,29 +139,57 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
-    def perform_update(self, serializer):
+    def update(self, request, *args, **kwargs):
         task = self.get_object()
-        solution = self.request.data.get("solution")
-        if solution:
-            serializer.save(solution=solution)
+        solution = request.data.get("solution")
 
-            # AI grading example, adjust or remove if you don't have AI setup
+        if not solution:
+            return Response({"error": "Solution is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(task, data={"solution": solution}, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+
+            # AI grading logic
             prompt = (
                 f"Task: {task.task}\n\n"
                 f"User Solution: {solution}\n\n"
                 "Please grade the user's solution from 0 to 5 and provide a short review."
             )
-            response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-            ai_content = response.get("choices")[0].get("message").get("content")
 
-            import re
-            grade_match = re.search(r"([0-5])", ai_content)
-            grade = int(grade_match.group(1)) if grade_match else 0
+            try:
+                response = chat(model="llama3", messages=[{"role": "user", "content": prompt}])
+                ai_content = response.get("message", {}).get("content") or response.get("choices")[0]["message"]["content"]
 
-            task.grade = grade
-            task.review = ai_content
-            task.status = "completed" if grade == 5 else "in_progress"
-            task.save()
+                grade_match = re.search(r"\b([0-5])\b", ai_content)
+                grade = int(grade_match.group(1)) if grade_match else 0
+
+                task.grade = grade
+                task.review = ai_content
+                task.status = "completed" if grade == 5 else "in_progress"
+                task.save()
+
+                # ✅ Append to UserLearningTrack summary
+                if task.user_learning_track:
+                    progress_entry = (
+                        f"Task: {task.task}\n"
+                        f"Solution: {task.solution}\n"
+                        f"Review: {task.review}\n"
+                        f"Grade: {task.grade}/5\n"
+                        "---\n"
+                    )
+                    user_track = task.user_learning_track
+                    user_track.summary = (user_track.summary or "") + progress_entry
+                    user_track.save()
+
+            except Exception as e:
+                logging.error(f"AI grading failed: {e}")
+                return Response({"error": "Failed to grade solution."}, status=500)
+
+            return Response(self.get_serializer(task).data)
+
+        logging.error(f"Serializer validation failed: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class NoteDetail(RetrieveUpdateDestroyAPIView):
@@ -130,7 +201,7 @@ class NoteDetail(RetrieveUpdateDestroyAPIView):
 
 
 class TestAuthView(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -139,14 +210,13 @@ class TestAuthView(APIView):
 
 
 class GenerateNextTask(APIView):
-    authentication_classes = [JWTAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, track_id):
-        print("zubiiiii")
+    def post(self, request, user_learning_track_id):
         try:
-            # Get the UserLearningTrack by pk only, ignore user for now
-            user_track = get_object_or_404(UserLearningTrack, pk=track_id)
+            # Validate and retrieve the UserLearningTrack object
+            user_track = get_object_or_404(UserLearningTrack, pk=user_learning_track_id, user=request.user)
 
             current_summary = user_track.summary or "No progress summary available."
 
@@ -157,20 +227,12 @@ class GenerateNextTask(APIView):
 
             response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
 
-            # Extract response content safely
-            new_task_text = None
-            if isinstance(response, dict):
-                new_task_text = response.get('message', {}).get('content') or response.get('content')
-            elif hasattr(response, 'message'):
-                new_task_text = response.message.content
-            else:
-                new_task_text = str(response)
-
+            new_task_text = response.get('message', {}).get('content') or response.get('content')
             if not new_task_text:
                 return Response({"error": "No content returned from Ollama"}, status=500)
 
             new_task = Task.objects.create(
-                user=request.user,  # no user for testing
+                user=request.user,
                 user_learning_track=user_track,
                 task=new_task_text,
                 status="pending"

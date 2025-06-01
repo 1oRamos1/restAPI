@@ -18,25 +18,14 @@ class TopicSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class LearningTrackListSerializer(serializers.ModelSerializer):
-    level_display = serializers.CharField(source='get_level_display', read_only=True)
-    category = CategorySerializer(read_only=True)
-    topics = TopicSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = LearningTrack
-        fields = ['id', 'title', 'level', 'level_display', 'category', 'topics']
-
-
 class UserLearningTrackSerializer(serializers.ModelSerializer):
-    learning_track = LearningTrackListSerializer(read_only=True)
     learning_track_id = serializers.PrimaryKeyRelatedField(
         queryset=LearningTrack.objects.all(), source='learning_track', write_only=True
     )
 
     class Meta:
         model = UserLearningTrack
-        fields = ['id', 'learning_track', 'learning_track_id', 'start_date', 'last_updated', 'progression', 'summary']
+        fields = ['id', 'learning_track_id', 'start_date', 'last_updated', 'progression', 'summary']
         read_only_fields = ['id', 'start_date', 'last_updated']
 
     def create(self, validated_data):
@@ -54,6 +43,24 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
         return instance
 
 
+class LearningTrackListSerializer(serializers.ModelSerializer):
+    level_display = serializers.CharField(source='get_level_display', read_only=True)
+    category = CategorySerializer(read_only=True)
+    topics = TopicSerializer(many=True, read_only=True)
+    user_learning_track_id = serializers.SerializerMethodField()
+
+    class Meta:
+        model = LearningTrack
+        fields = ['id', 'title', 'level', 'level_display', 'category', 'topics', 'user_learning_track_id']
+
+    def get_user_learning_track_id(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated:
+            user_track = obj.user_learning_tracks.filter(user=user).first()
+            return user_track.id if user_track else None
+        return None
+
+
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
@@ -61,9 +68,11 @@ class TaskListSerializer(serializers.ModelSerializer):
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
+    user_learning_track_id = serializers.IntegerField(source='user_learning_track.id', read_only=True)
+
     class Meta:
         model = Task
-        fields = '__all__'
+        fields = ['id', 'task', 'solution', 'grade', 'review', 'status', 'user_learning_track_id']
 
 
 class NoteSerializer(serializers.ModelSerializer):

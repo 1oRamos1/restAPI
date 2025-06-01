@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     "corsheaders",
 
+
 ]
 
 MIDDLEWARE = [
@@ -57,8 +58,19 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
 CORS_ALLOW_CREDENTIALS = True
+
+SESSION_COOKIE_HTTPONLY = None
+CSRF_COOKIE_HTTPONLY = None
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 
 ROOT_URLCONF = "mysite.urls"
 
@@ -114,7 +126,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
 }
 

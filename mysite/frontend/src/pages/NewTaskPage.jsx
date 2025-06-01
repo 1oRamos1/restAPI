@@ -11,7 +11,7 @@ function TrackDetail() {
     if (!trackId) return;
 
     api
-      .get(`user/tracks/${trackId}/`)
+      .post(`user/tracks/${trackId}/generate-task/`)
       .then(res => setTrack(res.data))
       .catch(err => {
         console.error('Failed to fetch track:', err);

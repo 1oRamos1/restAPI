@@ -9,7 +9,7 @@ function TrackList() {
   useEffect(() => {
     api.get(`categories/${categoryId}/tracks/`)
       .then(res => setTracks(res.data))
-      .catch(err => console.error(err));
+      .catch(err => console.error('Failed to fetch tracks:', err));
   }, [categoryId]);
 
   return (
@@ -18,7 +18,9 @@ function TrackList() {
       <ul>
         {tracks.map(track => (
           <li key={track.id}>
-            <Link to={`/track/${track.id}`}>{track.title || track.name}</Link>
+         <Link to={`/track/${track.user_learning_track_id}`}>
+              {track.title || 'Unnamed Track'}
+            </Link>
           </li>
         ))}
       </ul>
