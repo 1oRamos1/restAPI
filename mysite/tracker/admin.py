@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Topic, LearningTrack, UserLearningTrack, Task, Note
+from .models import Category, Topic, LearningTrack, UserLearningTrack, Task
 
 
 @admin.register(Category)
@@ -35,10 +35,4 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ('task', 'user__username', 'user_learning_track__title')
     list_filter = ('status', 'grade')
 
-
-@admin.register(Note)
-class NoteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user_learning_track', 'description', 'creating_date')
-    search_fields = ('description',)
-    list_filter = ('creating_date',)
 

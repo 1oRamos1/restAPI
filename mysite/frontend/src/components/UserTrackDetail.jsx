@@ -1,55 +1,187 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import api from '../api/axios';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 function UserTrackDetail() {
-  const { trackId } = useParams();
+  const { trackId, userTrackId } = useParams();
   const [userTrack, setUserTrack] = useState(null);
-  const [tasks, setTasks] = useState([]);
+  const [trackInfo, setTrackInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { isAuthenticated, openLoginModal } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get(`user/tracks/${trackId}/`)
-      .then(res => {
-        setUserTrack(res.data);
-        // Assuming userTrack includes a list of tasks or tasks are related
-        // But since you didn't provide a tasks endpoint per track, fetch tasks separately if needed
-      })
-      .catch(err => console.error(err));
-  }, [trackId]);
+    const fetchData = async () => {
+      try {
+        if (!userTrackId || userTrackId === 'null' || userTrackId === 'undefined') {
+          const res = await api.get(`/tracks/${trackId}/`);
+          setTrackInfo(res.data);
+        } else {
+          const res = await api.get(`/user/tracks/${trackId}/${userTrackId}/`);
+          setUserTrack(res.data);
+          setTrackInfo(res.data.learning_track);
+        }
+      } catch (err) {
+        console.error('❌ Failed to load track:', err.response?.data || err.message);
+        setError('Something went wrong loading the track info.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // You probably want to fetch tasks separately for this user track:
-  useEffect(() => {
-    api.get('user/tasks/')  // You may need to create this endpoint to get user's tasks or filter by track
-      .then(res => {
-        // Filter tasks by userTrack id if needed
-        const filteredTasks = res.data.filter(t => t.user_learning_track === parseInt(trackId));
-        setTasks(filteredTasks);
-      })
-      .catch(err => console.error(err));
-  }, [trackId]);
+    fetchData();
+  }, [trackId, userTrackId]);
 
-  function continueProgress() {
-    // Navigate to task page or generate next task page
-    navigate(`/track/${trackId}/new-task`);
+  const handleStartJourney = async () => {
+  if (!isAuthenticated) {
+    openLoginModal();
+    return;
   }
 
-  if (!userTrack) return <p>Loading...</p>;
+  setBtnLoading(true);
+  try {
+    // ✅ CORRECTED API CALL
+    const res = await api.post('/user/tracks/', { learning_track: trackId });
+    const newTrack = res.data;
+
+    const taskRes = await api.post(`/user/tracks/${newTrack.id}/generate-task/`);
+    const newTask = taskRes.data;
+
+    navigate(`/tasks/${newTask.id}`);
+  } catch (err) {
+    console.error('❌ Failed to start journey:', err.response?.data || err.message);
+    setError('Failed to start a new journey.');
+  } finally {
+    setBtnLoading(false);
+  }
+};
+
+
+  const generateTask = async () => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+
+    setBtnLoading(true);
+    setError('');
+    try {
+      const res = await api.post(`/user/tracks/${userTrackId}/generate-task/`);
+      const task = res.data;
+      navigate(`/tasks/${task.id}`);
+    } catch (err) {
+      console.error('❌ Task generation error:', err);
+      setError('Failed to generate task');
+    } finally {
+      setBtnLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue0 dark:bg-gray-900">
+        <p className="text-blue70 dark:text-cyan-200 font-semibold">Loading track details...</p>
+      </div>
+    );
+  }
+
+  const completedTasks = userTrack?.tasks?.filter(task => task.status === 'completed') || [];
 
   return (
-    <div>
-      <h1>{userTrack.learning_track.title || userTrack.learning_track.name} Progress</h1>
-      <h2>Tasks Done</h2>
-      <ul>
-        {tasks.map(task => (
-          <li key={task.id}>
-            <Link to={`/task/${task.id}`}>{task.task.substring(0, 50)}...</Link> - Status: {task.status}
-          </li>
-        ))}
-      </ul>
-      <button onClick={continueProgress}>Continue Progress (Generate Next Task)</button>
+    <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
+      <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
+        <h1 className="text-5xl font-extrabold text-blue70 dark:text-cyan-300 mb-12 text-center">
+          {trackInfo?.title || 'Your Track'}
+        </h1>
+
+        {!userTrackId || userTrackId === 'null' || userTrackId === 'undefined' ? (
+          <div className="text-center">
+            <button
+              onClick={handleStartJourney}
+              disabled={btnLoading}
+              className="
+                px-8 py-4 text-lg font-bold rounded-lg
+                bg-blue70 hover:bg-blue50 text-white
+                dark:bg-cyan-900 dark:text-cyan-200
+                hover:from-blue60 hover:via-blue80 hover:to-blue90
+                dark:hover:from-cyan-600 dark:hover:via-cyan-700 dark:hover:to-cyan-800
+                transition-all duration-300 ease-in-out
+                disabled:opacity-50 disabled:cursor-not-allowed
+                shadow-lg hover:shadow-2xl hover:scale-105
+              "
+            >
+              {btnLoading ? 'Starting...' : 'Get in a new Journey!'}
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-center mb-12">
+              <button
+                onClick={generateTask}
+                disabled={btnLoading}
+                className="
+                  px-10 py-4 text-lg font-bold rounded-lg
+                  bg-blue70 text-blue0
+                  dark:bg-cyan-900 dark:text-cyan-100
+                  hover:bg-blue50 hover:text-white
+                  dark:hover:bg-cyan-500
+                  border border-blue70 dark:border-none
+                  transition disabled:opacity-50 disabled:cursor-not-allowed
+                  shadow-md hover:shadow-lg hover:scale-[1.05]
+                "
+              >
+                {btnLoading ? 'Generating...' : 'Continue Track'}
+              </button>
+            </div>
+
+            <ul className="grid grid-cols-1 gap-3">
+              {completedTasks.slice().reverse().map(task => (
+                <li key={task.id}>
+                  <Link
+                    to={`/tasks/${task.id}`}
+                    className="block rounded-lg p-4
+                      bg-gradient-to-b from-white to-blue0
+                      dark:from-gray-800 dark:to-gray-900
+                      border border-blue50 dark:border-gray-700
+                      text-blue70 dark:text-cyan-200
+                      shadow-md dark:shadow-none
+                      transition-transform duration-300
+                      hover:scale-[1.03] hover:border-blue60
+                      dark:hover:border-cyan-500
+                      hover:shadow-[0_6px_12px_rgba(12,74,110,0.3)]
+                      dark:hover:shadow-[0_6px_12px_rgba(6,182,212,0.5)]"
+                  >
+                    <div className="flex justify-between items-center mb-1">
+                      <h3 className="text-base font-semibold truncate max-w-[80%]">
+                        {task.task.includes('### Title:')
+                          ? task.task.split('### Title:')[1].split('\n')[0].trim()
+                          : 'Untitled Task'}
+                      </h3>
+                      <span className="text-sm font-semibold text-blue200 dark:text-cyan-300 whitespace-nowrap">
+                        Grade: {task.grade != null ? `${task.grade} / 5` : '-'}
+                      </span>
+                    </div>
+                    <p className="text-blue200 dark:text-cyan-300 text-xs">
+                      Click to view solution & feedback
+                    </p>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+
+        {/* Only show error if it's not from triggering login */}
+        {error && isAuthenticated && (
+          <p className="text-red-600 dark:text-red-400 text-center font-medium mt-8">{error}</p>
+        )}
+      </div>
     </div>
   );
 }
 
 export default UserTrackDetail;
+

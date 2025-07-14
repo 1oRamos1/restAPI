@@ -1,0 +1,65 @@
+{% extends "socialaccount/base_entrance.html" %}
+{% load i18n %}
+{% load allauth %}
+
+{% block head_title %}
+  {% trans "Sign In" %}
+{% endblock head_title %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-cyan-100 to-blue-200 px-4">
+  <div class="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+    <h1 class="text-3xl font-extrabold text-gray-900 mb-6 text-center">{% trans "Sign In" %}</h1>
+
+    {% if form.errors %}
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <strong>{% trans "Error:" %}</strong> {% trans "Please check the form below for errors." %}
+      </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'account_login' %}" novalidate>
+      {% csrf_token %}
+      <div class="mb-4">
+        <label for="id_login" class="block text-gray-700 font-semibold mb-2">{% trans "Username or Email" %}</label>
+        <input type="text" name="login" id="id_login" required
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+          value="{{ form.login.value|default_if_none:'' }}">
+      </div>
+
+      <div class="mb-6">
+        <label for="id_password" class="block text-gray-700 font-semibold mb-2">{% trans "Password" %}</label>
+        <input type="password" name="password" id="id_password" required
+          class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+      </div>
+
+      {% if redirect_field_value %}
+        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+      {% endif %}
+
+      <button type="submit"
+        class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-3 rounded-md font-semibold transition duration-200">
+        {% trans "Sign In" %}
+      </button>
+    </form>
+
+    <div class="mt-6 text-center text-gray-600">
+      <p>{% trans "Don't have an account?" %}
+        <a href="{% url 'account_signup' %}" class="text-cyan-600 hover:underline">{% trans "Sign up" %}</a>
+      </p>
+      <p class="mt-2">
+        <a href="{% url 'account_reset_password' %}" class="text-cyan-600 hover:underline">{% trans "Forgot password?" %}</a>
+      </p>
+    </div>
+
+    <hr class="my-6 border-gray-300">
+
+    <div class="text-center">
+      <p class="mb-4 text-gray-600">{% trans "Or sign in with" %}</p>
+      <a href="{% provider_login_url 'google' %}"
+         class="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md font-semibold transition duration-200">
+         {% trans "Google" %}
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock content %}
