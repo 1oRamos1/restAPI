@@ -39,7 +39,7 @@ export default function Navbar({ onLoginClick }) {
     .then(() => {
       setIsAuthenticated(false);
       navigate('/');
-      window.location.reload(); // 🔹 Force page refresh
+      window.location.reload();
     })
     .catch(err => console.error('Logout failed:', err));
 };

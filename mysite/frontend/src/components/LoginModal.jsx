@@ -49,7 +49,7 @@ export default function LoginModal({ onClose }) {
     setIsAuthenticated(true);
     setError('');
     onClose();
-    window.location.reload(); // 🔹 Refresh page after login
+    window.location.reload();
   } catch (err) {
     console.error(err);
     setError('Google login failed. Try again.');
@@ -71,7 +71,7 @@ const handleLogin = async () => {
     setIsAuthenticated(true);
     setError('');
     onClose();
-    window.location.reload(); // 🔹 Refresh page after login
+    window.location.reload();
   } catch (err) {
     const detail = err.response?.data?.detail;
     if (
