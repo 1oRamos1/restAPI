@@ -2,7 +2,6 @@ from django.urls import path, include, re_path
 from django.http import HttpResponseNotFound
 from .views import *
 
-
 app_name = "tracker"
 
 accounts_blocker = re_path(
@@ -16,10 +15,11 @@ urlpatterns = [
     path('auth/csrf/', set_csrf_cookie, name='csrf'),
     path('auth/login/', login_view, name='login'),
     path('auth/signup/', signup_view, name='signup'),
+    path('upgrade-to-pro/', upgrade_to_pro, name='upgrade-to-pro'),
 
     # web google log-in
-
-    path('dj-rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
+    path('dj-rest-auth/google/', GoogleLoginView.as_view(), name='google_login'),
+    path('dj-rest-auth/user/', CustomUserDetailsView.as_view(), name='rest_user_details'),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
 
     # API endpoints
@@ -27,14 +27,15 @@ urlpatterns = [
     path('categories/<int:category_id>/tracks/', LearningTracksByCategory.as_view(), name='tracks-by-category'),
     path('tracks/<int:trackId>/', LearningTrackDetail.as_view(), name='user-track-retrieve'),
 
+    path('custom-track/create/', CustomTrackCreateView.as_view(), name='custom-track-create'),
+    path('custom-track/options/', CustomTrackOptionsView.as_view(), name='custom-track-options'),
+    path('freeform-track/create/', FreeformCustomTrackCreateView.as_view(), name='freeform-track-create'),
+
     path('user/tracks/', UserLearningTrackList.as_view(), name='user-learning-tracks-list'),
     path('user/tracks/<int:learning_track_id>/<int:user_learning_track_id>/', UserLearningTrackDetail.as_view(),
          name='user-learning-track'),
     path('user/tracks/<int:user_learning_track_id>/generate-task/', GenerateNextTask.as_view(),
          name='generate-next-task'),
     path('user/tasks/<int:pk>/', TaskDetail.as_view(), name='task-detail'),
-
-    # Test endpoints
-    path('test-auth/', TestAuthView.as_view(), name='test-auth'),
 
 ]

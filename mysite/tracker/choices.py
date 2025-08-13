@@ -9,3 +9,8 @@ STATUS_CHOICES = (
     ('in_progress', 'In Progress'),
     ('completed', 'Completed'),
 )
+
+MONACO_LANGUAGES = [
+    "python", "javascript", "typescript", "html", "css", "json", "markdown",
+    "cpp", "c", "java", "go", "shell", "bash", "php", "sql", "xml", "yaml", "rust"
+]

@@ -1,9 +1,71 @@
+from dj_rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
-from django.contrib.auth.models import User
-from .models import (
-    Category, Topic, LearningTrack, UserLearningTrack,
-    Task
-)
+from .models import *
+import json
+from .ai_integration import generate_track_from_prompt, extract_json_from_text
+from .validators import is_valid_learning_goal, is_valid_track_structure
+
+
+class CustomUserDetailsSerializer(UserDetailsSerializer):
+    is_pro = serializers.BooleanField(source='profile.is_pro', read_only=True)
+
+    class Meta(UserDetailsSerializer.Meta):
+        fields = UserDetailsSerializer.Meta.fields + ('is_pro',)
+
+
+class CustomTrackOptionsSerializer(serializers.Serializer):
+    language = serializers.ChoiceField(choices=["python", "js", "cpp", "auto"], default="auto")
+    level = serializers.ChoiceField(choices=["beginner", "advanced", "master"])
+    description = serializers.CharField(max_length=300)
+
+
+class CustomTrackCreateSerializer(serializers.Serializer):
+    language = serializers.ChoiceField(choices=["python", "js", "cpp", "auto"])
+    description = serializers.CharField(max_length=300)
+    level = serializers.ChoiceField(choices=["beginner", "advanced", "master"])
+
+    def update(self, instance, validated_data):
+        raise NotImplementedError("Update not supported")
+
+    def validate_description(self, value):
+        # Implement your is_valid_learning_goal check or similar here if needed
+        return value
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        prompt = validated_data['description']
+        selected_lang = validated_data['language']
+        selected_level = validated_data['level']
+
+        if selected_lang != "auto":
+            full_prompt = f"Create a {selected_level} track in {selected_lang} about: {prompt}"
+        else:
+            full_prompt = f"Create a {selected_level} track based on: {prompt}. Choose the most suitable language."
+
+        ai_response_text = generate_track_from_prompt(full_prompt)
+        track_data = extract_json_from_text(ai_response_text)
+
+        # Validate AI response structure here if you want
+
+        category_name = track_data.get('category')
+        language = track_data.get('language') or (selected_lang if selected_lang != 'auto' else 'python')
+
+        category, _ = Category.objects.get_or_create(name=category_name.strip(), language=language)
+
+        learning_track = LearningTrack.objects.create(
+            title=track_data['title'],
+            category=category,
+            level=track_data['level'],
+            is_custom=True,
+            created_by=user
+        )
+
+        user_learning_track = UserLearningTrack.objects.create(
+            user=user,
+            learning_track=learning_track
+        )
+
+        return user_learning_track
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -51,9 +113,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         fields = ['id', 'task', 'solution', 'grade', 'review', 'status', 'user_learning_track_id', 'task_number']
 
     def get_task_number(self, obj):
-        # get all tasks of the same user_learning_track ordered by id (or date)
         tasks = Task.objects.filter(user_learning_track=obj.user_learning_track).order_by('id')
-        # find position of current task (1-based index)
         for i, t in enumerate(tasks, start=1):
             if t.id == obj.id:
                 return i
@@ -72,18 +132,18 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
         source='learning_track',
         write_only=True
     )
-
-    # Show only `id` and `title` from the related LearningTrack
     learning_track = serializers.SerializerMethodField()
     tasks = TaskListSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
 
     class Meta:
         model = UserLearningTrack
         fields = [
             'id',
             'learning_track_id',
-            'learning_track',  # contains only id + title
+            'learning_track',
             'start_date',
+            'category',
             'last_updated',
             'progression',
             'summary',
@@ -92,12 +152,16 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'start_date', 'last_updated', 'learning_track', 'tasks']
 
     def get_learning_track(self, obj):
-        if obj.learning_track:
-            return {
-                "id": obj.learning_track.id,
-                "title": obj.learning_track.title
-            }
-        return None
+        track = obj.learning_track
+        if not track:
+            return None
+
+        return {
+            "id": track.id,
+            "title": track.title,
+            "level": track.level,
+            "category": CategorySerializer(track.category).data,
+        }
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -112,7 +176,6 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
                 setattr(instance, attr, value)
             instance.save()
         return instance
-
 
 
 

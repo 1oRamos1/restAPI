@@ -4,3 +4,12 @@ from django.apps import AppConfig
 class ApiConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "tracker"
+
+
+class TrackerConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'tracker'
+
+    def ready(self):
+        import signals
+

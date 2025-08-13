@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AuthProvider } from './context/AuthContext';
 
 import Layout from './layout/Layout';
 import Signup from './pages/Signup';
@@ -13,8 +14,10 @@ import TrackPage from './pages/TrackPage';
 import UserTracksList from './pages/UserTracksList';
 import TaskPage from './pages/TaskPage';
 import NewTaskPage from './pages/NewTaskPage';
+import BuyProPage from './pages/BuyProPage';
+import PaymentPage from './pages/PaymentPage';
+import CreateTrackPage from './pages/CreateTrackPage';
 
-import { AuthProvider } from './context/AuthContext'; // ✅ Add this
 
 // 🔁 Set theme on initial load
 function applyTheme() {
@@ -39,8 +42,8 @@ function App() {
   }, [pathname]);
 
   return (
-    <GoogleOAuthProvider clientId="1054941900001-rchlqsk7cirl67lfoja5qga9p30vcdd2.apps.googleusercontent.com">
-      <AuthProvider> {/* ✅ Wrap your app in AuthProvider */}
+    <GoogleOAuthProvider clientId="1054941900001-8o9cl0tqu27744cof3dsrti6v6f9r6ns.apps.googleusercontent.com">
+      <AuthProvider>
         <Routes>
           <Route element={<Layout />}>
             <Route path="/password-reset" element={<PasswordReset />} />
@@ -50,6 +53,9 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/category/:categoryId" element={<CategoryPage />} />
             <Route path="/my-tracks" element={<UserTracksList />} />
+            <Route path="/buy-pro" element={<BuyProPage />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/create-track" element={<CreateTrackPage />} />
             <Route path="/track/:trackId/:userTrackId" element={<TrackPage />} />
             <Route path="/tasks/:taskId" element={<TaskPage />} />
             <Route path="/tasks/:taskId/submit-again" element={<TaskPage isSubmitAgain />} />
@@ -62,4 +68,3 @@ function App() {
 }
 
 export default App;
-

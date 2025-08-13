@@ -1,8 +1,16 @@
-// src/components/LoginModal.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
+
+const GOOGLE_CLIENT_ID = '1054941900001-8o9cl0tqu27744cof3dsrti6v6f9r6ns.apps.googleusercontent.com';
+
+function getCsrfTokenFromCookie() {
+  return document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+}
 
 export default function LoginModal({ onClose }) {
   const [username, setUsername] = useState('');
@@ -12,62 +20,71 @@ export default function LoginModal({ onClose }) {
   const { setIsAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
-    const scriptId = 'google-login-script';
+    try {
+      if (!window.google?.accounts?.id) return;
 
-    const renderGoogleButton = () => {
-      if (window.google && window.google.accounts?.id) {
-        window.google.accounts.id.initialize({
-          client_id: 'YOUR_GOOGLE_CLIENT_ID',
-          callback: handleGoogleLogin,
-        });
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-login-button'),
-          {
-            theme: 'outline',
-            size: 'large',
-            width: '380',
-          }
-        );
-      }
-    };
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleLogin,
+      });
 
-    if (!document.getElementById(scriptId)) {
-      const script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.id = scriptId;
-      script.onload = renderGoogleButton;
-      document.body.appendChild(script);
-    } else {
-      renderGoogleButton();
+      window.google.accounts.id.renderButton(
+        document.getElementById('google-login-button'),
+        {
+          theme: 'outline',
+          size: 'large',
+          width: '380',
+        }
+      );
+    } catch (e) {
+      console.error('Google login script not ready:', e);
     }
   }, []);
 
-  const handleGoogleLogin = (response) => {
-    console.log('Google login response:', response);
-    // TODO: send token to backend
-  };
+ const handleGoogleLogin = async (response) => {
+  try {
+    await api.get('/auth/csrf/'); // Get token
+    await api.post('/dj-rest-auth/google/', { id_token: response.credential }); // Login
 
-  const handleLogin = async () => {
-    try {
-      await api.post('/auth/login/', { username, password });
-      setIsAuthenticated(true);
-      setError('');
-      onClose();
-    } catch (err) {
-      const detail = err.response?.data?.detail;
-      if (
-        detail?.toLowerCase().includes('no active account') ||
-        detail?.toLowerCase().includes('unable to log in') ||
-        detail?.toLowerCase().includes('not found')
-      ) {
-        setError("You're not signed in. Please sign up.");
-      } else {
-        setError('Login failed. Check your credentials.');
+    setIsAuthenticated(true);
+    setError('');
+    onClose();
+    window.location.reload(); // 🔹 Refresh page after login
+  } catch (err) {
+    console.error(err);
+    setError('Google login failed. Try again.');
+  }
+};
+
+const handleLogin = async () => {
+  try {
+    await api.post(
+      '/auth/login/',
+      { username, password },
+      {
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': getCsrfTokenFromCookie(),
+        },
       }
+    );
+    setIsAuthenticated(true);
+    setError('');
+    onClose();
+    window.location.reload(); // 🔹 Refresh page after login
+  } catch (err) {
+    const detail = err.response?.data?.detail;
+    if (
+      detail?.toLowerCase().includes('no active account') ||
+      detail?.toLowerCase().includes('unable to log in') ||
+      detail?.toLowerCase().includes('not found')
+    ) {
+      setError("You're not signed in. Please sign up.");
+    } else {
+      setError('Login failed. Check your credentials.');
     }
-  };
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">

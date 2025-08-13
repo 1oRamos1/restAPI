@@ -89,6 +89,7 @@ function UserTrackDetail() {
   }
 
   const completedTasks = userTrack?.tasks?.filter(task => task.status === 'completed') || [];
+  const noTasksDone = completedTasks.length === 0;
 
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
@@ -97,7 +98,7 @@ function UserTrackDetail() {
           {trackInfo?.title || 'Your Track'}
         </h1>
 
-        {!userTrackId || userTrackId === 'null' || userTrackId === 'undefined' ? (
+        {!userTrackId || userTrackId === 'null' || userTrackId === 'undefined' || noTasksDone ? (
           <div className="text-center">
             <button
               onClick={handleStartJourney}

@@ -4,6 +4,14 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from .choices import DIFFICULTY_CHOICES, STATUS_CHOICES
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    is_pro = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} Profile"
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True)
     language = models.CharField(max_length=20, default='python')
@@ -25,6 +33,8 @@ class LearningTrack(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="tracks")
     topics = models.ManyToManyField(Topic, related_name="tracks")
     users = models.ManyToManyField(User, through='UserLearningTrack', related_name='learning_tracks')
+    is_custom = models.BooleanField(default=False)
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="custom_tracks")
 
     def __str__(self):
         return self.title
@@ -63,4 +73,3 @@ class Task(models.Model):
 
     def __str__(self):
         return self.task[:30]
-

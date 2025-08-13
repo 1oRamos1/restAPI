@@ -1,118 +1,228 @@
-from django.contrib.auth import authenticate
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import mixins
-from rest_framework.generics import (
-    RetrieveAPIView,
-    RetrieveUpdateDestroyAPIView,
-    ListAPIView,
-    GenericAPIView,
-)
-from rest_framework.permissions import IsAuthenticated, AllowAny
-import re
-from .models import LearningTrack, Task, Category, UserLearningTrack, User
-from .serializers import (
-    LearningTrackListSerializer,
-    UserLearningTrackSerializer,
-    LearningTrackDetailSerializer,
-    TaskDetailSerializer,
-    TaskListSerializer,
-    CategorySerializer
-)
 import logging
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.hashers import make_password
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
-import ollama
-from ollama import chat
 
-
-from rest_framework.views import APIView
+from rest_framework import mixins, status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, GenericAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from rest_framework import status
-from django.contrib.auth import login
+from rest_framework.views import APIView
+
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.oauth2.client import OAuth2Client
 from dj_rest_auth.registration.views import SocialLoginView
-from django.shortcuts import redirect
-from django.contrib.auth.hashers import make_password
-from .services import generate_and_save_summary
+from dj_rest_auth.views import UserDetailsView
+from google.oauth2 import id_token
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.middleware.csrf import get_token
+from google.auth.transport import requests
+import ollama
+
+from .serializers import *
+from .ai_integration import *
+from .validators import is_valid_learning_goal, is_valid_track_structure
+from .choices import MONACO_LANGUAGES
+
+# 🔑 TEMP: hardcoded OpenAI API key
+openai.api_key = "sk-proj-j_vFmfzEcF93d821ZnsqF9KtHaUu5X0WvppbgBWUo72Gahh1prj8i6FtbJSHNq3Sg" \
+                 "4h_0r9sFST3BlbkFJaqrif1S9RmvsnMYxET8qO2Hq8LRXFS-uRAzHR34IOmfm_osBjrRa6751MuKhtx2rkxwJHMfNMA"  # Replace with your actual key
 
 
-class GoogleLogin(SocialLoginView):
-    adapter_class = GoogleOAuth2Adapter
-    client_class = OAuth2Client  # This must match what's registered in Google Cloud
+class CustomUserDetailsView(UserDetailsView):
+    serializer_class = CustomUserDetailsSerializer
 
 
-def google_login_redirect(request):
-    return redirect("http://localhost:8000/accounts/3rdparty/signup/")
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def user_pro_status(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    if profile.is_pro:
+        return Response({'status': 'already_pro'})
+
+    profile.is_pro = True
+    profile.save()
+    return Response({'status': 'upgraded'})
 
 
-def redirect_to_frontend(request):
-    return redirect("/login")
+def use_openai(user):
+    return hasattr(user, "profile") and user.profile.is_pro
 
 
-# 🔒 Set CSRF cookie on GET
+def get_chat_completion(user, prompt):
+    if use_openai(user):
+        response = openai.ChatCompletion.create(
+            model="gpt-4.1",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+        )
+        return response.choices[0].message["content"]
+    else:
+        result = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
+        return result.get("message", {}).get("content") or result.get("content")
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def upgrade_to_pro(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    profile.is_pro = True
+    profile.save()
+    return Response({'status': 'upgraded to pro'})
+
+
+logger = logging.getLogger(__name__)
+@ method_decorator(csrf_exempt, name='dispatch')
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        print("GoogleLoginView called")
+        print(f"Request data: {request.data}")
+        print(f"Request headers: {dict(request.headers)}")
+        print(f"Content type: {request.content_type}")
+        try:
+            # Get the credential from request
+            credential = request.data.get('credential') or request.data.get('id_token') or request.data.get(
+                'access_token')
+
+            if not credential:
+                return Response({'error': 'No credential provided'}, status=400)
+
+            # Verify the token
+            idinfo = id_token.verify_oauth2_token(
+                credential,
+                requests.Request(),
+                "1054941900001-8o9cl0tqu27744cof3dsrti6v6f9r6ns.apps.googleusercontent.com")
+
+            # Extract user info
+            email = idinfo['email']
+            name = idinfo['name']
+
+            # Get or create user
+            user, created = User.objects.get_or_create(
+                email=email,
+                defaults={'username': email, 'first_name': name}
+            )
+
+            # Log the user in (or return token)
+            login(request, user)
+
+            return Response({'success': True, 'user': user.username})
+
+        except Exception as e:
+            logger.error(f"Google login error: {str(e)}")
+            return Response({'error': str(e)}, status=400)
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 @ensure_csrf_cookie
 def set_csrf_cookie(request):
-    return JsonResponse({"detail": "CSRF cookie set"})
+    return Response({'csrfToken': get_token(request)})
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login_view(request):
-    try:
-        data = request.data  # Use DRF's request.data instead of json.loads(request.body)
-        username = data.get("username")
-        password = data.get("password")
-
-        if not username or not password:
-            return JsonResponse({"error": "Username and password are required"}, status=400)
-
-        user = authenticate(request, username=username, password=password)
-        if user:
-            if not user.is_active:
-                return JsonResponse({"error": "Account is inactive"}, status=403)
-            login(request, user)
-            return JsonResponse({"message": "Logged in"})
-        return JsonResponse({"error": "Invalid credentials"}, status=403)
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+    data = request.data
+    user = authenticate(request, username=data.get("username"), password=data.get("password"))
+    if user:
+        login(request, user)
+        return JsonResponse({"message": "Logged in"})
+    return JsonResponse({"error": "Invalid credentials"}, status=403)
 
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def signup_view(request):
-    try:
-        data = request.data
-        username = data.get("username")
-        email = data.get("email", "").strip()
-        password1 = data.get("password1")
-        password2 = data.get("password2")
+    data = request.data
+    username = data.get("username")
+    email = data.get("email", "").strip()
+    password1 = data.get("password1")
+    password2 = data.get("password2")
 
-        if not username or not email or not password1 or not password2:
-            return JsonResponse({"error": "All fields are required"}, status=400)
+    if not username or not email or not password1 or not password2:
+        return JsonResponse({"error": "All fields are required"}, status=400)
+    if password1 != password2:
+        return JsonResponse({"error": "Passwords do not match"}, status=400)
+    if User.objects.filter(username=username).exists():
+        return JsonResponse({"error": "Username already exists"}, status=400)
+    if User.objects.filter(email=email).exists():
+        return JsonResponse({"error": "Email already in use"}, status=400)
 
-        if password1 != password2:
-            return JsonResponse({"error": "Passwords do not match"}, status=400)
+    user = User.objects.create(
+        username=username,
+        email=email,
+        password=make_password(password1)
+    )
+    return JsonResponse({"message": "User created successfully"}, status=201)
 
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"error": "Username already exists"}, status=400)
 
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({"error": "Email already in use"}, status=400)
+class CustomTrackOptionsView(APIView):
+    permission_classes = [IsAuthenticated]
 
-        user = User.objects.create(
-            username=username,
-            email=email,
-            password=make_password(password1)
+    def post(self, request):
+        serializer = CustomTrackOptionsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        lang_input = data['language']
+        lang_prompt = (
+            lang_input if lang_input != 'auto'
+            else f"one of the following: {', '.join(MONACO_LANGUAGES)}"
         )
 
-        return JsonResponse({"message": "User created successfully"}, status=201)
+        prompt = f"""
+           User wants a {data['level']} programming learning track.
+           Language preference: {lang_prompt}.
+           Learning goal: {data['description']}
+           Suggest 3 to 5 learning tracks as a JSON ARRAY ONLY with this format:
+           [
+               {{
+                   "title": "Track title",
+                   "language": "Programming language",
+                   "level": "beginner|advanced|master",
+                   "short_description": "A short summary of the learning track"
+               }},
+               ...
+           ]
+           Do NOT include any other text, explanations, or formatting.
+           Return ONLY valid JSON.
+           """
 
-    except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)
+        ai_response_text = generate_track_from_prompt(prompt)
+        try:
+            options = extract_json_from_text(ai_response_text)
+        except ValidationError as e:
+            return Response({"detail": str(e)}, status=400)
+
+        if not isinstance(options, list) or not options:
+            return Response({"detail": "AI did not return a valid list of options."}, status=400)
+
+        return Response({"options": options})
+
+
+class CustomTrackCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if not getattr(request.user.profile, 'is_pro', False):
+            return Response({'detail': 'Pro membership required.'}, status=403)
+
+        serializer = CustomTrackCreateSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+
+        user_learning_track = serializer.save()
+
+        return Response({
+            'track_id': user_learning_track.learning_track.id,
+            'user_track_id': user_learning_track.id
+        }, status=status.HTTP_201_CREATED)
 
 
 class CategoryList(ListAPIView):
@@ -123,7 +233,7 @@ class CategoryList(ListAPIView):
         queryset = Category.objects.all()
         language = self.request.query_params.get('language')
         if language:
-            queryset = queryset.filter(language=language)  # assumes you have a field named 'language'
+            queryset = queryset.filter(language=language)
         return queryset
 
 
@@ -132,12 +242,11 @@ class LearningTracksByCategory(ListAPIView):
     permission_classes = [AllowAny]
 
     def get_queryset(self):
-        category_id = self.kwargs['category_id']
-        return LearningTrack.objects.filter(category_id=category_id)
+        return LearningTrack.objects.filter(category_id=self.kwargs['category_id'])
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['request'] = self.request  # Ensure user reaches the serializer
+        context['request'] = self.request
         return context
 
 
@@ -148,8 +257,7 @@ class LearningTrackDetail(RetrieveAPIView):
     lookup_field = "trackId"
 
     def get_object(self):
-        track_id = self.kwargs.get("trackId")
-        return get_object_or_404(LearningTrack, pk=track_id)
+        return get_object_or_404(LearningTrack, pk=self.kwargs.get("trackId"))
 
 
 class UserLearningTrackList(mixins.ListModelMixin,
@@ -159,8 +267,7 @@ class UserLearningTrackList(mixins.ListModelMixin,
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        user_tracks = UserLearningTrack.objects.filter(user=user).select_related('learning_track')
+        user_tracks = UserLearningTrack.objects.filter(user=self.request.user).select_related('learning_track')
         for user_track in user_tracks:
             user_track.learning_track.user_track_for_user = user_track
         return user_tracks
@@ -169,15 +276,8 @@ class UserLearningTrackList(mixins.ListModelMixin,
         return self.list(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        learning_track_id = request.data.get("learning_track")
-        if not learning_track_id:
-            return Response({"error": "Missing 'learning_track' in request body"}, status=400)
-
-        learning_track = get_object_or_404(LearningTrack, pk=learning_track_id)
-        ult, created = UserLearningTrack.objects.get_or_create(
-            user=request.user,
-            learning_track=learning_track
-        )
+        learning_track = get_object_or_404(LearningTrack, pk=request.data.get("learning_track"))
+        ult, created = UserLearningTrack.objects.get_or_create(user=request.user, learning_track=learning_track)
         serializer = self.get_serializer(ult)
         return Response(serializer.data, status=201 if created else 200)
 
@@ -195,37 +295,29 @@ class UserLearningTrackDetail(
         return UserLearningTrack.objects.filter(user=self.request.user)
 
     def get(self, request, *args, **kwargs):
-        user_learning_track_id = kwargs.get('user_learning_track_id')
-        learning_track_id = kwargs.get('learning_track_id')
-
-        if not user_learning_track_id:
-            return Response({"error": "user_learning_track_id path param required"}, status=400)
-
-        obj = get_object_or_404(self.get_queryset(), pk=user_learning_track_id, learning_track_id=learning_track_id)
-
-        # ✅ Update progression on access
-        completed_tasks = Task.objects.filter(user_learning_track=obj, status="completed").count()
-        if obj.progression != completed_tasks:
-            obj.progression = completed_tasks
+        obj = get_object_or_404(
+            self.get_queryset(),
+            pk=kwargs.get('user_learning_track_id'),
+            learning_track_id=kwargs.get('learning_track_id')
+        )
+        completed = Task.objects.filter(user_learning_track=obj, status="completed").count()
+        if obj.progression != completed:
+            obj.progression = completed
             obj.save()
-
-        serializer = self.get_serializer(obj)
-        return Response(serializer.data)
+        return Response(self.get_serializer(obj).data)
 
     def post(self, request, *args, **kwargs):
-        user_learning_track_id = request.data.get('user_learning_track_id')
-        learning_track = get_object_or_404(LearningTrack, pk=user_learning_track_id)
+        learning_track_id = request.data.get('learning_track_id')
+        if not learning_track_id:
+            return Response({"error": "Missing learning_track_id"}, status=400)
+        track = get_object_or_404(LearningTrack, pk=learning_track_id)
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=request.user, user_learning_track=learning_track)
+        serializer.save(user=request.user, learning_track=track)
         return Response(serializer.data, status=201)
 
     def delete(self, request, *args, **kwargs):
-        user_learning_track_id = kwargs.get('user_learning_track_id')
-        if not user_learning_track_id:
-            return Response({"error": "user_learning_track_id path param required"}, status=400)
-
-        user_track = get_object_or_404(self.get_queryset(), pk=user_learning_track_id)
+        user_track = get_object_or_404(self.get_queryset(), pk=kwargs.get('user_learning_track_id'))
         user_track.delete()
         return Response(status=204)
 
@@ -257,7 +349,7 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
                 "Ignore placeholders or boilerplate. Only consider real implementation work.\n"
                 "Write ONLY the review. Be concise but helpful.\n"
                 "VERY IMPORTANT:\n"
-                "- Speak directly to me (second person). Start the summary with 'You..."
+                "- Speak directly to me (second person). Start the summary with 'You...'\n"
                 "- Do NOT comment on the task text or instructions.\n"
                 "- Do NOT mention the grade anywhere except the LAST LINE.\n"
                 "- The last line MUST be in this exact format: Grade: <score>/5\n"
@@ -266,14 +358,11 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
             )
 
             try:
-                response = chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-                ai_content = response.get("message", {}).get("content") or response.get("choices")[0]["message"]["content"]
+                ai_content = get_chat_completion(request.user, prompt)
 
-                # Extract grade
                 grade_match = re.search(r"Grade[:：]?\s*(\d)\s*/\s*5\s*$", ai_content, re.IGNORECASE)
                 grade = int(grade_match.group(1)) if grade_match else 0
 
-                # Clean review body
                 review_body = re.sub(r"Grade[:：]?\s*\d\s*/\s*5\s*$", "", ai_content, flags=re.IGNORECASE).strip()
                 formatted_review = f"{review_body}\n\nGrade: {grade}/5"
 
@@ -282,14 +371,12 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
                 task.status = "inprogress"
                 task.save()
 
-                # ✅ Update progression count
                 if task.user_learning_track:
                     user_track = task.user_learning_track
                     completed_tasks = Task.objects.filter(user_learning_track=user_track, status="completed").count()
                     user_track.progression = completed_tasks
                     user_track.save()
 
-                    # ✅ Generate summary
                     all_tasks = Task.objects.filter(
                         user_learning_track=user_track,
                         status="completed"
@@ -308,14 +395,13 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
                         "Write a short summary (3–5 lines) that captures my overall progress, "
                         "strengths, and areas I need to improve.\n"
                         "Speak directly to me (second person). Start the summary with 'You...'.\n"
-                        "Do NOT repeat individual task details. Be clear and motivating."
+                        "Do NOT repeat individual task details. Be clear and motivating.\n"
                         "VERY IMPORTANT:\n"
-                        "- Do NOT any greetings, follow-ups or titles, just clean review.\n"
+                        "- Do NOT include greetings, follow-ups or titles, just clean review.\n"
                     )
 
                     try:
-                        summary_response = chat(model="llama3", messages=[{"role": "user", "content": summary_prompt}])
-                        concise_summary = summary_response.get("message", {}).get("content") or summary_response.get("choices")[0]["message"]["content"]
+                        concise_summary = get_chat_completion(request.user, summary_prompt)
                         user_track.summary = concise_summary.strip()
                         user_track.save()
                     except Exception as e:
@@ -329,14 +415,6 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
 
         logging.error(f"Serializer validation failed: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class TestAuthView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        print("User is:", request.user)
-        return Response({"user": str(request.user)})
 
 
 class GenerateNextTask(APIView):
@@ -356,12 +434,8 @@ class GenerateNextTask(APIView):
                 last_task.status = "completed"
                 last_task.save()
 
-                # ✅ Update progression immediately after completing a task
-                completed_count = Task.objects.filter(user_learning_track=user_track, status="completed").count()
-                user_track.progression = completed_count
+                user_track.progression = Task.objects.filter(user_learning_track=user_track, status="completed").count()
                 user_track.save()
-
-            language_tag = user_track.learning_track.category.language  # fallback to python if not set
 
             prompt = (
                 f"I'm a {user_track.learning_track.level} programmer student. Please act as a {user_track.learning_track.title} teacher.\n"
@@ -369,35 +443,103 @@ class GenerateNextTask(APIView):
                 "Generate the next programming task **with the exact structure below and NOTHING ELSE**:\n"
                 "### Title: <A short and clear title of the task>\n"
                 "### Description:\n<A short explanation of the task to complete>\n"
-                f"### Code:\n```{language_tag}\n<starter code or blanks>\n```\n"
+                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code or blanks>\n```\n"
                 "VERY IMPORTANT:\n"
-                "- Only fill the blanks kind of tasks!.\n"
-                "- Output ONLY this structure and content, task must have title , no greetings, "
-                "explanations, or extra text.\n"
-                "- Use the exact headings and markdown formatting as shown.\n"
-                "- Include the language tag after the triple backticks exactly as shown.\n"
-                "- If you cannot comply, reply only with: 'Unable to generate task.'\n"
+                "- Only fill the blanks kind of tasks!\n"
+                "- Use the exact markdown format shown.\n"
+                "- No greetings, no explanations, only valid content.\n"
             )
 
-            response = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-            new_task_text = response.get('message', {}).get('content') or response.get('content')
+            result_text = get_chat_completion(request.user, prompt)
 
-            if not new_task_text:
-                return Response({"error": "No content returned from Ollama"}, status=500)
+            if not result_text:
+                return Response({"error": "No content returned"}, status=500)
 
             new_task = Task.objects.create(
                 user=request.user,
                 user_learning_track=user_track,
-                task=new_task_text,
+                task=result_text,
                 status="pending"
             )
 
-            # ✅ Generate and save updated summary
-            generate_and_save_summary(user_track)
+            # Optional: regenerate summary if needed here
 
-            serializer = TaskListSerializer(new_task)
-            return Response(serializer.data)
+            return Response(TaskListSerializer(new_task).data)
 
         except Exception as e:
-            logging.error(f"Error in GenerateNextTask: {e}")
+            logging.error(f"GenerateNextTask failed: {e}")
             return Response({"error": str(e)}, status=500)
+
+
+class FreeformCustomTrackCreateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        profile = getattr(user, "profile", None)
+        if not profile or not profile.is_pro:
+            return Response({'detail': 'Pro membership required.'}, status=status.HTTP_403_FORBIDDEN)
+
+        learning_goal = request.data.get('learning_goal', '').strip()
+        if not learning_goal:
+            return Response({'detail': 'Missing learning goal.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate input meaning
+        if not is_valid_learning_goal(learning_goal):
+            return Response({'detail': 'Invalid or meaningless learning goal.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Generate AI track JSON string
+            ai_response = generate_track_from_prompt(learning_goal)
+            # Parse AI JSON output
+            track_data = json.loads(ai_response)
+        except (ValidationError, json.JSONDecodeError) as e:
+            return Response({'detail': f'AI generation failed or invalid output: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate AI structured output format
+        if not is_valid_track_structure(track_data):
+            return Response({'detail': 'AI output invalid structure.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Extract required fields
+        language = track_data.get('language')
+        category_name = track_data.get('category')
+        level = track_data.get('level')
+        title = track_data.get('title', learning_goal)  # fallback
+
+        # Find or create Category by name & language
+        category = Category.objects.filter(name__iexact=category_name, language=language).first()
+        if not category:
+            return Response({'detail': f'Category "{category_name}" with language "{language}" not found.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create LearningTrack
+        learning_track = LearningTrack.objects.create(
+            title=title,
+            category=category,
+            level=level,
+            is_custom=True  # flag for DIY track
+        )
+
+        # Create Tasks from AI data
+        for task_data in track_data['tasks']:
+            learning_track.tasks.create(
+                title=task_data['title'],
+                description=task_data['description'],
+                difficulty=task_data.get('difficulty', 'medium'),
+            )
+
+        # Create UserLearningTrack
+        user_learning_track = UserLearningTrack.objects.create(
+            user=user,
+            learning_track=learning_track,
+            progression=0,
+            summary='',
+        )
+
+        return Response({
+            'learning_track_id': learning_track.id,
+            'user_learning_track_id': user_learning_track.id,
+            'redirect_url': f'/track/{learning_track.id}/{user_learning_track.id}'
+        }, status=status.HTTP_201_CREATED)
+
+
+

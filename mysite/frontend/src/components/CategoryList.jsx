@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useSearchParams, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
-function CategoryList({ language: initialLanguage = '', size = 'large' }) {
+function CategoryList({ language: initialLanguage = '', size = 'large', limit }) {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -14,9 +14,13 @@ function CategoryList({ language: initialLanguage = '', size = 'large' }) {
   useEffect(() => {
     api
       .get('categories/', { params: language ? { language } : {} })
-      .then((res) => setCategories(res.data))
+      .then((res) => {
+        const allCategories = res.data;
+        const limited = limit ? allCategories.slice(0, limit) : allCategories;
+        setCategories(limited);
+      })
       .catch((err) => console.error('API error:', err));
-  }, [language]);
+  }, [language, limit]);
 
   const cardSizeClasses =
     size === 'small'

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Topic, LearningTrack, UserLearningTrack, Task
+from .models import *
 
 
 @admin.register(Category)
@@ -36,3 +36,8 @@ class TaskAdmin(admin.ModelAdmin):
     list_filter = ('status', 'grade')
 
 
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'is_pro')
+    search_fields = ('user__username',)
+    list_filter = ('is_pro',)

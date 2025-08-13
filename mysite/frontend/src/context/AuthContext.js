@@ -6,14 +6,19 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false); // 🔥 modal state
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
-    api.get('/dj-rest-auth/user/')
+    api.get('/dj-rest-auth/user/', { withCredentials: true })
       .then(res => {
         setIsAuthenticated(true);
         setUser(res.data);
         console.log("✅ Authenticated user:", res.data);
+        if (res.data?.is_pro === true) {
+          console.log("💎 Pro user detected");
+        } else {
+          console.log("👤 Regular user");
+        }
       })
       .catch(err => {
         setIsAuthenticated(false);
@@ -22,7 +27,7 @@ export const AuthProvider = ({ children }) => {
       });
   }, []);
 
-  const openLoginModal = () => setShowLoginModal(true);  // 🔥 expose modal trigger
+  const openLoginModal = () => setShowLoginModal(true);
   const closeLoginModal = () => setShowLoginModal(false);
 
   return (
@@ -31,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         setIsAuthenticated,
         user,
+        isPro: user?.is_pro === true,
         showLoginModal,
         openLoginModal,
         closeLoginModal
