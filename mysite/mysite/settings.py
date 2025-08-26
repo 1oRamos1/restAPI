@@ -17,6 +17,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+ALLOWED_HOSTS = ['*']
 
 # === Installed apps ===
 INSTALLED_APPS = [
