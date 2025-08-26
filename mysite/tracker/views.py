@@ -12,9 +12,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView
 from dj_rest_auth.views import UserDetailsView
 from google.oauth2 import id_token
 from django.views.decorators.csrf import csrf_exempt
@@ -28,9 +25,7 @@ from .ai_integration import *
 from .validators import is_valid_learning_goal, is_valid_track_structure
 from .choices import MONACO_LANGUAGES
 
-# 🔑 TEMP: hardcoded OpenAI API key
-openai.api_key = "sk-proj-j_vFmfzEcF93d821ZnsqF9KtHaUu5X0WvppbgBWUo72Gahh1prj8i6FtbJSHNq3Sg" \
-                 "4h_0r9sFST3BlbkFJaqrif1S9RmvsnMYxET8qO2Hq8LRXFS-uRAzHR34IOmfm_osBjrRa6751MuKhtx2rkxwJHMfNMA"  # Replace with your actual key
+openai.api_key = settings.OPENAI_API_KEY
 
 
 class CustomUserDetailsView(UserDetailsView):
@@ -98,16 +93,17 @@ class GoogleLoginView(APIView):
             idinfo = id_token.verify_oauth2_token(
                 credential,
                 requests.Request(),
-                "1054941900001-8o9cl0tqu27744cof3dsrti6v6f9r6ns.apps.googleusercontent.com")
+                settings.SOCIAL_AUTH_GOOGLE_CLIENT_ID)
 
             # Extract user info
             email = idinfo['email']
             name = idinfo['name']
 
             # Get or create user
+            first_name = name.split()[0] if name else ''
             user, created = User.objects.get_or_create(
                 email=email,
-                defaults={'username': email, 'first_name': name}
+                defaults={'username': email, 'first_name': first_name}
             )
 
             # Log the user in (or return token)

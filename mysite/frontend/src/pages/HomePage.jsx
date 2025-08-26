@@ -14,7 +14,7 @@ export default function HomePage() {
         <header className="w-full flex flex-row flex-wrap xl:flex-nowrap min-h-[750px] overflow-hidden">
           <div className="flex-[2.5] bg-[#155e94] text-white dark:bg-blue80 dark:text-cyan-200 px-8 lg:px-16 py-24 flex flex-col justify-center z-10">
             <h1 className="mb-6 text-4xl xl:text-6xl 2xl:text-[5rem] font-extrabold leading-tight text-blue0 dark:text-cyan-200">
-              Hello {user ? user.username : 'Guest'}!
+               Hello {user ? user.first_name || user.username : 'Guest'}!
             </h1>
             <p className="text-lg xl:text-2xl font-extrabold max-w-xl text-blue-200 dark:text-cyan-200">
               Ready to grow your skills? Our learning paths guide you every step of the way—whether you’re just starting out or leveling up.

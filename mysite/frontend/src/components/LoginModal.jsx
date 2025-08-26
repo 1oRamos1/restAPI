@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
 
-const GOOGLE_CLIENT_ID = '1054941900001-8o9cl0tqu27744cof3dsrti6v6f9r6ns.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID
 
 function getCsrfTokenFromCookie() {
   return document.cookie

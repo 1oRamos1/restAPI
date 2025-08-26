@@ -4,7 +4,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import api from "../api/axios";
 import { AuthContext } from "../context/AuthContext";
 
-const clientId = "ASha_O1QBvAd1YGbs2i6bTLiznXOViJNO0yYdXK9fBVv9yp_w-LNMVnssMFTNNnsxicILCEmU8z1pxwH"; // Replace with actual sandbox client ID
+const clientId = process.env.REACT_APP_PAYPAL_CLIENT_ID
 
 export default function PaymentPage() {
   const navigate = useNavigate();

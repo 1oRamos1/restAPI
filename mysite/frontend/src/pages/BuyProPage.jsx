@@ -5,7 +5,7 @@ import api from '../api/axios';
 import { AuthContext } from '../context/AuthContext';
 
 const initialOptions = {
-  'client-id': 'ASha_O1QBvAd1YGbs2i6bTLiznXOViJNO0yYdXK9fBVv9yp_w-LNMVnssMFTNNnsxicILCEmU8z1pxwH',
+  'client-id': process.env.REACT_APP_PAYPAL_CLIENT_ID,
   currency: 'USD',
   intent: 'capture',
 };
