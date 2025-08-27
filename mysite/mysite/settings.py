@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from decouple import config
-import dj_database_url
+
 
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
@@ -21,9 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app']
 
 
-# Database
 DATABASES = {
-    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
+    }
 }
 
 
