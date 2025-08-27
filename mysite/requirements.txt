@@ -12,6 +12,8 @@ django-cors-headers
 python-decouple
 dj-rest-auth
 PyJWT~=2.9.0
+cryptography>=41.0.0
+
 
 
 
