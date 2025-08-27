@@ -8,4 +8,5 @@ django-allauth~=65.9.0
 openai
 gunicorn
 django-extensions
+django-cors-headers
 python-decouple
