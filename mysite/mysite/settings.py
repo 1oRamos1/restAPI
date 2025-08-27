@@ -21,14 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app']
 
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
-
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",

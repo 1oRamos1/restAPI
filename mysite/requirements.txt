@@ -10,3 +10,5 @@ gunicorn
 django-extensions
 django-cors-headers
 python-decouple
+dj-rest-auth
+
