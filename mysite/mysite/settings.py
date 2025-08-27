@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from decouple import config
+import dj_database_url
 
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
@@ -18,6 +19,13 @@ PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app']
+
+
+# Database
+DATABASES = {
+    "default": dj_database_url.config(default=os.getenv("DATABASE_URL"))
+}
+
 
 # === Installed apps ===
 INSTALLED_APPS = [
