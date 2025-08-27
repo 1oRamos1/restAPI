@@ -11,6 +11,7 @@ django-extensions
 django-cors-headers
 python-decouple
 dj-rest-auth
-jwt
+PyJWT~=2.9.0
+
 
 
