@@ -7,4 +7,5 @@ ollama~=0.4.8
 django-allauth~=65.9.0
 openai
 gunicorn
+django-extensions
 python-decouple
