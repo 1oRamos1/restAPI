@@ -18,7 +18,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app']
+ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app', 'localhost', '127.0.0.1']
 
 
 # === Installed apps ===
