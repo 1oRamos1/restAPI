@@ -17,7 +17,7 @@ OPENAI_API_KEY = config('OPENAI_API_KEY')
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
 
 REST_USE_JWT = False
 # === Installed apps ===
@@ -101,6 +101,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tracker-production-387a.up.railway.app",
+    "https://tracker-2528.onrender.com",
     "http://localhost:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
