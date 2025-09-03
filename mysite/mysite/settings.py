@@ -122,7 +122,7 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "frontend" / "build"],
+        "DIRS": [BASE_DIR / "frontend/build"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -175,8 +175,10 @@ USE_TZ = True
 
 # === Static files ===
 STATIC_URL = "/static/"
-STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [
+    BASE_DIR / "frontend/build/static",  # React static files
+]
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Django collects static here
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
