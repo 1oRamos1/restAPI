@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 from decouple import config
 
 
@@ -20,7 +19,7 @@ PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-production-387a.up.railway.app', 'localhost', '127.0.0.1']
 
-
+REST_USE_JWT = False
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -53,7 +52,6 @@ SITE_ID = 1
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # === Authentication settings ===
-REST_USE_JWT = False
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 SOCIALACCOUNT_AUTO_SIGNUP = False

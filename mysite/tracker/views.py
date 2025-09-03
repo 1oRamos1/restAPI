@@ -24,25 +24,24 @@ from .serializers import *
 from .ai_integration import *
 from .validators import is_valid_learning_goal, is_valid_track_structure
 from .choices import MONACO_LANGUAGES
+from django.contrib.auth.models import User
+from dj_rest_auth.views import PasswordResetView
+from rest_framework.response import Response
+from rest_framework import status
 
 openai.api_key = settings.OPENAI_API_KEY
 
 
+class CustomPasswordResetView(PasswordResetView):
+    def post(self, request, *args, **kwargs):
+        email = request.data.get("email")
+        if not User.objects.filter(email=email).exists():
+            return Response({"error": "Email not registered."}, status=status.HTTP_400_BAD_REQUEST)
+        return super().post(request, *args, **kwargs)
+
+
 class CustomUserDetailsView(UserDetailsView):
     serializer_class = CustomUserDetailsSerializer
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def user_pro_status(request):
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-
-    if profile.is_pro:
-        return Response({'status': 'already_pro'})
-
-    profile.is_pro = True
-    profile.save()
-    return Response({'status': 'upgraded'})
 
 
 def use_openai(user):

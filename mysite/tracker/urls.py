@@ -1,5 +1,6 @@
 from django.urls import path, include, re_path
 from django.http import HttpResponseNotFound
+from django.contrib.auth import views as auth_views
 from .views import *
 
 app_name = "tracker"
@@ -20,7 +21,7 @@ urlpatterns = [
     # web google log-in
     path('dj-rest-auth/google/', GoogleLoginView.as_view(), name='google_login'),
     path('dj-rest-auth/user/', CustomUserDetailsView.as_view(), name='rest_user_details'),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('dj-rest-auth/password/reset/', CustomPasswordResetView.as_view(), name='password_reset'),
 
     # API endpoints
     path('categories/', CategoryList.as_view(), name='category-list'),
