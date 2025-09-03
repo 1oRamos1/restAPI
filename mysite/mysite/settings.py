@@ -121,7 +121,7 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / 'templates'],
+        "DIRS": [BASE_DIR / "frontend/build"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -180,5 +180,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 STATICFILES_DIRS = [
     BASE_DIR / 'frontend/build/static',
+
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
