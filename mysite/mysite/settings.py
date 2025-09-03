@@ -94,6 +94,7 @@ MIDDLEWARE = [
 
 # === CORS & CSRF ===
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
     "https://tracker-2528.onrender.com",
 ]
 CORS_ALLOW_CREDENTIALS = True
