@@ -21,7 +21,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('', TemplateView.as_view(template_name='index.html')),
+    re_path(r"^.*$", TemplateView.as_view(template_name="index.html")),
     path("api/v1/tracker/", include("tracker.urls", namespace="tracker")),
     path('accounts/', include('allauth.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
