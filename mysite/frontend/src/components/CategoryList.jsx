@@ -17,6 +17,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
       .then((res) => {
         const allCategories = res.data;
         const limited = limit ? allCategories.slice(0, limit) : allCategories;
+        console.log(res.data);
         setCategories(limited);
       })
       .catch((err) => console.error('API error:', err));
