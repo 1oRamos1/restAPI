@@ -1,33 +1,54 @@
 #!/usr/bin/env bash
 set -o errexit
 
-# Build React with relative paths
+# ----------------------------------------
+# 1. Build React with relative paths
+# ----------------------------------------
 cd frontend
 export CI=false
-export PUBLIC_URL=/static
+export PUBLIC_URL=/static  # ensures static paths are relative
 npm install
 npm run build
 cd ..
 
-# Setup directories
+# ----------------------------------------
+# 2. Setup directories for Django
+# ----------------------------------------
 mkdir -p staticfiles templates
 
-# Copy ALL build files to staticfiles (including index.html initially)
+# Copy all React build files to staticfiles
 cp -r frontend/build/* staticfiles/
 
-# Move index.html to templates but keep a copy in staticfiles
+# Move index.html to templates for TemplateView (React catch-all)
 cp staticfiles/index.html templates/
 
-# Install Python dependencies
+# ----------------------------------------
+# 3. Install Python dependencies
+# ----------------------------------------
 pip install -r requirements.txt
 
-# Don't run collectstatic with --clear, just add files
+# ----------------------------------------
+# 4. Collect static files for Django
+# ----------------------------------------
+# Copies JS/CSS/images from apps/static and frontend build into STATIC_ROOT
 python manage.py collectstatic --no-input
 
-echo "=== Final check ==="
-echo "Files in staticfiles:"
+# Optional: check some files exist
+echo "=== Final check: staticfiles ==="
 ls -la staticfiles/ | head -10
 echo "Looking for CSS/JS files:"
 find staticfiles -name "*.css" -o -name "*.js" | head -5
 
+# ----------------------------------------
+# 5. Django migrations for database
+# ----------------------------------------
+# Create new migrations if models changed
+python manage.py makemigrations
+
+# Apply all migrations to Internal Postgres (creates tables)
 python manage.py migrate
+
+# Optional: load fixtures if you have existing data
+# python manage.py loaddata data.json
+
+echo "=== Build complete ==="
