@@ -4,6 +4,7 @@ set -o errexit  # Exit on error
 # Build React
 cd frontend
 export CI=false
+export PUBLIC_URL=/static
 npm install
 npm run build
 cd ..
