@@ -178,7 +178,9 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"  # Django collects static here
 STATICFILES_DIRS = []
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Don't use CompressedManifest for now, it might be renaming files
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
