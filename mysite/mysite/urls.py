@@ -21,8 +21,8 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
     path("api/v1/tracker/", include("tracker.urls", namespace="tracker")),
+
     path('accounts/', include('allauth.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     re_path(
@@ -30,5 +30,6 @@ urlpatterns = [
         auth_views.PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
+    re_path(r'^.*$', TemplateView.as_view(template_name="index.html")),
 
 ]
