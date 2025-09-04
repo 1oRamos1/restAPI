@@ -48,6 +48,11 @@ python manage.py makemigrations
 # Apply all migrations to Internal Postgres (creates tables)
 python manage.py migrate
 
+# 6. Create superuser
+python manage.py create_render_superuser
+
+# 7. Populate database with categories + tracks
+python manage.py create_sample_tracks
 # Optional: load fixtures if you have existing data
 # python manage.py loaddata data.json
 
