@@ -4,7 +4,7 @@ set -o errexit  # Exit on error
 # Build React
 cd frontend
 export CI=false
-export PUBLIC_URL=/static
+export PUBLIC_URL=
 npm install
 npm run build
 cd ..
@@ -12,8 +12,16 @@ cd ..
 # Setup Django directories
 mkdir -p staticfiles mysite/templates
 
-# Copy React build files
+# Copy React build files (CSS, JS, etc.)
 cp -r frontend/build/static/* staticfiles/ 2>/dev/null || :
+
+# Copy other important files (favicon, manifest, etc.)
+cp frontend/build/*.ico staticfiles/ 2>/dev/null || :
+cp frontend/build/*.json staticfiles/ 2>/dev/null || :
+cp frontend/build/*.png staticfiles/ 2>/dev/null || :
+cp frontend/build/*.txt staticfiles/ 2>/dev/null || :
+
+# Copy index.html to templates
 cp frontend/build/index.html mysite/templates/
 
 # Install Python dependencies and setup Django
