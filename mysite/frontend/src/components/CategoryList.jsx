@@ -15,9 +15,14 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
     api
       .get('categories/', { params: language ? { language } : {} })
       .then((res) => {
-        const allCategories = res.data;
+        console.log("API categories response:", res.data);
+
+        // handle both array and wrapped object
+        let allCategories = Array.isArray(res.data)
+          ? res.data
+          : res.data.categories || [];
+
         const limited = limit ? allCategories.slice(0, limit) : allCategories;
-        console.log(res.data);
         setCategories(limited);
       })
       .catch((err) => console.error('API error:', err));
@@ -58,32 +63,39 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-        {categories.map((cat) => (
-          <Link
-            key={cat.id}
-            to={`/category/${cat.id}`}
-            className={`relative bg-blue70/90 dark:bg-gray-900 hover:bg-blue90 dark:hover:bg-cyan-700
-              transform hover:scale-105 transition-all duration-300 shadow-xl rounded-xl
-              p-4 pt-6 text-white dark:text-cyan-200 flex flex-col justify-between
-              border border-blue10 dark:border-gray-700 ${cardSizeClasses}`}
-          >
-            <h3 className="font-bold text-center mb-2">{cat.name}</h3>
-
-            {/* Full-width language banner */}
-            <div
-              className={`absolute bottom-0 left-0 right-0
-                text-sm text-blue5 bg-black/40 dark:bg-white/10
-                text-center pointer-events-none backdrop-blur-sm
-                rounded-b-xl
-                ${showDropdown ? 'py-4' : 'py-1'}`}
+        {Array.isArray(categories) && categories.length > 0 ? (
+          categories.map((cat) => (
+            <Link
+              key={cat.id}
+              to={`/category/${cat.id}`}
+              className={`relative bg-blue70/90 dark:bg-gray-900 hover:bg-blue90 dark:hover:bg-cyan-700
+                transform hover:scale-105 transition-all duration-300 shadow-xl rounded-xl
+                p-4 pt-6 text-white dark:text-cyan-200 flex flex-col justify-between
+                border border-blue10 dark:border-gray-700 ${cardSizeClasses}`}
             >
-              <span className="font-semibold capitalize">{cat.language}</span>
-            </div>
-          </Link>
-        ))}
+              <h3 className="font-bold text-center mb-2">{cat.name}</h3>
+
+              {/* Full-width language banner */}
+              <div
+                className={`absolute bottom-0 left-0 right-0
+                  text-sm text-blue5 bg-black/40 dark:bg-white/10
+                  text-center pointer-events-none backdrop-blur-sm
+                  rounded-b-xl
+                  ${showDropdown ? 'py-4' : 'py-1'}`}
+              >
+                <span className="font-semibold capitalize">{cat.language}</span>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p className="text-center col-span-full text-gray-400">
+            No categories found.
+          </p>
+        )}
       </div>
     </div>
   );
 }
 
 export default CategoryList;
+
