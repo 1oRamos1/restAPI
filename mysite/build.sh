@@ -3,6 +3,7 @@ set -o errexit  # Exit on error
 
 # Build React
 cd frontend
+export CI=false
 npm install
 npm run build
 cd ..
