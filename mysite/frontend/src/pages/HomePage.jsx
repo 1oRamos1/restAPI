@@ -22,7 +22,7 @@ export default function HomePage() {
           </div>
           <div className="flex-[1.5] relative bg-blue0 dark:bg-gray-800 min-h-[300px]">
             <img
-              src="/ezgif.com-gif-maker.gif"
+               src={`${process.env.PUBLIC_URL}/ezgif.com-gif-maker.gif`}
               alt="Robot Guide"
               className="absolute right-0 top-1/2 -translate-y-1/2 w-64 xl:w-80 2xl:w-96 object-contain pointer-events-none"
               style={{ userSelect: 'none' }}
