@@ -276,11 +276,8 @@ class Command(BaseCommand):
 
                 category, created = Category.objects.get_or_create(
                     name=cat_name,
-                    defaults={"language": lang}
+                    language=lang
                 )
-                if not created and category.language != lang:
-                    category.language = lang
-                    category.save()
                 self.stdout.write(f"{'Created' if created else 'Exists'} category: {cat_name} ({lang})")
 
                 for track_data in tracks:
@@ -296,9 +293,6 @@ class Command(BaseCommand):
                         updated = False
                         if track.level != level:
                             track.level = level
-                            updated = True
-                        if track.category != category:
-                            track.category = category
                             updated = True
                         if updated:
                             track.save()
