@@ -12,21 +12,14 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    api
-      .get('categories/', { params: language ? { language } : {} })
-      .then((res) => {
-        console.log("API categories response:", res.data);
-
-        // handle both array and wrapped object
-        let allCategories = Array.isArray(res.data)
-          ? res.data
-          : res.data.categories || [];
-
-        const limited = limit ? allCategories.slice(0, limit) : allCategories;
-        setCategories(limited);
-      })
-      .catch((err) => console.error('API error:', err));
-  }, [language, limit]);
+  api
+    .get('categories/', { params: language ? { language } : {} })
+    .then((res) => {
+      console.log("RAW categories response:", res.data);
+      setCategories(res.data);
+    })
+    .catch((err) => console.error('API error:', err));
+}, [language, limit]);
 
   const cardSizeClasses =
     size === 'small'
