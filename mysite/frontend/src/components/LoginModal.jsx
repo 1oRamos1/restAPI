@@ -42,6 +42,7 @@ export default function LoginModal({ onClose }) {
   }, []);
 
  const handleGoogleLogin = async (response) => {
+ console.log("Google callback fired:", response);
   try {
     await api.get('/auth/csrf/'); // Get token
     await api.post('/dj-rest-auth/google/', { id_token: response.credential }); // Login
