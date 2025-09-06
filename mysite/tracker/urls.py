@@ -15,6 +15,7 @@ urlpatterns = [
     # web general log-in
     path('auth/csrf/', set_csrf_cookie, name='csrf'),
     path('auth/login/', login_view, name='login'),
+    path('auth/logout/', logout_view, name='logout'),
     path('auth/signup/', signup_view, name='signup'),
     path('upgrade-to-pro/', upgrade_to_pro, name='upgrade-to-pro'),
 

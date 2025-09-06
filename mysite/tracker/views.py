@@ -1,5 +1,5 @@
 import logging
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -142,6 +142,13 @@ def login_view(request):
         login(request, user)
         return JsonResponse({"message": "Logged in"})
     return JsonResponse({"error": "Invalid credentials"}, status=403)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def logout_view(request):
+    logout(request)
+    return Response({"message": "Logged out successfully"}, status=200)
 
 
 @api_view(['POST'])

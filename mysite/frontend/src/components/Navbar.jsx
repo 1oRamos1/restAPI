@@ -32,7 +32,7 @@ export default function Navbar({ onLoginClick }) {
     .find(row => row.startsWith('csrftoken='))
     ?.split('=')[1];
 
-  api.post('dj-rest-auth/logout/', {}, {
+  api.post('auth/logout/', {}, {
     headers: { 'X-CSRFToken': csrftoken },
     withCredentials: true,
   })
