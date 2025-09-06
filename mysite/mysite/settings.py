@@ -14,6 +14,9 @@ SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET')
 # === OpenAI ===
 OPENAI_API_KEY = config('OPENAI_API_KEY')
 
+# === Mistral ===
+MISTRAL_API_KEY = config('MISTRAL_API_KEY')
+
 # === Paypal ===
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 

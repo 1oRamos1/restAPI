@@ -1,8 +1,11 @@
 # app_name/services.py
 import logging
 from .models import Task
-from ollama import chat  # Assuming your AI wrapper is imported here
+from mistralai import Mistral
+from django.conf import settings
 
+# Initialize Mistral client once
+mistral_client = Mistral(api_key=settings.MISTRAL_API_KEY)
 
 def generate_and_save_summary(user_track):
     try:
@@ -26,24 +29,18 @@ def generate_and_save_summary(user_track):
             "Write a short summary (3–5 lines) that captures my overall progress, "
             "strengths, and areas I need to improve.\n"
             "Speak directly to me (second person). Start the summary with 'You...'.\n"
-            "Do NOT repeat individual task details. Be clear and motivating."
+            "Do NOT repeat individual task details. Be clear and motivating.\n"
             "VERY IMPORTANT:\n"
-            "- Do NOT any greetings, follow-ups or titles, just clean review.\n"
-            "Please summarize my progress.\n"
-            "Here is the detailed progress so far:\n"
-            f"{progress_data}\n\n"
-            "Write a short summary (3–5 lines) that captures my overall progress, "
-            "strengths, and areas I need to improve.\n"
-            "Speak directly to me (second person). Start the summary with 'You...'.\n"
-            "Do NOT repeat individual task details. Be clear and motivating."
-            "VERY IMPORTANT:\n"
-            "- Do NOT any greetings, follow-ups or titles, just clean review.\n"
+            "- Do NOT include greetings, follow-ups or titles, just clean review."
         )
 
-        response = chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-        concise_summary = response.get("message", {}).get("content") or response.get("content")
+        chat_response = mistral_client.chat.complete(
+            model="mistral-large-latest",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        concise_summary = chat_response.choices[0].message.content.strip()
 
-        user_track.summary = concise_summary.strip()
+        user_track.summary = concise_summary
         user_track.save(update_fields=['summary'])
 
         return user_track.summary

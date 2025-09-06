@@ -34,7 +34,7 @@ export default function HomePage() {
         <section className="w-full bg-blue80 dark:bg-blue100 py-40 xl:py-60 px-6 text-white dark:text-cyan-200">
           <div className="max-w-7xl mx-auto text-center">
             <h2 className="text-4xl xl:text-6xl font-extrabold tracking-tight mb-6 text-blue0 dark:text-cyan-200">
-              Welcome to CodeTracks
+              Welcome to Codyssey
             </h2>
             <p className="text-lg xl:text-xl text-blue-200 dark:text-cyan-200 max-w-3xl mx-auto leading-relaxed">
               Unlock your potential with expertly curated learning paths that guide you through real-world coding challenges.

@@ -49,7 +49,7 @@ export default function Navbar({ onLoginClick }) {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 shadow-lg border-b border-cyan-100 dark:border-gray-700">
       <div className="w-full px-6 py-4 flex justify-between items-center">
         <Link to="/" className="text-3xl font-extrabold text-blue80 dark:text-cyan-100 tracking-tight">
-          CodeTracks
+          Codyssey
         </Link>
 
         <div className="flex space-x-4 items-center">

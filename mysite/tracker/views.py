@@ -29,7 +29,11 @@ from dj_rest_auth.views import PasswordResetView
 from rest_framework.response import Response
 from rest_framework import status
 
+from mistralai import Mistral
+from django.conf import settings
+
 openai.api_key = settings.OPENAI_API_KEY
+mistral_client = Mistral(api_key=settings.MISTRAL_API_KEY)
 
 
 class CustomPasswordResetView(PasswordResetView):
@@ -57,8 +61,15 @@ def get_chat_completion(user, prompt):
         )
         return response.choices[0].message["content"]
     else:
-        result = ollama.chat(model="llama3", messages=[{"role": "user", "content": prompt}])
-        return result.get("message", {}).get("content") or result.get("content")
+        try:
+            chat_response = mistral_client.chat.complete(
+                model="mistral-large-latest",  # latest Mistral chat model
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return chat_response.choices[0].message.content
+        except Exception as e:
+            logging.error(f"Mistral API call failed: {e}")
+            return "Error: AI response unavailable."
 
 
 @api_view(['POST'])
