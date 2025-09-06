@@ -17,7 +17,7 @@ export default function PasswordResetConfirm() {
     }
 
     try {
-      await api.post('http://localhost:8000/dj-rest-auth/password/reset/confirm/', {
+      await api.post('https://tracker-2528.onrender.com/dj-rest-auth/password/reset/confirm/', {
         uid,
         token,
         new_password1: newPassword1,
