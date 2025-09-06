@@ -20,14 +20,14 @@ export default function LoginModal({ onClose }) {
   const { setIsAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
-      console.log('GOOGLE_CLIENT_ID:', GOOGLE_CLIENT_ID); // Add this line
-      console.log('Type of GOOGLE_CLIENT_ID:', typeof GOOGLE_CLIENT_ID); // And this
       try {
         if (!window.google?.accounts?.id) return;
 
         window.google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
           callback: (response) => console.log("GOOGLE RESPONSE:", response),
+          use_fedcm_for_prompt: false, // Add this line
+          origin: 'https://tracker-2528.onrender.com' // Add this line
         });
 
         window.google.accounts.id.renderButton(
