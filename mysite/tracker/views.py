@@ -174,6 +174,7 @@ def signup_view(request):
         email=email,
         password=make_password(password1)
     )
+    login(request, user)
     return JsonResponse({"message": "User created successfully"}, status=201)
 
 
