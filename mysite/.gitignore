@@ -14,4 +14,4 @@ build/
 .env.local
 
 # General
-*.log
+*.logbuild/
