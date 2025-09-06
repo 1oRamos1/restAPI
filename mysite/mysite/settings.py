@@ -65,9 +65,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-ACCOUNT_LOGOUT_REDIRECT_URL = 'http://localhost:3000/login'
-LOGIN_REDIRECT_URL = 'http://localhost:3000/'
-LOGOUT_REDIRECT_URL = 'http://localhost:3000/'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/login'
+LOGIN_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
+LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
 
 # === Google OAuth ===
 SOCIALACCOUNT_PROVIDERS = {
