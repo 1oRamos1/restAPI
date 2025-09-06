@@ -20,26 +20,26 @@ export default function LoginModal({ onClose }) {
   const { setIsAuthenticated } = useContext(AuthContext);
 
   useEffect(() => {
-    try {
-      if (!window.google?.accounts?.id) return;
+  try {
+    if (!window.google?.accounts?.id) return;
 
-      window.google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleLogin,
-      });
+    window.google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: (response) => console.log("GOOGLE RESPONSE:", response),
+    });
 
-      window.google.accounts.id.renderButton(
-        document.getElementById('google-login-button'),
-        {
-          theme: 'outline',
-          size: 'large',
-          width: '380',
-        }
-      );
-    } catch (e) {
-      console.error('Google login script not ready:', e);
-    }
-  }, []);
+    window.google.accounts.id.renderButton(
+      document.getElementById('google-login-button'),
+      {
+        theme: 'outline',
+        size: 'large',
+        width: '380',
+      }
+    );
+  } catch (e) {
+    console.error('Google login script not ready:', e);
+  }
+}, []);
 
  const handleGoogleLogin = async (response) => {
  console.log("Google callback fired:", response);
