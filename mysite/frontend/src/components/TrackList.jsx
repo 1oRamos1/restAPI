@@ -85,19 +85,17 @@ function TrackList() {
                 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105
                 transition-all duration-200
-                shadow-md rounded-md p-3
+                shadow-md rounded-md p-2
                 text-white dark:text-cyan-200
                 group flex flex-col
-                h-[120px] md:h-[140px] lg:h-[160px]
+                h-[100px] md:h-[110px] lg:h-[120px]
               "
             >
-              <div className="flex flex-col justify-between flex-grow h-full">
-                <div>
-                  <h3 className="text-sm md:text-base lg:text-lg font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-1">
-                    {track.title}
-                  </h3>
-                </div>
-                <p className="font-kumbh text-xs md:text-sm lg:text-base text-blue-200 dark:text-cyan-300">
+              <div className="flex flex-col justify-between h-full">
+                <h3 className="text-xs md:text-sm lg:text-base font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100">
+                  {track.title}
+                </h3>
+                <p className="font-kumbh text-[10px] md:text-xs lg:text-sm text-blue-200 dark:text-cyan-300">
                   Level: {track.level}
                 </p>
               </div>
@@ -110,4 +108,3 @@ function TrackList() {
 }
 
 export default TrackList;
-
