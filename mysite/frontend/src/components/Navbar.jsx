@@ -24,25 +24,35 @@ export default function Navbar({ onLoginClick }) {
     localStorage.theme = nextMode ? 'dark' : 'light';
   };
 
-  const handleLogout = () => {
-  if (!window.confirm('Are you sure you want to logout?')) return;
+  const handleLogout = async () => {
+      if (!window.confirm('Are you sure you want to logout?')) return;
 
-  const csrftoken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('csrftoken='))
-    ?.split('=')[1];
+      try {
+        // Get CSRF token
+        const csrftoken = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('csrftoken='))
+          ?.split('=')[1];
 
-  api.post('auth/logout/', {}, {
-    headers: { 'X-CSRFToken': csrftoken },
-    withCredentials: true,
-  })
-    .then(() => {
-      setIsAuthenticated(false);
-      navigate('/');
-      window.location.reload();
-    })
-    .catch(err => console.error('Logout failed:', err));
-};
+        // Logout from Django
+        await api.post('auth/logout/', {}, {
+          headers: { 'X-CSRFToken': csrftoken },
+          withCredentials: true,
+        });
+
+        // Disable Google auto-login
+        if (window.google?.accounts?.id) {
+          window.google.accounts.id.disableAutoSelect();
+        }
+
+        // Update frontend state
+        setIsAuthenticated(false);
+        navigate('/');
+        window.location.reload();
+      } catch (err) {
+        console.error('Logout failed:', err);
+      }
+    };
 
 
   return (

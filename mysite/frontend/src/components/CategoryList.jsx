@@ -16,7 +16,8 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
     .get('categories/', { params: language ? { language } : {} })
     .then((res) => {
       console.log("RAW categories response:", res.data);
-      setCategories(res.data);
+      const limited = limit ? res.data.slice(0, limit) : res.data;
+      setCategories(limited);
     })
     .catch((err) => console.error('API error:', err));
 }, [language, limit]);
