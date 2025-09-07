@@ -36,9 +36,11 @@ export default function HomePage() {
             <h2 className="text-4xl xl:text-6xl font-extrabold tracking-tight mb-6 text-blue0 dark:text-cyan-200">
               Welcome to Codyssey
             </h2>
-            <p className="text-lg xl:text-xl text-blue-200 dark:text-cyan-200 max-w-3xl mx-auto leading-relaxed">
-              Unlock your potential with expertly curated learning paths that guide you through real-world coding challenges.
-              Track your progress, sharpen your skills, and build projects that matter — all in one seamless platform.
+            <p className="text-xs md:text-sm lg:text-base xl:text-xl text-blue-200 dark:text-cyan-200 max-w-2xl mx-auto leading-relaxed">
+               Pick your programming<strong className="font-bold text-2xl text-blue-100"> language</strong>, choose your
+               <strong className="font-bold text-2xl text-blue-100"> category</strong> and
+               <strong className="font-bold text-2xl text-blue-100"> level</strong>,
+               and jump into your new coding journey with customized challenges made just for you.
             </p>
           </div>
         </section>
