@@ -12,20 +12,19 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-  api
-    .get('categories/', { params: language ? { language } : {} })
-    .then((res) => {
-      console.log("RAW categories response:", res.data);
-      const limited = limit ? res.data.slice(0, limit) : res.data;
-      setCategories(limited);
-    })
-    .catch((err) => console.error('API error:', err));
-}, [language, limit]);
+    api
+      .get('categories/', { params: language ? { language } : {} })
+      .then((res) => {
+        const limited = limit ? res.data.slice(0, limit) : res.data;
+        setCategories(limited);
+      })
+      .catch((err) => console.error('API error:', err));
+  }, [language, limit]);
 
   const cardSizeClasses =
     size === 'small'
-      ? 'w-56 h-32 text-xl'
-      : 'w-96 h-44 text-3xl';
+      ? 'w-full sm:w-80 md:w-72 lg:w-56 h-32 text-xl'
+      : 'w-full sm:w-96 md:w-80 lg:w-96 h-44 text-3xl';
 
   const showDropdown = location.pathname !== '/'; // don't show on homepage
 
@@ -56,7 +55,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-10 justify-items-center">
         {Array.isArray(categories) && categories.length > 0 ? (
           categories.map((cat) => (
             <Link
