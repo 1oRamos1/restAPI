@@ -25,19 +25,19 @@ function TrackList() {
       {/* Section Header */}
       <section className="
         w-full bg-blue70/90 dark:bg-gray-900
-        py-8 md:py-10 lg:py-12
+        py-8 md:py-10 lg:py-12 xl:py-16
         px-4 md:px-6
         text-white text-center"
       >
         <h1 className="
-          text-xl md:text-2xl lg:text-3xl
+          text-xl md:text-2xl lg:text-3xl xl:text-4xl
           font-kumbh font-bold tracking-tight
           text-blue0 dark:text-cyan-200 mb-3"
         >
           Choose Your Learning Track
         </h1>
         <p className="
-          text-sm md:text-base lg:text-lg
+          text-sm md:text-base lg:text-lg xl:text-xl
           text-blue-200 dark:text-cyan-300 max-w-lg mx-auto"
         >
           Dive into curated learning tracks and elevate your coding skills.
@@ -75,7 +75,7 @@ function TrackList() {
 
       {/* Tracks Grid */}
       <section className="max-w-4xl mx-auto w-full px-4 py-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8 justify-items-center">
           {filteredTracks.map((track) => (
             <Link
               key={track.id}
@@ -85,22 +85,29 @@ function TrackList() {
                 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105
                 transition-all duration-200
-                shadow-md rounded-md p-3
+                shadow-xl rounded-xl p-4 pt-6
                 text-white dark:text-cyan-200
-                group flex flex-col
-                h-[100px] md:h-[110px] lg:h-[120px]
+                flex flex-col justify-between
+                border border-blue10 dark:border-gray-700
+                w-full sm:w-80 md:w-72 lg:w-80 xl:w-80
+                h-32 md:h-36 lg:h-40 xl:h-44
               "
             >
               <div className="flex flex-col justify-between h-full">
-                <h3 className="text-xs md:text-sm lg:text-base font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100">
+                <h3 className="text-base md:text-lg lg:text-xl xl:text-xl font-bold text-center">
                   {track.title}
                 </h3>
-                <p className="font-kumbh text-[10px] md:text-xs lg:text-sm text-blue-200 dark:text-cyan-300">
+                <p className="text-xs md:text-sm lg:text-base xl:text-base text-blue-200 dark:text-cyan-300 text-center">
                   Level: {track.level}
                 </p>
               </div>
             </Link>
           ))}
+          {filteredTracks.length === 0 && (
+            <p className="text-center col-span-full text-gray-400">
+              No tracks found.
+            </p>
+          )}
         </div>
       </section>
     </div>
@@ -108,3 +115,4 @@ function TrackList() {
 }
 
 export default TrackList;
+

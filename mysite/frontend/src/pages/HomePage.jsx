@@ -8,7 +8,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col min-h-screen w-full font-kumbh text-gray-800 bg-gradient-to-br dark:bg-gray-900">
-      <main className="flex-grow w-full max-w-[1440px] mx-auto">
+      <main className="flex-grow w-full mx-auto px-4 md:px-6 xl:px-12">
         {/* Section 1: Header */}
         <header className="
           w-full flex flex-col lg:flex-row
@@ -19,16 +19,19 @@ export default function HomePage() {
             flex-[2.5] bg-[#155e94] text-white dark:bg-blue80 dark:text-cyan-200
             px-4 md:px-8 lg:px-12 xl:px-14
             py-10 md:py-14 lg:py-18 xl:py-20
-            flex flex-col justify-center z-10">
+            flex flex-col justify-center z-10"
+          >
             <h1 className="
               mb-2 md:mb-4 lg:mb-6
               text-2xl md:text-3xl lg:text-4xl xl:text-5xl
-              font-extrabold leading-tight text-blue0 dark:text-cyan-200">
+              font-extrabold leading-tight text-blue0 dark:text-cyan-200"
+            >
               Hello {user ? user.first_name || user.username : 'Guest'}!
             </h1>
             <p className="
               text-sm md:text-base lg:text-lg xl:text-xl
-              font-extrabold max-w-xl text-blue-200 dark:text-cyan-200">
+              font-extrabold max-w-xl text-blue-200 dark:text-cyan-200"
+            >
               Ready to grow your skills? Our learning paths guide you every step of the way—whether you’re just starting out or leveling up.
             </p>
           </div>
@@ -54,10 +57,10 @@ export default function HomePage() {
               Welcome to Codyssey
             </h2>
             <p className="text-xs md:text-sm lg:text-base xl:text-lg text-blue-200 dark:text-cyan-200 max-w-2xl mx-auto leading-relaxed">
-               Pick your programming<strong className="font-bold text-2xl text-blue-100"> language</strong>, choose your
-               <strong className="font-bold text-2xl text-blue-100"> category</strong> and
-               <strong className="font-bold text-2xl text-blue-100"> level</strong>,
-               and jump into your new coding journey with customized challenges made just for you.
+              Pick your programming<strong className="font-bold text-2xl text-blue-100"> language</strong>, choose your
+              <strong className="font-bold text-2xl text-blue-100"> category</strong> and
+              <strong className="font-bold text-2xl text-blue-100"> level</strong>,
+              and jump into your new coding journey with customized challenges made just for you.
             </p>
           </div>
         </section>
