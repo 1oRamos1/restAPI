@@ -30,7 +30,7 @@ function TrackList() {
         text-white text-center"
       >
         <h1 className="
-          text-2xl md:text-4xl lg:text-5xl xl:text-6xl
+          text-2xl md:text-3xl lg:text-4xl xl:text-5xl
           font-kumbh font-extrabold tracking-tight
           text-blue0 dark:text-cyan-200 mb-4 md:mb-6"
         >
@@ -87,12 +87,13 @@ function TrackList() {
                 transition-all duration-300
                 shadow-xl rounded-xl p-4 md:p-6
                 text-white dark:text-cyan-200
-                group flex flex-col h-full
+                group flex flex-col
+                h-[300px] md:h-[320px] lg:h-[340px]
               "
             >
-              <div className="flex flex-col justify-between flex-grow">
+              <div className="flex flex-col justify-between flex-grow h-full">
                 <div className="mb-2 md:mb-3">
-                  <h3 className="text-lg md:text-xl lg:text-2xl font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100">
+                  <h3 className="text-base md:text-lg lg:text-xl font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-3">
                     {track.title}
                   </h3>
                 </div>
