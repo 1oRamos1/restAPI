@@ -22,16 +22,16 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
   }, [language, limit]);
 
   const cardSizeClasses =
-    size === 'small'
-      ? 'w-full sm:w-80 md:w-72 lg:w-56 h-32 text-xl'
-      : 'w-full sm:w-96 md:w-80 lg:w-96 h-44 text-3xl';
+  size === 'small'
+    ? 'w-full sm:w-80 md:w-64 lg:w-56 h-28 md:h-32 text-base md:text-xl'
+    : 'w-full sm:w-96 md:w-80 lg:w-96 h-36 md:h-44 text-2xl md:text-3xl';
 
   const showDropdown = location.pathname !== '/'; // don't show on homepage
 
   return (
     <div className="w-full font-kumbh">
       {showDropdown && (
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-10 justify-items-center">
           <select
             value={language}
             onChange={(e) => {
