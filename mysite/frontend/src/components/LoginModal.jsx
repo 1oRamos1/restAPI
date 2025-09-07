@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import api from '../api/axios';
 
-const GOOGLE_CLIENT_ID = process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID;
 
 function getCsrfTokenFromCookie() {
   return document.cookie
@@ -19,75 +19,75 @@ export default function LoginModal({ onClose }) {
   const navigate = useNavigate();
   const { setIsAuthenticated } = useContext(AuthContext);
 
-  useEffect(() => {
-      try {
-        if (!window.google?.accounts?.id) return;
+  const handleGoogleLogin = async (response) => {
+    console.log("Google callback fired:", response);
+    try {
+      await api.get('/auth/csrf/'); // Get token
+      await api.post('/dj-rest-auth/google/', { id_token: response.credential }); // Login
 
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: (response) => console.log("GOOGLE RESPONSE:", response),
-          use_fedcm_for_prompt: false, // Add this line
-          origin: 'https://tracker-2528.onrender.com' // Add this line
-        });
-
-        window.google.accounts.id.renderButton(
-          document.getElementById('google-login-button'),
-          {
-            theme: 'outline',
-            size: 'large',
-            width: '380',
-          }
-        );
-      } catch (e) {
-        console.error('Google login script not ready:', e);
-      }
-    }, []);
-
- const handleGoogleLogin = async (response) => {
- console.log("Google callback fired:", response);
-  try {
-    await api.get('/auth/csrf/'); // Get token
-    await api.post('/dj-rest-auth/google/', { id_token: response.credential }); // Login
-
-    setIsAuthenticated(true);
-    setError('');
-    onClose();
-    window.location.reload();
-  } catch (err) {
-    console.error(err);
-    setError('Google login failed. Try again.');
-  }
-};
-
-const handleLogin = async () => {
-  try {
-    await api.post(
-      '/auth/login/',
-      { username, password },
-      {
-        withCredentials: true,
-        headers: {
-          'X-CSRFToken': getCsrfTokenFromCookie(),
-        },
-      }
-    );
-    setIsAuthenticated(true);
-    setError('');
-    onClose();
-    window.location.reload();
-  } catch (err) {
-    const detail = err.response?.data?.detail;
-    if (
-      detail?.toLowerCase().includes('no active account') ||
-      detail?.toLowerCase().includes('unable to log in') ||
-      detail?.toLowerCase().includes('not found')
-    ) {
-      setError("You're not signed in. Please sign up.");
-    } else {
-      setError('Login failed. Check your credentials.');
+      setIsAuthenticated(true);
+      setError('');
+      onClose();
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      setError('Google login failed. Try again.');
     }
-  }
-};
+  };
+
+  useEffect(() => {
+    try {
+      if (!window.google?.accounts?.id) return;
+
+      window.google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleLogin, // ✅ now calls the real handler
+        use_fedcm_for_prompt: false,
+        origin: 'https://tracker-2528.onrender.com',
+      });
+
+      window.google.accounts.id.renderButton(
+        document.getElementById('google-login-button'),
+        {
+          theme: 'outline',
+          size: 'large',
+          width: '380',
+        }
+      );
+    } catch (e) {
+      console.error('Google login script not ready:', e);
+    }
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await api.post(
+        '/auth/login/',
+        { username, password },
+        {
+          withCredentials: true,
+          headers: {
+            'X-CSRFToken': getCsrfTokenFromCookie(),
+          },
+        }
+      );
+      setIsAuthenticated(true);
+      setError('');
+      onClose();
+      window.location.reload();
+    } catch (err) {
+      const detail = err.response?.data?.detail;
+      if (
+        detail?.toLowerCase().includes('no active account') ||
+        detail?.toLowerCase().includes('unable to log in') ||
+        detail?.toLowerCase().includes('not found')
+      ) {
+        setError("You're not signed in. Please sign up.");
+      } else {
+        setError('Login failed. Check your credentials.');
+      }
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
