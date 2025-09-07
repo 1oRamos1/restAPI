@@ -22,16 +22,16 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
   }, [language, limit]);
 
   const cardSizeClasses =
-  size === 'small'
-    ? 'w-full sm:w-80 md:w-64 lg:w-56 h-28 md:h-32 text-base md:text-xl'
-    : 'w-full sm:w-96 md:w-80 lg:w-96 h-36 md:h-44 text-2xl md:text-3xl';
+    size === 'small'
+      ? 'w-full sm:w-64 md:w-48 lg:w-44 h-24 md:h-28 lg:h-32 text-base md:text-lg'
+      : 'w-full sm:w-80 md:w-72 lg:w-80 h-32 md:h-36 text-xl md:text-2xl';
 
   const showDropdown = location.pathname !== '/'; // don't show on homepage
 
   return (
     <div className="w-full font-kumbh">
       {showDropdown && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-10 justify-items-center">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <select
             value={language}
             onChange={(e) => {
@@ -55,7 +55,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 lg:gap-10 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 justify-items-center">
         {Array.isArray(categories) && categories.length > 0 ? (
           categories.map((cat) => (
             <Link
@@ -67,14 +67,12 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
                 border border-blue10 dark:border-gray-700 ${cardSizeClasses}`}
             >
               <h3 className="font-bold text-center mb-2">{cat.name}</h3>
-
-              {/* Full-width language banner */}
               <div
                 className={`absolute bottom-0 left-0 right-0
-                  text-sm text-blue5 bg-black/40 dark:bg-white/10
+                  text-xs md:text-sm text-blue5 bg-black/40 dark:bg-white/10
                   text-center pointer-events-none backdrop-blur-sm
                   rounded-b-xl
-                  ${showDropdown ? 'py-4' : 'py-1'}`}
+                  ${showDropdown ? 'py-3' : 'py-1'}`}
               >
                 <span className="font-semibold capitalize">{cat.language}</span>
               </div>
@@ -91,4 +89,3 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
 }
 
 export default CategoryList;
-
