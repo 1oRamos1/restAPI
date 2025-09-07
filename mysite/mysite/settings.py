@@ -69,6 +69,8 @@ ACCOUNT_LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/login'
 LOGIN_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
 LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
 
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 # === Google OAuth ===
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
