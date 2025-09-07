@@ -54,7 +54,7 @@ export default function HomePage() {
               Welcome to Codyssey
             </h2>
             <p className="text-xs md:text-sm lg:text-base xl:text-xl text-blue-200 dark:text-cyan-200 max-w-2xl mx-auto leading-relaxed">
-               Pick your programming<strong className="font-bold text-2xl text-blue-300"> language</strong>, choose your
+               Pick your programming<strong className="font-bold text-2xl text-blue-100"> language</strong>, choose your
                <strong className="font-bold text-2xl text-blue-100"> category</strong> and
                <strong className="font-bold text-2xl text-blue-100"> level</strong>,
                and jump into your new coding journey with customized challenges made just for you.
