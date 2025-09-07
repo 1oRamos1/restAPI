@@ -74,8 +74,8 @@ function TrackList() {
       </div>
 
       {/* Tracks Grid */}
-      <section className="max-w-6xl mx-auto w-full px-4 md:px-8 py-12 md:py-16 lg:py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-10">
+      <section className="max-w-6xl mx-auto w-full px-4 md:px-8 py-10 md:py-14 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7 lg:gap-8">
           {filteredTracks.map((track) => (
             <Link
               key={track.id}
@@ -85,15 +85,15 @@ function TrackList() {
                 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105
                 transition-all duration-300
-                shadow-xl rounded-xl p-4 md:p-6
+                shadow-xl rounded-xl p-3 md:p-5
                 text-white dark:text-cyan-200
                 group flex flex-col
-                h-[300px] md:h-[320px] lg:h-[340px]
+                h-[260px] md:h-[270px] lg:h-[280px]
               "
             >
               <div className="flex flex-col justify-between flex-grow h-full">
-                <div className="mb-2 md:mb-3">
-                  <h3 className="text-base md:text-lg lg:text-xl font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-3">
+                <div className="mb-1 md:mb-2">
+                  <h3 className="text-sm md:text-base lg:text-lg font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-3">
                     {track.title}
                   </h3>
                 </div>
