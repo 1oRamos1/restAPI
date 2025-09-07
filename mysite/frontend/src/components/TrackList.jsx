@@ -25,43 +25,43 @@ function TrackList() {
       {/* Section Header */}
       <section className="
         w-full bg-blue70/90 dark:bg-gray-900
-        py-16 md:py-20 lg:py-28 xl:py-36
+        py-12 md:py-16 lg:py-20
         px-4 md:px-8 xl:px-16
         text-white text-center"
       >
         <h1 className="
-          text-3xl md:text-4xl lg:text-5xl xl:text-6xl
+          text-2xl md:text-3xl lg:text-4xl
           font-kumbh font-extrabold tracking-tight
-          text-blue0 dark:text-cyan-200 mb-6"
+          text-blue0 dark:text-cyan-200 mb-4"
         >
           Choose Your Learning Track
         </h1>
         <p className="
-          text-lg md:text-xl lg:text-2xl xl:text-3xl
-          text-blue-200 dark:text-cyan-300 max-w-2xl mx-auto"
+          text-base md:text-lg lg:text-xl
+          text-blue-200 dark:text-cyan-300 max-w-xl mx-auto"
         >
           Dive into curated learning tracks and elevate your coding skills through real challenges.
         </p>
       </section>
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto px-4 md:px-8 pt-8 md:pt-12 flex flex-col gap-6">
+      <div className="max-w-5xl mx-auto px-4 md:px-8 pt-6 md:pt-10 flex flex-col gap-4">
         {/* Search Bar */}
         <input
           type="text"
           placeholder="Search tracks..."
-          className="w-full px-5 py-3 rounded-md text-base md:text-lg text-blue70 dark:text-cyan-100 placeholder-blue200 dark:placeholder-cyan-100 border border-gray-500 bg-blue0 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+          className="w-full px-4 py-2 rounded-md text-sm md:text-base text-blue70 dark:text-cyan-100 placeholder-blue200 dark:placeholder-cyan-100 border border-gray-500 bg-blue0 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-cyan-400"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         {/* Level Selector */}
-        <div className="overflow-x-auto whitespace-nowrap space-x-4 flex scrollbar-hide">
+        <div className="overflow-x-auto whitespace-nowrap space-x-2 flex scrollbar-hide">
           {['', 'beginner', 'advanced', 'master'].map(level => (
             <button
               key={level}
               onClick={() => setSelectedLevel(level)}
-              className={`px-6 py-3 rounded-full border text-sm md:text-base font-semibold transition-all duration-200 ${
+              className={`px-4 py-2 rounded-full border text-xs md:text-sm font-semibold transition-all duration-200 ${
                 selectedLevel === level
                   ? 'bg-blue70 text-white dark:bg-cyan-600 dark:text-white'
                   : 'bg-white dark:bg-gray-800 text-blue70 dark:text-cyan-200'
@@ -74,8 +74,8 @@ function TrackList() {
       </div>
 
       {/* Tracks Grid */}
-      <section className="max-w-6xl mx-auto w-full px-6 md:px-10 py-20">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <section className="max-w-5xl mx-auto w-full px-4 md:px-6 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredTracks.map((track) => (
             <Link
               key={track.id}
@@ -85,19 +85,19 @@ function TrackList() {
                 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105
                 transition-all duration-300
-                shadow-xl rounded-xl p-6
+                shadow-md rounded-lg p-4
                 text-white dark:text-cyan-200
                 group flex flex-col
-                h-[300px] md:h-[320px] lg:h-[340px]
+                h-[180px] md:h-[200px] lg:h-[220px]
               "
             >
               <div className="flex flex-col justify-between flex-grow h-full">
                 <div className="mb-1">
-                  <h3 className="text-xl md:text-2xl lg:text-3xl font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-3">
+                  <h3 className="text-lg md:text-xl lg:text-2xl font-kumbh font-semibold group-hover:text-white dark:group-hover:text-cyan-100 line-clamp-2">
                     {track.title}
                   </h3>
                 </div>
-                <p className="font-kumbh text-base md:text-lg lg:text-xl text-blue-200 dark:text-cyan-300">
+                <p className="font-kumbh text-sm md:text-base lg:text-lg text-blue-200 dark:text-cyan-300">
                   Track Level: {track.level}
                 </p>
               </div>
@@ -110,3 +110,4 @@ function TrackList() {
 }
 
 export default TrackList;
+
