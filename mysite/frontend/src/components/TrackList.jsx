@@ -85,7 +85,7 @@ function TrackList() {
                 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105
                 transition-all duration-200
-                shadow-md rounded-md p-2
+                shadow-md rounded-md p-3
                 text-white dark:text-cyan-200
                 group flex flex-col
                 h-[100px] md:h-[110px] lg:h-[120px]
