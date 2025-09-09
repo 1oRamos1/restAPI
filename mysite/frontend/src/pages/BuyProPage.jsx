@@ -60,7 +60,7 @@ export default function BuyProPage() {
   if (user?.is_pro) {
     return (
       <div className="min-h-screen bg-blue0 dark:bg-blue90 flex items-center justify-center px-4">
-        <div className="w-full max-w-xl bg-white dark:bg-gray-900 text-center px-10 py-16 rounded-3xl shadow-xl ring-4 ring-green-500 dark:ring-green-400 border border-green-300 dark:border-green-600">
+        <div className="w-full max-w-xl bg-white dark:bg-gray-900 text-center px-8 py-13 rounded-3xl shadow-xl ring-4 ring-green-500 dark:ring-green-400 border border-green-300 dark:border-green-600">
           <h1 className="text-6xl font-extrabold mb-8 text-green-600 dark:text-green-400">
             👑 You're Already Pro!
           </h1>
@@ -81,16 +81,16 @@ export default function BuyProPage() {
   return (
     <PayPalScriptProvider options={initialOptions}>
       <div className="min-h-screen bg-blue0 dark:bg-blue90 flex items-center justify-center px-4 relative">
-        <div className="w-full max-w-xl min-h-[75vh] bg-white dark:bg-gray-900 text-center px-10 py-10 rounded-3xl shadow-xl ring-4 ring-blue70 dark:ring-cyan-600 border border-blue50 dark:border-cyan-800">
-          <h1 className="text-6xl font-extrabold mb-12 text-blue70 dark:text-cyan-300">
+        <div className="w-full max-w-xl min-h-[75vh] bg-white dark:bg-gray-900 text-center px-7 py-7 rounded-3xl shadow-xl ring-4 ring-blue70 dark:ring-cyan-600 border border-blue50 dark:border-cyan-800">
+          <h1 className="text-5xl font-extrabold mb-12 text-blue70 dark:text-cyan-300">
             Upgrade to Pro
           </h1>
 
-          <p className="mb-12 text-2xl font-semibold text-blue80 dark:text-cyan-200">
+          <p className="mb-12 text-xl font-semibold text-blue80 dark:text-cyan-200">
             Unlock exclusive features:
           </p>
 
-          <ul className="text-center mb-20 space-y-12 text-xl font-medium text-blue80 dark:text-cyan-200">
+          <ul className="text-center mb-20 space-y-12 text-lg font-medium text-blue80 dark:text-cyan-200">
             <li>Create your own custom learning tracks</li>
             <li>Smarter Task Generation, Driven by the Most Advanced AI Model </li>
             <li>Early access to new features and tools</li>
