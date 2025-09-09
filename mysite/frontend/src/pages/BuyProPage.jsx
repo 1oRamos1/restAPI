@@ -13,7 +13,7 @@ const initialOptions = {
 export default function BuyProPage() {
   const [showPayPal, setShowPayPal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { user, setUser, refreshUser } = useContext(AuthContext);
+  const { user, setUser, refreshUser, isAuthenticated, openLoginModal } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleUpgrade = async (paymentDetails) => {
@@ -49,6 +49,14 @@ export default function BuyProPage() {
     }
   };
 
+  const handleBuyProClick = () => {
+    if (!isAuthenticated) {
+      openLoginModal();
+      return;
+    }
+    setShowPayPal(true);
+  };
+
   if (user?.is_pro) {
     return (
       <div className="min-h-screen bg-blue0 dark:bg-blue90 flex items-center justify-center px-4">
@@ -73,7 +81,7 @@ export default function BuyProPage() {
   return (
     <PayPalScriptProvider options={initialOptions}>
       <div className="min-h-screen bg-blue0 dark:bg-blue90 flex items-center justify-center px-4 relative">
-        <div className="w-full max-w-xl min-h-[75vh] bg-white dark:bg-gray-900 text-center px-10 py-16 rounded-3xl shadow-xl ring-4 ring-blue70 dark:ring-cyan-600 border border-blue50 dark:border-cyan-800">
+        <div className="w-full max-w-xl min-h-[75vh] bg-white dark:bg-gray-900 text-center px-10 py-10 rounded-3xl shadow-xl ring-4 ring-blue70 dark:ring-cyan-600 border border-blue50 dark:border-cyan-800">
           <h1 className="text-6xl font-extrabold mb-12 text-blue70 dark:text-cyan-300">
             Upgrade to Pro
           </h1>
@@ -83,17 +91,19 @@ export default function BuyProPage() {
           </p>
 
           <ul className="text-center mb-20 space-y-12 text-xl font-medium text-blue80 dark:text-cyan-200">
-            <li>Use OpenAI GPT-4 for smarter task generation</li>
             <li>Create your own custom learning tracks</li>
+            <li>Smarter Task Generation, Driven by the Most Advanced AI Model </li>
             <li>Early access to new features and tools</li>
           </ul>
 
           <button
-            className="mt-4 bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500 text-white px-10 py-4 rounded-xl font-bold text-lg transition shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => setShowPayPal(true)}
+            className="mt-4 bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500
+            text-white px-10 py-4 rounded-xl font-bold text-lg transition shadow-md disabled:opacity-50
+            disabled:cursor-not-allowed"
+            onClick={handleBuyProClick}
             disabled={isProcessing}
           >
-            {isProcessing ? 'Processing...' : 'Buy Pro Now'}
+            {isProcessing ? 'Processing...' : 'Go Premium'}
           </button>
         </div>
 
@@ -101,10 +111,10 @@ export default function BuyProPage() {
           <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
             <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg max-w-md w-full relative">
               <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">
-                Get Pro Access
+                Get Pro User Access
               </h1>
               <p className="text-center text-gray-600 dark:text-gray-300 mb-8">
-                Get full access to AI-powered custom track creation using ChatGPT.
+                Get full access to AI-powered custom track creation.
               </p>
 
               <button
@@ -167,3 +177,4 @@ export default function BuyProPage() {
     </PayPalScriptProvider>
   );
 }
+

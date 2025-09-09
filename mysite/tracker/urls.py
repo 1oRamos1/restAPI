@@ -1,6 +1,5 @@
-from django.urls import path, include, re_path
+from django.urls import path, re_path
 from django.http import HttpResponseNotFound
-from django.contrib.auth import views as auth_views
 from .views import *
 
 app_name = "tracker"
@@ -31,7 +30,6 @@ urlpatterns = [
 
     path('custom-track/create/', CustomTrackCreateView.as_view(), name='custom-track-create'),
     path('custom-track/options/', CustomTrackOptionsView.as_view(), name='custom-track-options'),
-    path('freeform-track/create/', FreeformCustomTrackCreateView.as_view(), name='freeform-track-create'),
 
     path('user/tracks/', UserLearningTrackList.as_view(), name='user-learning-tracks-list'),
     path('user/tracks/<int:learning_track_id>/<int:user_learning_track_id>/', UserLearningTrackDetail.as_view(),

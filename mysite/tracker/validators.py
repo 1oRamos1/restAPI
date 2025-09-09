@@ -1,6 +1,5 @@
 import re
 
-# Allow broad character set used in programming-related input
 ALLOWED_CHARS_PATTERN = re.compile(
     r'^[\w\s.,!?\'"()\-\+:;<>[\]{}@#%^&*/\\=~`|]{10,300}$',
     re.UNICODE

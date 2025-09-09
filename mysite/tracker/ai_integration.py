@@ -10,25 +10,25 @@ VALID_LEVELS = ['beginner', 'advanced', 'master']
 
 def generate_custom_track_options(goal, language):
     prompt = f"""
-The user wants to learn: "{goal}"
-They prefer the programming language: {language}.
-
-Generate 3 to 5 unique learning track options that:
-- Are realistic and coherent.
-- Each one has: a title, category, level (beginner/advanced/master), and a short description.
-- Use categories like: Web, AI, Backend, Frontend, DevOps, Game Dev, Security, Algorithms, Data Science, etc.
-- Format strictly as JSON list like:
-[
-  {{
-    "title": "Mastering Algorithms with C++",
-    "category": "Algorithms",
-    "level": "advanced",
-    "short_description": "Learn advanced algorithms using C++ with real-world challenges."
-  }},
-  ...
-]
-Only return a valid JSON array. No preamble, no markdown, no explanations.
-"""
+    The user wants to learn: "{goal}"
+    They prefer the programming language: {language}.
+    
+    Generate 3 to 5 unique learning track options that:
+    - Are realistic and coherent.
+    - Each one has: a title, category, level (beginner/advanced/master), and a short description.
+    - Use categories like: Web, AI, Backend, Frontend, DevOps, Game Dev, Security, Algorithms, Data Science, etc.
+    - Format strictly as JSON list like:
+    [
+      {{
+        "title": "Mastering Algorithms with C++",
+        "category": "Algorithms",
+        "level": "advanced",
+        "short_description": "Learn advanced algorithms using C++ with real-world challenges."
+      }},
+      ...
+    ]
+    Only return a valid JSON array. No preamble, no markdown, no explanations.
+    """
 
     try:
         response = openai.ChatCompletion.create(
@@ -72,7 +72,6 @@ def extract_json_from_text(text: str):
     """
     Extracts a JSON object or array from a string. Handles responses with code blocks or trailing text.
     """
-    # Strip markdown/code block fences
     if "```" in text:
         text = text.replace("```json", "").replace("```", "").strip()
 

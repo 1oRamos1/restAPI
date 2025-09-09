@@ -1,9 +1,7 @@
 from dj_rest_auth.serializers import UserDetailsSerializer
 from rest_framework import serializers
 from .models import *
-import json
 from .ai_integration import generate_track_from_prompt, extract_json_from_text
-from .validators import is_valid_learning_goal, is_valid_track_structure
 
 
 class CustomUserDetailsSerializer(UserDetailsSerializer):
@@ -28,7 +26,6 @@ class CustomTrackCreateSerializer(serializers.Serializer):
         raise NotImplementedError("Update not supported")
 
     def validate_description(self, value):
-        # Implement your is_valid_learning_goal check or similar here if needed
         return value
 
     def create(self, validated_data):
@@ -44,8 +41,6 @@ class CustomTrackCreateSerializer(serializers.Serializer):
 
         ai_response_text = generate_track_from_prompt(full_prompt)
         track_data = extract_json_from_text(ai_response_text)
-
-        # Validate AI response structure here if you want
 
         category_name = track_data.get('category')
         language = track_data.get('language') or (selected_lang if selected_lang != 'auto' else 'python')

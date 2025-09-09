@@ -43,7 +43,6 @@ function UserTrackDetail() {
 
   setBtnLoading(true);
   try {
-    // ✅ CORRECTED API CALL
     const res = await api.post('/user/tracks/', { learning_track: trackId });
     const newTrack = res.data;
 

@@ -1,33 +1,29 @@
 import logging
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
+
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from django.utils.decorators import method_decorator
+from django.middleware.csrf import get_token
 
 from rest_framework import mixins, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import RetrieveAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, GenericAPIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.response import Response
 
-from dj_rest_auth.views import UserDetailsView
 from google.oauth2 import id_token
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.middleware.csrf import get_token
 from google.auth.transport import requests
-import ollama
 
 from .serializers import *
 from .ai_integration import *
-from .validators import is_valid_learning_goal, is_valid_track_structure
 from .choices import MONACO_LANGUAGES
 from django.contrib.auth.models import User
 from dj_rest_auth.views import PasswordResetView
-from rest_framework.response import Response
-from rest_framework import status
+from dj_rest_auth.views import UserDetailsView
 
 from mistralai import Mistral
 from django.conf import settings
@@ -476,84 +472,12 @@ class GenerateNextTask(APIView):
                 status="pending"
             )
 
-            # Optional: regenerate summary if needed here
-
             return Response(TaskListSerializer(new_task).data)
 
         except Exception as e:
             logging.error(f"GenerateNextTask failed: {e}")
             return Response({"error": str(e)}, status=500)
 
-
-class FreeformCustomTrackCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        user = request.user
-        profile = getattr(user, "profile", None)
-        if not profile or not profile.is_pro:
-            return Response({'detail': 'Pro membership required.'}, status=status.HTTP_403_FORBIDDEN)
-
-        learning_goal = request.data.get('learning_goal', '').strip()
-        if not learning_goal:
-            return Response({'detail': 'Missing learning goal.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Validate input meaning
-        if not is_valid_learning_goal(learning_goal):
-            return Response({'detail': 'Invalid or meaningless learning goal.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            # Generate AI track JSON string
-            ai_response = generate_track_from_prompt(learning_goal)
-            # Parse AI JSON output
-            track_data = json.loads(ai_response)
-        except (ValidationError, json.JSONDecodeError) as e:
-            return Response({'detail': f'AI generation failed or invalid output: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Validate AI structured output format
-        if not is_valid_track_structure(track_data):
-            return Response({'detail': 'AI output invalid structure.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Extract required fields
-        language = track_data.get('language')
-        category_name = track_data.get('category')
-        level = track_data.get('level')
-        title = track_data.get('title', learning_goal)  # fallback
-
-        # Find or create Category by name & language
-        category = Category.objects.filter(name__iexact=category_name, language=language).first()
-        if not category:
-            return Response({'detail': f'Category "{category_name}" with language "{language}" not found.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Create LearningTrack
-        learning_track = LearningTrack.objects.create(
-            title=title,
-            category=category,
-            level=level,
-            is_custom=True  # flag for DIY track
-        )
-
-        # Create Tasks from AI data
-        for task_data in track_data['tasks']:
-            learning_track.tasks.create(
-                title=task_data['title'],
-                description=task_data['description'],
-                difficulty=task_data.get('difficulty', 'medium'),
-            )
-
-        # Create UserLearningTrack
-        user_learning_track = UserLearningTrack.objects.create(
-            user=user,
-            learning_track=learning_track,
-            progression=0,
-            summary='',
-        )
-
-        return Response({
-            'learning_track_id': learning_track.id,
-            'user_learning_track_id': user_learning_track.id,
-            'redirect_url': f'/track/{learning_track.id}/{user_learning_track.id}'
-        }, status=status.HTTP_201_CREATED)
 
 
 

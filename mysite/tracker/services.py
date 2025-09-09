@@ -1,11 +1,10 @@
-# app_name/services.py
 import logging
 from .models import Task
 from mistralai import Mistral
 from django.conf import settings
 
-# Initialize Mistral client once
 mistral_client = Mistral(api_key=settings.MISTRAL_API_KEY)
+
 
 def generate_and_save_summary(user_track):
     try:
