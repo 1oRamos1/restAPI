@@ -31,7 +31,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
   return (
     <div className="w-full font-kumbh">
       {showDropdown && (
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
           <select
             value={language}
             onChange={(e) => {
@@ -43,7 +43,8 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
                 navigate('/categories');
               }
             }}
-            className="w-full md:w-72 px-4 py-2 rounded-md text-sm text-gray-400 dark:text-cyan-700
+            className="w-full md:w-80 px-6 py-4 rounded-lg text-base font-medium
+                       text-gray-700 dark:text-cyan-200
                        bg-blue0 dark:bg-gray-800 border border-gray-500
                        focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
@@ -55,7 +56,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 justify-items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
         {Array.isArray(categories) && categories.length > 0 ? (
           categories.map((cat) => (
             <Link
@@ -63,16 +64,16 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
               to={`/category/${cat.id}`}
               className={`relative bg-blue70/90 dark:bg-gray-900 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105 transition-all duration-300 shadow-xl rounded-xl
-                p-4 pt-6 text-white dark:text-cyan-200 flex flex-col justify-between
+                p-5 pt-6 text-white dark:text-cyan-200 flex flex-col justify-between
                 border border-blue10 dark:border-gray-700 ${cardSizeClasses}`}
             >
-              <h3 className="font-bold text-center mb-2">{cat.name}</h3>
+              <h3 className="font-bold text-center mb-3">{cat.name}</h3>
               <div
                 className={`absolute bottom-0 left-0 right-0
                   text-xs md:text-sm text-blue5 bg-black/40 dark:bg-white/10
                   text-center pointer-events-none backdrop-blur-sm
                   rounded-b-xl
-                  ${showDropdown ? 'py-3' : 'py-1'}`}
+                  ${showDropdown ? 'py-3' : 'py-2'}`}
               >
                 <span className="font-semibold capitalize">{cat.language}</span>
               </div>

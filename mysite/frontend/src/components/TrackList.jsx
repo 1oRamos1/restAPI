@@ -14,7 +14,7 @@ function TrackList() {
       .catch(err => console.error('Failed to fetch tracks:', err));
   }, [categoryId]);
 
-  const filteredTracks = tracks.filter(track => {
+    const filteredTracks = tracks.filter(track => {
     const matchesSearch = track.title.toLowerCase().includes(search.toLowerCase());
     const matchesLevel = selectedLevel ? track.level === selectedLevel : true;
     return matchesSearch && matchesLevel;
