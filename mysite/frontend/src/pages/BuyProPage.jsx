@@ -97,7 +97,7 @@ export default function BuyProPage() {
           </ul>
 
           <button
-            className="mt-4 bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500
+            className="mt-3 bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500
             text-white px-10 py-4 rounded-xl font-bold text-lg transition shadow-md disabled:opacity-50
             disabled:cursor-not-allowed"
             onClick={handleBuyProClick}
