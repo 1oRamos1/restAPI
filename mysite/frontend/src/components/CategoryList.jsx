@@ -43,7 +43,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
                 navigate('/categories');
               }
             }}
-            className="w-full md:w-80 px-6 py-4 rounded-lg text-base font-medium
+            className="w-full md:w-80 px-4 py-2 rounded-md text-sm font-medium
                        text-gray-700 dark:text-cyan-200
                        bg-blue0 dark:bg-gray-800 border border-gray-500
                        focus:outline-none focus:ring-2 focus:ring-cyan-400"
