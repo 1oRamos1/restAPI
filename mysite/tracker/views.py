@@ -59,7 +59,7 @@ def get_chat_completion(user, prompt):
     else:
         try:
             chat_response = mistral_client.chat.complete(
-                model="mistral-large-latest",  # latest Mistral chat model
+                model="ministral-3b-24.10",  # latest Mistral chat model
                 messages=[{"role": "user", "content": prompt}],
             )
             return chat_response.choices[0].message.content
