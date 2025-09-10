@@ -22,7 +22,7 @@ export default function HomePage() {
           </div>
           <div className="flex-[1.5] relative bg-blue0 dark:bg-gray-800 min-h-[300px]">
             <img
-               src={`${process.env.PUBLIC_URL}/ezgif.com-gif-maker.gif`}
+              src={`${process.env.PUBLIC_URL}/ezgif.com-gif-maker.gif`}
               alt="Robot Guide"
               className="absolute right-0 top-1/2 -translate-y-1/2 w-64 xl:w-80 2xl:w-96 object-contain pointer-events-none"
               style={{ userSelect: 'none' }}
@@ -48,8 +48,8 @@ export default function HomePage() {
         {/* Section 3: Python */}
         <section className="w-full bg-white dark:bg-gray-900">
           <div className="flex flex-col xl:flex-row min-h-[600px]">
-            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center">
-              <CategoryList language="python" size="small" limit={6}/>
+            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center min-w-0">
+              <CategoryList language="python" size="small" limit={6} truncate />
               <div className="mt-8">
                 <Link
                   to={`/categories?language=python`}
@@ -62,7 +62,7 @@ export default function HomePage() {
             <div className="flex-1 bg-blue70/90 dark:bg-blue90 px-10 xl:px-20 py-16 text-white dark:text-cyan-200 flex flex-col justify-center">
               <h3 className="text-4xl xl:text-5xl font-extrabold mb-6">Python</h3>
               <p className="text-base xl:text-lg text-blue-100 dark:text-cyan-200 leading-relaxed">
-                Dive into beginner‑friendly and advanced Python tracks covering fundamentals, OOP, data
+                Dive into beginner-friendly and advanced Python tracks covering fundamentals, OOP, data
                 structures and automation projects.
               </p>
             </div>
@@ -79,8 +79,8 @@ export default function HomePage() {
                 web applications.
               </p>
             </div>
-            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center">
-              <CategoryList language="js" size="small" limit={6}/>
+            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center min-w-0">
+              <CategoryList language="js" size="small" limit={6} truncate />
               <div className="mt-8">
                 <Link
                   to={`/categories?language=js`}
@@ -96,8 +96,8 @@ export default function HomePage() {
         {/* Section 5: C++ */}
         <section className="w-full bg-white dark:bg-gray-900">
           <div className="flex flex-col xl:flex-row min-h-[600px]">
-            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center">
-              <CategoryList language="c++" size="small" limit={6}/>
+            <div className="flex-1 bg-blue0 dark:bg-gray-900 px-10 xl:px-20 py-16 flex flex-col justify-center min-w-0">
+              <CategoryList language="c++" size="small" limit={6} truncate />
               <div className="mt-8">
                 <Link
                   to={`/categories?language=${encodeURIComponent('c++')}`}
@@ -110,8 +110,8 @@ export default function HomePage() {
             <div className="flex-1 bg-blue70/90 dark:bg-blue90 px-10 xl:px-20 py-16 text-white dark:text-cyan-200 flex flex-col justify-center">
               <h3 className="text-4xl xl:text-5xl font-extrabold mb-6">C++</h3>
               <p className="text-base xl:text-lg text-blue-100 dark:text-cyan-200 leading-relaxed">
-                Explore low‑level programming, data structures and algorithms with C++ — perfect for
-                performance‑critical and competitive‑programming work.
+                Explore low-level programming, data structures and algorithms with C++ — perfect for
+                performance-critical and competitive-programming work.
               </p>
             </div>
           </div>
