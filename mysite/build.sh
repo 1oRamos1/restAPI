@@ -47,7 +47,7 @@ python manage.py makemigrations
 
 # Apply all migrations to Internal Postgres (creates tables)
 python manage.py migrate
-python mange.py flush
+python mangae.py flush
 
 # 6. Create superuser
 python manage.py create_render_superuser
