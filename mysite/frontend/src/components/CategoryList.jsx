@@ -64,10 +64,15 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
               to={`/category/${cat.id}`}
               className={`relative bg-blue70/90 dark:bg-gray-900 hover:bg-blue90 dark:hover:bg-cyan-700
                 transform hover:scale-105 transition-all duration-300 shadow-xl rounded-xl
-                p-5 pt-6 text-white dark:text-cyan-200 flex flex-col justify-between
+                p-5 pt-6 text-white dark:text-cyan-200 flex flex-col justify-start
                 border border-blue10 dark:border-gray-700 ${cardSizeClasses}`}
             >
-              <h3 className="font-bold text-center mb-3">{cat.name}</h3>
+              {/* Category title with padding bottom so it won’t collide */}
+              <div className="flex-grow pb-8 overflow-hidden">
+                <h3 className="font-bold text-center truncate">{cat.name}</h3>
+              </div>
+
+              {/* Fixed language tag at bottom */}
               <div
                 className={`absolute bottom-0 left-0 right-0
                   text-xs md:text-sm text-blue5 bg-black/40 dark:bg-white/10
@@ -90,3 +95,4 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
 }
 
 export default CategoryList;
+
