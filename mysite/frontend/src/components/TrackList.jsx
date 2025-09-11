@@ -5,44 +5,31 @@ import { Link, useParams } from 'react-router-dom';
 function TrackList() {
   const { categoryId } = useParams();
   const [tracks, setTracks] = useState([]);
-  const [category, setCategory] = useState(null);
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
 
-  // Fetch tracks
   useEffect(() => {
     api.get(`categories/${categoryId}/tracks/`)
       .then(res => setTracks(res.data))
       .catch(err => console.error('Failed to fetch tracks:', err));
   }, [categoryId]);
 
-  // Fetch category info
-  useEffect(() => {
-    api.get(`categories/${categoryId}/`)
-      .then(res => setCategory(res.data))
-      .catch(err => console.error('Failed to fetch category:', err));
-  }, [categoryId]);
-
-  const filteredTracks = tracks.filter(track => {
+    const filteredTracks = tracks.filter(track => {
     const matchesSearch = track.title.toLowerCase().includes(search.toLowerCase());
     const matchesLevel = selectedLevel ? track.level === selectedLevel : true;
     return matchesSearch && matchesLevel;
   });
 
-  return (
-    <div className="min-h-screen bg-blue0 dark:bg-blue90 font-kumbh text-gray-800 dark:text-gray-100 flex flex-col">
+    const categoryName = tracks[0]?.category?.name || '';
 
-      {/* Category Header */}
-      {category && (
-        <section className="w-full bg-blue80 dark:bg-gray-900 py-24 px-6 text-white text-center">
-          <h1 className="text-5xl font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-4">
-            {category.name}
-          </h1>
-        </section>
-      )}
+    return (
+    <div className="min-h-screen bg-blue0 dark:bg-blue90 font-kumbh text-gray-800 dark:text-gray-100 flex flex-col">
 
       {/* Section Header */}
       <section className="w-full bg-blue70/90 dark:bg-gray-900 py-32 px-6 text-white text-center">
+        <h1 className="text-6xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
+          {categoryName}
+        </h1>
         <h2 className="text-6xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
           Choose Your Learning Track
         </h2>
