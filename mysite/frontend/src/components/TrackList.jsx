@@ -30,7 +30,7 @@ function TrackList() {
         <h1 className="text-6xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
           {categoryName}
         </h1>
-        <h1 className="text-4xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
+        <h1 className="text-3xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
           Choose Your Learning Track
         </h1>
         <p className="text-lg text-blue-200 dark:text-cyan-300 max-w-2xl mx-auto">
