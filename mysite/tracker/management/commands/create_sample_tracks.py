@@ -79,7 +79,7 @@ class Command(BaseCommand):
                     ],
                 },
                 {
-                    "category": "Data Structures & Algorithms",
+                    "category": "DSA",
                     "tracks": [
                         {"title": "Basic Data Structures in Python", "level": "beginner"},
                         {"title": "Sorting and Searching", "level": "beginner"},
@@ -166,7 +166,7 @@ class Command(BaseCommand):
                     ],
                 },
                 {
-                    "category": "Data Structures & Algorithms",
+                    "category": "Algorithms",
                     "tracks": [
                         {"title": "Basic Data Structures in JS", "level": "beginner"},
                         {"title": "Sorting and Searching", "level": "beginner"},
@@ -197,7 +197,7 @@ class Command(BaseCommand):
                     ],
                 },
                 {
-                    "category": "STL & Algorithms",
+                    "category": "Algorithms",
                     "tracks": [
                         {"title": "Standard Template Library Basics", "level": "beginner"},
                         {"title": "Containers and Iterators", "level": "beginner"},

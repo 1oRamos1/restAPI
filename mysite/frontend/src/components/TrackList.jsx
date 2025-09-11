@@ -5,16 +5,25 @@ import { Link, useParams } from 'react-router-dom';
 function TrackList() {
   const { categoryId } = useParams();
   const [tracks, setTracks] = useState([]);
+  const [category, setCategory] = useState(null);
   const [search, setSearch] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
 
+  // Fetch tracks
   useEffect(() => {
     api.get(`categories/${categoryId}/tracks/`)
       .then(res => setTracks(res.data))
       .catch(err => console.error('Failed to fetch tracks:', err));
   }, [categoryId]);
 
-    const filteredTracks = tracks.filter(track => {
+  // Fetch category info
+  useEffect(() => {
+    api.get(`categories/${categoryId}/`)
+      .then(res => setCategory(res.data))
+      .catch(err => console.error('Failed to fetch category:', err));
+  }, [categoryId]);
+
+  const filteredTracks = tracks.filter(track => {
     const matchesSearch = track.title.toLowerCase().includes(search.toLowerCase());
     const matchesLevel = selectedLevel ? track.level === selectedLevel : true;
     return matchesSearch && matchesLevel;
@@ -23,11 +32,20 @@ function TrackList() {
   return (
     <div className="min-h-screen bg-blue0 dark:bg-blue90 font-kumbh text-gray-800 dark:text-gray-100 flex flex-col">
 
+      {/* Category Header */}
+      {category && (
+        <section className="w-full bg-blue80 dark:bg-gray-900 py-24 px-6 text-white text-center">
+          <h1 className="text-5xl font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-4">
+            {category.name}
+          </h1>
+        </section>
+      )}
+
       {/* Section Header */}
       <section className="w-full bg-blue70/90 dark:bg-gray-900 py-32 px-6 text-white text-center">
-        <h1 className="text-6xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
+        <h2 className="text-6xl font-kumbh font-extrabold tracking-tight text-blue0 dark:text-cyan-200 mb-6">
           Choose Your Learning Track
-        </h1>
+        </h2>
         <p className="text-lg text-blue-200 dark:text-cyan-300 max-w-2xl mx-auto">
           Dive into curated learning tracks and elevate your coding skills through real challenges.
         </p>
