@@ -69,9 +69,10 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
             >
               {/* Category title with padding bottom so it won’t collide */}
               <div className="flex-grow pb-8 overflow-hidden">
-                <h3 className="font-bold text-center truncate">{cat.name}</h3>
+                  <h3 className="font-bold text-center text-ellipsis line-clamp-2">
+                    {cat.name}
+                  </h3>
               </div>
-
               {/* Fixed language tag at bottom */}
               <div
                 className={`absolute bottom-0 left-0 right-0
