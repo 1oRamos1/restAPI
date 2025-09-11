@@ -26,7 +26,6 @@ cp staticfiles/index.html templates/
 # 3. Install Python dependencies
 # ----------------------------------------
 pip install -r requirements.txt
-python manage.py flush --no-input  # clear any existing data
 # ----------------------------------------
 # 4. Collect static files for Django
 # ----------------------------------------
