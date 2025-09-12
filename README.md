@@ -8,12 +8,11 @@
 ## 🌟 Features
 
 - **Personalized Learning Tracks** – Choose a language, category, and difficulty level.  
-- **AI-Powered Custom Tracks** – Pro users can generate their own coding tracks using OpenAI GPT API.  
-- **Practice-Oriented** – Focused on real coding tasks, not just theory.  
-- **Multi-Language Support** – Python, JavaScript, C++.  
+- **Premium Experience** – Pro users can generate their own coding tracks using OpenAI GPT API.  
+- **Hands-On Progression** – Practical coding tasks tailored to your learning path.  
+- **Multi-Language Support** – Python, JavaScript, C++ and more for the pro users.  
 - **Progress Tracking** – Save solutions, track completion, and view your coding journey.  
-- **Dark Mode** – Switch seamlessly between light and dark themes.  
-- **Pro Experience Sandbox** – Test the Pro features without paying.
+- **Dark Mode** – Switch seamlessly between light and dark themes.
 
 ---
 
@@ -21,7 +20,7 @@
 
 Try Codyssey online: [**Codyssey Live**](https://tracker-2528.onrender.com)
 
-### Sandbox Pro Access
+### Premium Access
 
 To explore Pro-only features, use the following credentials (sandbox environment):
 
