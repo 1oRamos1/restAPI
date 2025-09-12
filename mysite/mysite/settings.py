@@ -87,11 +87,18 @@ MIDDLEWARE = [
 ]
 
 # === CORS & CSRF ===
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv)
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://tracker-2528.onrender.com",
+]
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:3000,http://127.0.0.1:8000', cast=Csv)
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://tracker-2528.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = IS_PRODUCTION
