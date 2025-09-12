@@ -2,7 +2,6 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 
-
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -24,6 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
 
 REST_USE_JWT = False
+
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -107,6 +107,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://tracker-production-387a.up.railway.app",
     "https://tracker-2528.onrender.com",
     "http://localhost:3000",
     "http://localhost:8000",
@@ -115,11 +116,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = True  # Set to True in production with HTTPS
 CSRF_COOKIE_NAME = "csrftoken"
 
 # === URLs ===
@@ -146,12 +147,12 @@ WSGI_APPLICATION = "mysite.wsgi.application"
 
 # === Database ===
 DATABASES = {
-        "default": dj_database_url.config(
-            default=config("DATABASE_URL"),
-            conn_max_age=600,
-            ssl_require=True
-        )
-    }
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
+}
 
 # === Password validators ===
 AUTH_PASSWORD_VALIDATORS = [
@@ -185,9 +186,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
