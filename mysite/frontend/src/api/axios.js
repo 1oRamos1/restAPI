@@ -1,38 +1,37 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+// Determine backend URL based on environment
+const baseURL =
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api/v1/tracker/'
+    : 'https://tracker-2528.onrender.com/api/v1/tracker/';
+
 const api = axios.create({
-    baseURL: 'https://tracker-2528.onrender.com/api/v1/tracker/',
-    withCredentials: true,
-    xsrfCookieName: 'csrftoken',
-    xsrfHeaderName: 'X-CSRFToken',
+  baseURL,
+  withCredentials: true,
+  xsrfCookieName: 'csrftoken',
+  xsrfHeaderName: 'X-CSRFToken',
 });
 
-// Response interceptor to update CSRF token
+// Store latest CSRF token if returned by server
 api.interceptors.response.use(
-    (response) => {
-        // If response contains csrfToken, store it
-        if (response.data && response.data.csrfToken) {
-            // You can store it in a variable or use it directly
-            window.latestCsrfToken = response.data.csrfToken;
-        }
-        return response;
-    },
-    (error) => {
-        return Promise.reject(error);
+  (response) => {
+    if (response.data && response.data.csrfToken) {
+      window.latestCsrfToken = response.data.csrfToken;
     }
+    return response;
+  },
+  (error) => Promise.reject(error)
 );
 
-api.interceptors.request.use(config => {
-    // Try to get CSRF token from cookie first, then from stored variable
-    let csrfToken = Cookies.get('csrftoken') || window.latestCsrfToken;
-
-    console.log('CSRF Token:', csrfToken);
-
-    if (csrfToken) {
-        config.headers['X-CSRFToken'] = csrfToken;
-    }
-    return config;
+// Attach CSRF token to every request
+api.interceptors.request.use((config) => {
+  const csrfToken = Cookies.get('csrftoken') || window.latestCsrfToken;
+  if (csrfToken) {
+    config.headers['X-CSRFToken'] = csrfToken;
+  }
+  return config;
 });
 
 export default api;
