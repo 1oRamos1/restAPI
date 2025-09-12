@@ -1,28 +1,32 @@
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 import dj_database_url
+import os
+
+# === Base directory ===
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# === Environment detection ===
+ENVIRONMENT = config('ENVIRONMENT', default='local')  # 'local' or 'production'
+IS_PRODUCTION = ENVIRONMENT == 'production'
 
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = not IS_PRODUCTION
+
+# Allowed hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv)
+if IS_PRODUCTION:
+    ALLOWED_HOSTS += ['tracker-2528.onrender.com']
 
 # === Google OAuth ===
-SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET')
+SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID', default='')
+SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET', default='')
 
-# === OpenAI ===
-OPENAI_API_KEY = config('OPENAI_API_KEY')
-
-# === Mistral ===
-MISTRAL_API_KEY = config('MISTRAL_API_KEY')
-
-# === Paypal ===
-PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
-
-REST_USE_JWT = False
+# === API Keys ===
+OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
+MISTRAL_API_KEY = config('MISTRAL_API_KEY', default='')
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='')
 
 # === Installed apps ===
 INSTALLED_APPS = [
@@ -52,10 +56,10 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# === Email (console) ===
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# === Email backend ===
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' if not IS_PRODUCTION else 'django.core.mail.backends.smtp.EmailBackend'
 
-# === Authentication settings ===
+# === Authentication ===
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 SOCIALACCOUNT_AUTO_SIGNUP = False
@@ -65,25 +69,10 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-ACCOUNT_LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/login'
-LOGIN_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
-LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
-
-SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
-SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
-
-# === Google OAuth ===
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'APP': {
-            'client_id': config('SOCIAL_AUTH_GOOGLE_CLIENT_ID'),
-            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET'),
-            'key': ''
-        },
-    }
-}
+# Redirects
+LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', default='/')
+LOGOUT_REDIRECT_URL = config('LOGOUT_REDIRECT_URL', default='/login')
+ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 # === Middleware ===
 MIDDLEWARE = [
@@ -100,33 +89,23 @@ MIDDLEWARE = [
 ]
 
 # === CORS & CSRF ===
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://tracker-2528.onrender.com",
-]
+CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='http://localhost:3000', cast=Csv)
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://tracker-production-387a.up.railway.app",
-    "https://tracker-2528.onrender.com",
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:3000,http://127.0.0.1:8000', cast=Csv)
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = True  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = IS_PRODUCTION
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = True  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = IS_PRODUCTION
 CSRF_COOKIE_NAME = "csrftoken"
 
-# === URLs ===
+# === URLs & templates ===
 ROOT_URLCONF = "mysite.urls"
 
-# === Templates ===
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -142,15 +121,14 @@ TEMPLATES = [
     },
 ]
 
-# === WSGI ===
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 # === Database ===
 DATABASES = {
     "default": dj_database_url.config(
-        default=config("DATABASE_URL"),
+        default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=IS_PRODUCTION
     )
 }
 
