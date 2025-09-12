@@ -15,9 +15,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = not IS_PRODUCTION
 
 # Allowed hosts
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv)
-if IS_PRODUCTION:
-    ALLOWED_HOSTS += ['tracker-2528.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'tracker-2528.onrender.com']
 
 # === Google OAuth ===
 SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID', default='')
