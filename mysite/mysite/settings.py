@@ -2,28 +2,23 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-# === Google OAuth ===
-SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
-SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET')
-
-# === OpenAI ===
-OPENAI_API_KEY = config('OPENAI_API_KEY')
-
-# === Mistral ===
-MISTRAL_API_KEY = config('MISTRAL_API_KEY')
-
-# === Paypal ===
-PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
 
+# === API Keys ===
+SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET')
+OPENAI_API_KEY = config('OPENAI_API_KEY')
+MISTRAL_API_KEY = config('MISTRAL_API_KEY')
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+
 REST_USE_JWT = False
+
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -52,10 +47,10 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# === Email (console) ===
+# === Email (console for dev) ===
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# === Authentication settings ===
+# === Authentication ===
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 SOCIALACCOUNT_AUTO_SIGNUP = False
@@ -78,8 +73,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
-            'client_id': config('SOCIAL_AUTH_GOOGLE_CLIENT_ID'),
-            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET'),
+            'client_id': SOCIAL_AUTH_GOOGLE_CLIENT_ID,
+            'secret': SOCIAL_AUTH_GOOGLE_SECRET,
             'key': ''
         },
     }
@@ -101,8 +96,10 @@ MIDDLEWARE = [
 
 # === CORS & CSRF ===
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "https://tracker-2528.onrender.com",
+    "http://localhost:3000",   # React dev server
+    "http://localhost:8000",   # Django dev server
+    "http://127.0.0.1:8000",
+    "https://tracker-2528.onrender.com",  # production
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -116,11 +113,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_COOKIE_SECURE = not DEBUG   # Secure only in production
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_SECURE = not DEBUG      # Secure only in production
 CSRF_COOKIE_NAME = "csrftoken"
 
 # === URLs ===
@@ -146,7 +143,15 @@ TEMPLATES = [
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 # === Database ===
-DATABASES = {
+if DEBUG:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
+else:
+    DATABASES = {
         "default": dj_database_url.config(
             default=config("DATABASE_URL"),
             conn_max_age=600,
@@ -187,9 +192,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Don't use CompressedManifest for now, it might be renaming files
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use simple storage locally, whitenoise in production
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
