@@ -1,5 +1,5 @@
 from pathlib import Path
-from decouple import config, Csv
+from decouple import config
 import dj_database_url
 import os
 
@@ -114,7 +114,7 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [BASE_DIR / "frontend/build"],
+        'DIRS': [BASE_DIR / "frontend/build"] if IS_PRODUCTION else [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -167,7 +167,7 @@ USE_TZ = True
 
 # === Static files ===
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
+STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"] if IS_PRODUCTION else []
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
