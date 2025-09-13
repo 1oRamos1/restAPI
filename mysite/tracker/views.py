@@ -453,11 +453,12 @@ class GenerateNextTask(APIView):
                 "Generate the next programming task **with the exact structure below and NOTHING ELSE**:\n"
                 "### Title: <A short and clear title of the task>\n"
                 "### Description:\n<A short explanation of the task to complete>\n"
-                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code and blanks>\n```\n"
+                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code with multiple FILL-IN-THE-BLANK lines, marked as underscores or TODOs>\n```\n"
                 "VERY IMPORTANT:\n"
-                "- Only fill the blanks kind of tasks!\n"
-                "- Use the exact markdown format shown.\n"
-                "- No greetings, no explanations, only valid content.\n"
+                "- Do NOT provide a full solution.\n"
+                "- Insert several blanks (e.g., `__________` or `# TODO`) where the student must write code.\n"
+                "- Do not include example usage or final printouts.\n"
+                "- Only output in the requested markdown format, no extra explanations.\n"
             )
 
             result_text = get_chat_completion(request.user, prompt)
