@@ -453,7 +453,7 @@ class GenerateNextTask(APIView):
                 "Generate the next programming task **with the exact structure below and NOTHING ELSE**:\n"
                 "### Title: <A short and clear title of the task>\n"
                 "### Description:\n<A short explanation of the task to complete>\n"
-                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code or blanks>\n```\n"
+                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code and blanks>\n```\n"
                 "VERY IMPORTANT:\n"
                 "- Only fill the blanks kind of tasks!\n"
                 "- Use the exact markdown format shown.\n"
