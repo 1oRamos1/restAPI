@@ -43,7 +43,7 @@ export default function LoginModal({ onClose }) {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleLogin,
         use_fedcm_for_prompt: false,
-        origin: 'https://tracker-2528.onrender.com',
+        origin: origin,
       });
 
       window.google.accounts.id.renderButton(
