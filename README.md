@@ -60,10 +60,10 @@ If you want to run it locally:
 
 ```bash
 # Clone the repo
-git clone [https://github.com/yourusername/codyssey](https://github.com/1oRamos1/restAPI.git)
+git clone https://github.com/1oRamos1/restAPI.git
 
 # Backend setup
-cd mysite
+cd restAPI/mysite
 python -m venv venv
 source venv/bin/activate  # macOS/Linux
 venv\Scripts\activate     # Windows
@@ -72,9 +72,9 @@ python manage.py migrate
 python manage.py runserver
 
 # Frontend setup
-cd ../frontend
+cd frontend
 npm install
-npm run start
+npm start
 ```
 ---
 
