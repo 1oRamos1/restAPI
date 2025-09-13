@@ -3,9 +3,13 @@ from decouple import config
 import dj_database_url
 
 
+# === Environment detection ===
+ENVIRONMENT = config('ENVIRONMENT', default='local')  # 'local' or 'production'
+IS_PRODUCTION = ENVIRONMENT == 'production'
+
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = not IS_PRODUCTION
 
 # === Google OAuth ===
 SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
@@ -65,9 +69,10 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-ACCOUNT_LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/login'
-LOGIN_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
-LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
+# Redirects
+LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', default='/')
+LOGOUT_REDIRECT_URL = config('LOGOUT_REDIRECT_URL', default='/login')
+ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
 
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
@@ -107,7 +112,6 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://tracker-production-387a.up.railway.app",
     "https://tracker-2528.onrender.com",
     "http://localhost:3000",
     "http://localhost:8000",
@@ -130,7 +134,7 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [BASE_DIR / "frontend/build"],
+        "DIRS": [BASE_DIR / "frontend/build"] if IS_PRODUCTION else [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -186,9 +190,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# Don't use CompressedManifest for now, it might be renaming files
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
