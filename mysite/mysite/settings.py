@@ -3,29 +3,27 @@ from decouple import config
 import dj_database_url
 
 
-# === Base directory ===
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-# === Environment detection ===
-ENVIRONMENT = config('ENVIRONMENT', default='local')  # 'local' or 'production'
-IS_PRODUCTION = ENVIRONMENT == 'production'
-
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
-DEBUG = not IS_PRODUCTION
-
-# Allowed hosts
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'tracker-2528.onrender.com']
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 # === Google OAuth ===
-SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID', default='')
-SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET', default='')
+SOCIAL_AUTH_GOOGLE_CLIENT_ID = config('SOCIAL_AUTH_GOOGLE_CLIENT_ID')
+SOCIAL_AUTH_GOOGLE_SECRET = config('SOCIAL_AUTH_GOOGLE_SECRET')
 
-# === API Keys ===
-OPENAI_API_KEY = config('OPENAI_API_KEY', default='')
-MISTRAL_API_KEY = config('MISTRAL_API_KEY', default='')
-PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID', default='')
+# === OpenAI ===
+OPENAI_API_KEY = config('OPENAI_API_KEY')
 
+# === Mistral ===
+MISTRAL_API_KEY = config('MISTRAL_API_KEY')
+
+# === Paypal ===
+PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
+
+REST_USE_JWT = False
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -54,10 +52,10 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# === Email backend ===
+# === Email (console) ===
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# === Authentication ===
+# === Authentication settings ===
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 SOCIALACCOUNT_AUTO_SIGNUP = False
@@ -65,13 +63,27 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-# Redirects
-LOGIN_REDIRECT_URL = config('LOGIN_REDIRECT_URL', default='/')
-LOGOUT_REDIRECT_URL = config('LOGOUT_REDIRECT_URL', default='/login')
-ACCOUNT_LOGOUT_REDIRECT_URL = LOGOUT_REDIRECT_URL
+ACCOUNT_LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/login'
+LOGIN_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
+LOGOUT_REDIRECT_URL = 'https://tracker-2528.onrender.com/'
+
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
+# === Google OAuth ===
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': config('SOCIAL_AUTH_GOOGLE_CLIENT_ID'),
+            'secret': config('SOCIAL_AUTH_GOOGLE_SECRET'),
+            'key': ''
+        },
+    }
+}
 
 # === Middleware ===
 MIDDLEWARE = [
@@ -95,27 +107,30 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
+    "https://tracker-production-387a.up.railway.app",
     "https://tracker-2528.onrender.com",
     "http://localhost:3000",
     "http://localhost:8000",
     "http://127.0.0.1:8000",
 ]
+
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = IS_PRODUCTION
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = IS_PRODUCTION
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
 CSRF_COOKIE_NAME = "csrftoken"
 
-# === URLs & templates ===
+# === URLs ===
 ROOT_URLCONF = "mysite.urls"
 
+# === Templates ===
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        'DIRS': [BASE_DIR / "frontend/build"] if IS_PRODUCTION else [],
+        'DIRS': [BASE_DIR / "frontend/build"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -127,16 +142,17 @@ TEMPLATES = [
     },
 ]
 
+# === WSGI ===
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 # === Database ===
 DATABASES = {
-    "default": dj_database_url.config(
-        default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600,
-        ssl_require=IS_PRODUCTION
-    )
-}
+        "default": dj_database_url.config(
+            default=config("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
 
 # === Password validators ===
 AUTH_PASSWORD_VALIDATORS = [
@@ -168,9 +184,11 @@ USE_TZ = True
 
 # === Static files ===
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"] if IS_PRODUCTION else []
+STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 
+# Don't use CompressedManifest for now, it might be renaming files
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
