@@ -1,7 +1,7 @@
 from pathlib import Path
 from decouple import config
 import dj_database_url
-import os
+
 
 # === Base directory ===
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,11 +60,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' if not IS_PRODU
 # === Authentication ===
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 # Redirects
