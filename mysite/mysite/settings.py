@@ -55,7 +55,7 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 # === Email backend ===
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' if not IS_PRODUCTION else 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # === Authentication ===
 ACCOUNT_LOGIN_METHODS = {'username'}
