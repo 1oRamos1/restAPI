@@ -61,6 +61,7 @@ def get_chat_completion(user, prompt):
             chat_response = mistral_client.chat.complete(
                 model="ministral-3b-latest",  # latest Mistral chat model
                 messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
             )
             return chat_response.choices[0].message.content
         except Exception as e:
@@ -291,6 +292,16 @@ class UserLearningTrackList(mixins.ListModelMixin,
         serializer = self.get_serializer(ult)
         return Response(serializer.data, status=201 if created else 200)
 
+    def delete(self, request, *args, **kwargs):
+        # Get track id from body or query params
+        ult_id = request.data.get("user_learning_track_id") or request.query_params.get("user_learning_track_id")
+        if not ult_id:
+            return Response({"error": "user_learning_track_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user_track = get_object_or_404(UserLearningTrack, pk=ult_id, user=request.user)
+        user_track.delete()
+        return Response({"detail": "Track deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
 
 class UserLearningTrackDetail(
     mixins.CreateModelMixin,
@@ -339,32 +350,54 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
 
+    def extract_student_code(self, task_text, student_solution):
+        """
+        Extracts only the student's actual code, ignoring AI instructions and placeholders.
+        """
+        task_lines = set(task_text.splitlines())
+        student_lines = [
+            line for line in student_solution.splitlines()
+            if line.strip() and line not in task_lines and not re.match(r'(pass|# TODO|___+)', line.strip())
+        ]
+        return "\n".join(student_lines)
+
     def update(self, request, *args, **kwargs):
         task = self.get_object()
-        solution = request.data.get("solution")
+        solution = request.data.get("solution", "")
 
-        if not solution:
+        if not solution.strip():
             return Response({"error": "Solution is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = self.get_serializer(task, data={"solution": solution}, partial=True)
         if serializer.is_valid():
             serializer.save()
 
+            student_code = self.extract_student_code(task.task, solution)
+
+            # Assign grade 0 if no student code
+            if not student_code.strip():
+                task.grade = 0
+                task.review = "No actual implementation.\n\nGrade: 0/5"
+                task.status = "inprogress"
+                task.save()
+                return Response(self.get_serializer(task).data)
+
+            # Prepare AI review prompt
             prompt = (
                 f"Task:\n{task.task}\n\n"
                 f"My Solution:\n{solution}\n\n"
                 "You are a programming teacher. Review ONLY my actual solution, not the task instructions "
-                "or starter code.\n"
-                "If my response includes only the original function names, docstrings, or 'pass', give a 0/5.\n"
-                "Ignore placeholders or boilerplate. Only consider real implementation work.\n"
-                "Write ONLY the review. Be concise but helpful.\n"
-                "VERY IMPORTANT:\n"
-                "- Speak directly to me (second person). Start the summary with 'You...'\n"
-                "- Do NOT comment on the task text or instructions.\n"
-                "- Do NOT mention the grade anywhere except the LAST LINE.\n"
-                "- The last line MUST be in this exact format: Grade: <score>/5\n"
-                "- If there is no actual implementation, reply with a short explanation and then: Grade: 0/5\n"
-                "- Else according to the closeness to solution Grade: <0-5>/5.\n"
+                "or starter code ('# TODO').\n"
+                "Follow these rules strictly:\n"
+                "- Do NOT provide the full solution. Only give hints or guidance.\n"
+                "- Ignore any boilerplate code or placeholders.\n"
+                "- Speak directly to the student (second person). Start the review with 'You...'\n"
+                "- The LAST line MUST be: Grade: <score>/5\n"
+                "- Only the last line contains the grade. No other grades mentioned.\n"
+                "- If no actual implementation, reply with 'Grade: 0/5'.\n"
+                "- Otherwise, assign a grade from 1-5 based on correctness and closeness to solution.\n"
+                "- Do NOT include example usage, solutions, or explanations outside hints.\n"
+                "STRICTLY follow this format."
             )
 
             try:
@@ -380,42 +413,6 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
                 task.review = formatted_review
                 task.status = "inprogress"
                 task.save()
-
-                if task.user_learning_track:
-                    user_track = task.user_learning_track
-                    completed_tasks = Task.objects.filter(user_learning_track=user_track, status="completed").count()
-                    user_track.progression = completed_tasks
-                    user_track.save()
-
-                    all_tasks = Task.objects.filter(
-                        user_learning_track=user_track,
-                        status="completed"
-                    ).order_by('id')
-
-                    progress_data = "\n".join(
-                        f"Title: {t.task.split('### Title:')[1].splitlines()[0].strip() if '### Title:' in t.task else 'Unknown'}\n"
-                        f"Review: {t.review.strip()}"
-                        for t in all_tasks if t.grade is not None
-                    )
-
-                    summary_prompt = (
-                        "Please summarize my progress.\n"
-                        "Here is the detailed progress so far:\n"
-                        f"{progress_data}\n\n"
-                        "Write a short summary (3–5 lines) that captures my overall progress, "
-                        "strengths, and areas I need to improve.\n"
-                        "Speak directly to me (second person). Start the summary with 'You...'.\n"
-                        "Do NOT repeat individual task details. Be clear and motivating.\n"
-                        "VERY IMPORTANT:\n"
-                        "- Do NOT include greetings, follow-ups or titles, just clean review.\n"
-                    )
-
-                    try:
-                        concise_summary = get_chat_completion(request.user, summary_prompt)
-                        user_track.summary = concise_summary.strip()
-                        user_track.save()
-                    except Exception as e:
-                        logging.error(f"AI summary generation failed: {e}")
 
             except Exception as e:
                 logging.error(f"AI grading failed: {e}")
@@ -434,6 +431,7 @@ class GenerateNextTask(APIView):
         try:
             user_track = get_object_or_404(UserLearningTrack, pk=user_learning_track_id, user=request.user)
 
+            # Complete the last pending/inprogress task
             last_task = Task.objects.filter(
                 user=request.user,
                 user_learning_track=user_track,
@@ -444,19 +442,18 @@ class GenerateNextTask(APIView):
                 last_task.status = "completed"
                 last_task.save()
 
-                user_track.progression = Task.objects.filter(user_learning_track=user_track, status="completed").count()
-                user_track.save()
-
+            # Build AI prompt with next difficulty
             prompt = (
-                f"I'm a {user_track.learning_track.level} programmer student. Please act as a {user_track.learning_track.title} teacher.\n"
+                f"I'm a {user_track.learning_track.level} programmer student. "
+                f"Please act as a {user_track.learning_track.title} teacher.\n"
                 f"Based on the following progress:\n{user_track.summary or 'No progress summary available.'}\n"
-                "Generate the next programming task **with the exact structure below and NOTHING ELSE**:\n"
+                "**with the exact structure below and NOTHING ELSE**:\n"
                 "### Title: <A short and clear title of the task>\n"
                 "### Description:\n<A short explanation of the task to complete>\n"
-                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code with multiple FILL-IN-THE-BLANK lines, marked as underscores or TODOs>\n```\n"
+                f"### Code:\n```{user_track.learning_track.category.language}\n<starter code with FILL-IN-THE-BLANK lines, marked as underscores or # TODOs and blank spaces>\n```\n"
                 "VERY IMPORTANT:\n"
-                "- Do NOT provide a full solution.\n"
-                "- Insert several blanks (e.g., `__________` or `# TODO`) where the student must write code.\n"
+                "- Do NOT provide the solution!\n"
+                "- Insert several blanks where the student must write code.\n"
                 "- Do not include example usage or final printouts.\n"
                 "- Only output in the requested markdown format, no extra explanations.\n"
             )
@@ -470,7 +467,7 @@ class GenerateNextTask(APIView):
                 user=request.user,
                 user_learning_track=user_track,
                 task=result_text,
-                status="pending"
+                status="pending",
             )
 
             return Response(TaskListSerializer(new_task).data)
@@ -478,7 +475,5 @@ class GenerateNextTask(APIView):
         except Exception as e:
             logging.error(f"GenerateNextTask failed: {e}")
             return Response({"error": str(e)}, status=500)
-
-
 
 

@@ -102,10 +102,12 @@ class TaskListSerializer(serializers.ModelSerializer):
 class TaskDetailSerializer(serializers.ModelSerializer):
     user_learning_track_id = serializers.IntegerField(source='user_learning_track.id', read_only=True)
     task_number = serializers.SerializerMethodField()
+    learning_track_name = serializers.CharField(source='user_learning_track.learning_track.title', read_only=True)
+    learning_track_level = serializers.CharField(source='user_learning_track.learning_track.level', read_only=True)
 
     class Meta:
         model = Task
-        fields = ['id', 'task', 'solution', 'grade', 'review', 'status', 'user_learning_track_id', 'task_number']
+        fields = ['id', 'task', 'solution', 'grade', 'review', 'status', 'user_learning_track_id', 'task_number', 'learning_track_name', 'learning_track_level']
 
     def get_task_number(self, obj):
         tasks = Task.objects.filter(user_learning_track=obj.user_learning_track).order_by('id')

@@ -5,42 +5,40 @@ import { AuthContext } from '../context/AuthContext';
 
 export default function CreateTrack() {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const [step, setStep] = useState(1);
   const [description, setDescription] = useState('');
-  const [language, setLanguage] = useState('auto'); // default 'auto'
+  const [language, setLanguage] = useState('auto');
   const [level, setLevel] = useState('beginner');
-
   const [options, setOptions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user && user.is_pro === false) {
-      navigate('/');
-    }
+    if (user && !user.is_pro) navigate('/');
   }, [user, navigate]);
 
   if (user === undefined) return null;
 
   const validateInput = (text) => {
-    const cleaned = text.trim().toLowerCase();
-    const wordCount = cleaned.split(/\s+/).length;
+    const cleaned = text.trim();
     if (cleaned.length < 10 || cleaned.length > 300) return false;
+    const wordCount = cleaned.split(/\s+/).length;
     if (wordCount < 3 || wordCount > 15) return false;
-    if (!/^[a-zA-Z0-9.,?!'"()[\]{}<>/@#%^&*+=_\-\s\\]+$/.test(cleaned)) return false;
-
     const banned = ['asdf', 'qwerty', 'test', 'lorem', 'fuck', 'shit'];
-    if (banned.some((word) => cleaned.includes(word))) return false;
-    if (new Set(cleaned).size < 5) return false;
-
+    if (banned.some((word) => cleaned.toLowerCase().includes(word))) return false;
     return true;
   };
 
   const sanitizeLanguage = (lang) => {
-    const allowed = ['python', 'js', 'cpp'];
-    return allowed.includes(lang) ? lang : 'python'; // default to python if invalid
+    const allowed = ['python', 'js', 'cpp', 'auto'];
+    return allowed.includes(lang) ? lang : 'python';
+  };
+
+  const sanitizeLevel = (lvl) => {
+    const allowed = ['beginner', 'advanced', 'master'];
+    return allowed.includes(lvl) ? lvl : 'beginner';
   };
 
   const handleSearchOptions = async () => {
@@ -52,11 +50,15 @@ export default function CreateTrack() {
 
     try {
       setLoading(true);
+
+      // ENSURE payload matches serializer exactly
       const payload = {
-        description,
-        level,
-        language,
+        description: description.trim(),
+        language: sanitizeLanguage(language),
+        level: sanitizeLevel(level),
       };
+      console.log("Payload sent to backend:", payload);
+
       const res = await api.post('/custom-track/options/', payload);
       if (res.data.options && res.data.options.length > 0) {
         setOptions(res.data.options);
@@ -65,7 +67,7 @@ export default function CreateTrack() {
         setError('No options returned. Try different input.');
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching options:', err.response?.data || err.message);
       setError(err.response?.data?.detail || 'Failed to fetch options.');
     } finally {
       setLoading(false);
@@ -85,9 +87,9 @@ export default function CreateTrack() {
           : sanitizeLanguage(language);
 
       const payload = {
-        description,
+        description: description.trim(),
         language: resolvedLanguage,
-        level,
+        level: sanitizeLevel(level),
       };
 
       const response = await api.post('/custom-track/create/', payload);
@@ -107,9 +109,9 @@ export default function CreateTrack() {
     setLoading(true);
     try {
       const payload = {
-        description,
-        level,
-        language,
+        description: description.trim(),
+        language: sanitizeLanguage(language),
+        level: sanitizeLevel(level),
       };
       const res = await api.post('/custom-track/options/', payload);
       if (res.data.options && res.data.options.length > 0) {
@@ -128,7 +130,6 @@ export default function CreateTrack() {
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
-
         {step === 1 && (
           <>
             <h1 className="text-5xl font-extrabold text-blue70 dark:text-cyan-300 mb-12 text-center">
@@ -165,9 +166,7 @@ export default function CreateTrack() {
               </select>
             </div>
 
-            {error && (
-              <p className="text-red-600 text-sm mt-2 w-3/4 mx-auto">{error}</p>
-            )}
+            {error && <p className="text-red-600 text-sm mt-2 w-3/4 mx-auto">{error}</p>}
 
             <div className="mt-6">
               <button
@@ -178,38 +177,34 @@ export default function CreateTrack() {
                 {loading ? 'Searching...' : 'Search Tracks'}
               </button>
             </div>
-
-            {loading }
           </>
         )}
 
         {step === 2 && (
           <>
-             <div className="w-3/4 mx-auto space-y-5">
-    <h2 className="text-5xl font-extrabold text-blue70 dark:text-cyan-300 mb-12 text-center">
-      Choose your Track
-    </h2>
-    {options.map((opt, idx) => (
-      <div
-        key={idx}
-        className="p-3 border-2 border-blue70 dark:border-cyan-700 rounded-xl cursor-pointer
-                   bg-white dark:bg-gray-900 hover:bg-blue0 dark:hover:bg-cyan-700
-                   hover:shadow-xl transform transition-all duration-200
-                   hover:scale-105 hover:ring-blue40 dark:hover:ring-cyan-500"
-       onClick={() => handleCreateTrack(opt)}
-      >
-        <h3 className="text-xl text-blue70 dark:text-cyan-300 font-semibold">{opt.title}</h3>
-        <p className="text-md text-blue80 dark:text-cyan-500 mt-1 pb-2">{opt.short_description}</p>
-        <p className="text-sm italic text-gray-600 dark:text-gray-300">
-          {opt.level} • {opt.language}
-        </p>
-      </div>
-    ))}
-  </div>
+            <div className="w-3/4 mx-auto space-y-5">
+              <h2 className="text-5xl font-extrabold text-blue70 dark:text-cyan-300 mb-12 text-center">
+                Choose your Track
+              </h2>
+              {options.map((opt, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 border-2 border-blue70 dark:border-cyan-700 rounded-xl cursor-pointer
+                             bg-white dark:bg-gray-900 hover:bg-blue0 dark:hover:bg-cyan-700
+                             hover:shadow-xl transform transition-all duration-200
+                             hover:scale-105 hover:ring-blue40 dark:hover:ring-cyan-500"
+                  onClick={() => handleCreateTrack(opt)}
+                >
+                  <h3 className="text-xl text-blue70 dark:text-cyan-300 font-semibold">{opt.title}</h3>
+                  <p className="text-md text-blue80 dark:text-cyan-500 mt-1 pb-2">{opt.short_description}</p>
+                  <p className="text-sm italic text-gray-600 dark:text-gray-300">
+                    {opt.level} • {opt.language}
+                  </p>
+                </div>
+              ))}
+            </div>
 
-            {error && (
-              <p className="text-red-600 text-sm mt-4 w-3/4 mx-auto">{error}</p>
-            )}
+            {error && <p className="text-red-600 text-sm mt-4 w-3/4 mx-auto">{error}</p>}
 
             <div className="w-3/4 mx-auto mt-6 text-center">
               <button
@@ -221,11 +216,7 @@ export default function CreateTrack() {
               </button>
             </div>
 
-            {loading && (
-              <p className="text-center mt-4 text-sm text-blue-500">
-                Loading...
-              </p>
-            )}
+            {loading && <p className="text-center mt-4 text-sm text-blue-500">Loading...</p>}
           </>
         )}
       </div>

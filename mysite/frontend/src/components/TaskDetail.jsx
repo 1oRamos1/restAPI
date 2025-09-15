@@ -115,6 +115,10 @@ function TaskDetail() {
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
+       <h2 className="text-2xl font-semibold pb-5 text-blue70 dark:text-cyan-300">
+  {task.learning_track_name || 'Track Title'} - {task.learning_track_level || 'Level'}
+</h2>
+
         <h2 className="text-5xl font-extrabold mb-8 text-blue70 dark:text-cyan-300">
           Task {task.task_number}: {title}
         </h2>
