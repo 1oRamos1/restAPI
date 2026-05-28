@@ -18,12 +18,15 @@ cd ..
 # ----------------------------------------
 # 3. Setup directories
 # ----------------------------------------
-mkdir -p staticfiles templates
+mkdir -p staticfiles/static templates
 
 # Copy index.html to templates for Django TemplateView
 cp frontend/build/index.html templates/
 
-# Copy other public assets
+# Copy React static files to staticfiles/static/
+cp -r frontend/build/static/* staticfiles/static/
+
+# Copy other public assets to staticfiles root
 cp frontend/build/favicon.ico staticfiles/ 2>/dev/null || true
 cp frontend/build/*.png staticfiles/ 2>/dev/null || true
 cp frontend/build/*.gif staticfiles/ 2>/dev/null || true
@@ -31,12 +34,12 @@ cp frontend/build/manifest.json staticfiles/ 2>/dev/null || true
 cp frontend/build/robots.txt staticfiles/ 2>/dev/null || true
 
 # ----------------------------------------
-# 4. Collect static files
+# 4. Collect static files (Django admin, rest_framework etc.)
 # ----------------------------------------
 python manage.py collectstatic --no-input
 
 echo "=== Static files check ==="
-find staticfiles -name "*.css" -o -name "*.js" | head -5
+find staticfiles/static -name "*.css" -o -name "*.js" | head -5
 
 # ----------------------------------------
 # 5. Migrations
