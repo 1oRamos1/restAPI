@@ -27,10 +27,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
@@ -43,11 +43,12 @@ jobs:
         working-directory: mysite
         env:
           SECRET_KEY: test-secret-key-for-ci
-          DEBUG: True
           IS_PRODUCTION: False
           OPENAI_API_KEY: test-key
           MISTRAL_API_KEY: test-key
           SOCIAL_AUTH_GOOGLE_CLIENT_ID: test-key
+          SOCIAL_AUTH_GOOGLE_SECRET: test-key
+          PAYPAL_CLIENT_ID: test-key
           DATABASE_URL: postgresql://tracker_user:tracker_password@localhost:5432/tracker_db
           DB_SSL: False
         run: |
