@@ -14,14 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/tracker/", include("tracker.urls", namespace="tracker")),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
     path('accounts/', include('allauth.urls')),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
@@ -30,6 +34,8 @@ urlpatterns = [
         auth_views.PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
-    re_path(r'^.*$', TemplateView.as_view(template_name="index.html")),
-
 ]
+
+# ה-Catch-all של ריאקט יופעל אך ורק בפרודקשן!
+if settings.IS_PRODUCTION or settings.SERVE_FRONTEND:
+    urlpatterns.append(re_path(r'^.*$', TemplateView.as_view(template_name="index.html")))

@@ -20,21 +20,14 @@ class Category(models.Model):
         return self.name
 
 
-class Topic(models.Model):
-    title = models.CharField(max_length=100, db_index=True)
-
-    def __str__(self):
-        return self.title
-
-
 class LearningTrack(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="tracks")
+    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="custom_tracks") # null if it's not a custom track
     title = models.CharField(max_length=100)
     level = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="tracks")
-    topics = models.ManyToManyField(Topic, related_name="tracks")
-    users = models.ManyToManyField(User, through='UserLearningTrack', related_name='learning_tracks')
     is_custom = models.BooleanField(default=False)
-    created_by = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="custom_tracks")
+
+    users = models.ManyToManyField(User, through='UserLearningTrack', related_name='learning_tracks')
 
     def __str__(self):
         return self.title
@@ -43,10 +36,9 @@ class LearningTrack(models.Model):
 class UserLearningTrack(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_learning_tracks')
     learning_track = models.ForeignKey(LearningTrack, on_delete=models.CASCADE, related_name='user_learning_tracks')
+    summary = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
-    progression = models.IntegerField(default=0)
-    summary = models.TextField(blank=True, null=True)
 
     class Meta:
         unique_together = ('user', 'learning_track')
@@ -56,20 +48,21 @@ class UserLearningTrack(models.Model):
 
 
 class Task(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tasks")
-    user_learning_track = models.ForeignKey(UserLearningTrack, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True)
-    task = models.TextField()
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
+    user_learning_track = models.ForeignKey(UserLearningTrack, on_delete=models.CASCADE, related_name="tasks")
+
+    task = models.TextField()  # נשאר לתאימות עם נתונים ישנים
+    title = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+    starter_code = models.TextField(blank=True)
+    language = models.CharField(max_length=30, blank=True)
     solution = models.TextField(blank=True)
+    review = models.TextField(blank=True)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')
     grade = models.IntegerField(
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(5)
-        ],
+        validators=[MinValueValidator(0), MaxValueValidator(5)],
         blank=True,
         null=True
     )
-    review = models.TextField(blank=True)
 
     def __str__(self):
         return self.task[:30]

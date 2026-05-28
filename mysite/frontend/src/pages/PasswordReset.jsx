@@ -8,7 +8,7 @@ export default function PasswordReset() {
 
   const handleReset = async () => {
   try {
-    const response = await api.post('/dj-rest-auth/password/reset/', { email });
+    const response = await api.post('/auth/password/reset/', { email });
     setSubmitted(true);
     setError('');
   } catch (err) {

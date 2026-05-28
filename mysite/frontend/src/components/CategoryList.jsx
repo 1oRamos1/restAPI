@@ -26,7 +26,7 @@ function CategoryList({ language: initialLanguage = '', size = 'large', limit })
       ? 'w-full sm:w-64 md:w-48 lg:w-44 h-24 md:h-28 lg:h-32 text-base md:text-lg'
       : 'w-full sm:w-80 md:w-72 lg:w-80 h-32 md:h-36 text-xl md:text-2xl';
 
-  const showDropdown = location.pathname !== '/'; // don't show on homepage
+  const showDropdown = location.pathname !== '/';
 
   return (
     <div className="w-full font-kumbh">

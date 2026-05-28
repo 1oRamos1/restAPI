@@ -1,4 +1,9 @@
 import re
+import logging
+import openai
+from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 ALLOWED_CHARS_PATTERN = re.compile(
     r'^[\w\s.,!?\'"()\-\+:;<>[\]{}@#%^&*/\\=~`|]{10,300}$',
@@ -20,6 +25,7 @@ def is_valid_learning_goal(goal: str) -> bool:
     - No banned words
     - Not just repeated characters
     - Not too short of character variety
+    - OpenAI moderation check
     """
     if not isinstance(goal, str):
         return False
@@ -39,11 +45,29 @@ def is_valid_learning_goal(goal: str) -> bool:
     if any(banned in cleaned for banned in BANNED_WORDS):
         return False
 
-    # Prevent inputs like "aaaaaaa" or "1111111111"
     if len(set(cleaned)) < 5:
         return False
 
+    # OpenAI moderation — בודק תוכן פוגעני
+    if not is_safe_content(goal):
+        return False
+
     return True
+
+
+def is_safe_content(text: str) -> bool:
+    """
+    Uses OpenAI Moderation API to check for harmful content.
+    Returns True if content is safe, False if flagged.
+    Falls back to True if API call fails (to avoid blocking users on API errors).
+    """
+    try:
+        openai.api_key = settings.OPENAI_API_KEY
+        response = openai.Moderation.create(input=text)
+        return not response.results[0].flagged
+    except Exception as e:
+        logger.warning(f"Moderation API failed, allowing input: {e}")
+        return True
 
 
 def is_valid_track_structure(data: dict) -> bool:

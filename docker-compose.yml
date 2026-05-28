@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tracker_db
+      POSTGRES_USER: tracker_user
+      POSTGRES_PASSWORD: tracker_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: .
+      args:
+          - REACT_APP_API_URL=http://localhost:8000/api/v1/tracker/
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./mysite:/app
+      - /app/frontend/build
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./mysite/.env
+    environment:
+      - DATABASE_URL=postgresql://tracker_user:tracker_password@db:5432/tracker_db?sslmode=disable
+      - IS_PRODUCTION=False
+      - SERVE_FRONTEND=True
+      - DB_SSL=False
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

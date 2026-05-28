@@ -8,23 +8,26 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
+  // 1. הוצאנו את הלוגיקה לפונקציה נפרדת שניתן לקרוא לי מכל מקום
+  const checkAuthStatus = async () => {
+    try {
+      const res = await api.get('/auth/user/', { withCredentials: true });
+      setIsAuthenticated(true);
+      setUser(res.data);
+      if (res.data?.is_pro === true) {
+      } else {
+      }
+      return res.data;
+    } catch (err) {
+      setIsAuthenticated(false);
+      setUser(null);
+      throw err;
+    }
+  };
+
+  // 2. ה-useEffect המקורי רק קורא לפונקציה החדשה בטעינה הראשונית של האתר
   useEffect(() => {
-    api.get('/dj-rest-auth/user/', { withCredentials: true })
-      .then(res => {
-        setIsAuthenticated(true);
-        setUser(res.data);
-        console.log("✅ Authenticated user:", res.data);
-        if (res.data?.is_pro === true) {
-          console.log("💎 Pro user detected");
-        } else {
-          console.log("👤 Regular user");
-        }
-      })
-      .catch(err => {
-        setIsAuthenticated(false);
-        setUser(null);
-        console.log("❌ Guest:", err.response?.status);
-      });
+    checkAuthStatus().catch(() => {});
   }, []);
 
   const openLoginModal = () => setShowLoginModal(true);
@@ -36,6 +39,8 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated,
         setIsAuthenticated,
         user,
+        setUser,
+        checkAuthStatus,
         isPro: user?.is_pro === true,
         showLoginModal,
         openLoginModal,

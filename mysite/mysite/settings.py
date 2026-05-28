@@ -4,8 +4,8 @@ import dj_database_url
 
 
 # === Environment detection ===
-ENVIRONMENT = config('ENVIRONMENT', default='local')  # 'local' or 'production'
-IS_PRODUCTION = ENVIRONMENT == 'production'
+IS_PRODUCTION = config('IS_PRODUCTION', default=False, cast=bool)
+SERVE_FRONTEND = config('SERVE_FRONTEND', default=False, cast=bool)
 
 # === Security ===
 SECRET_KEY = config('SECRET_KEY')
@@ -25,9 +25,10 @@ MISTRAL_API_KEY = config('MISTRAL_API_KEY')
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1', '0.0.0.0']
 
 REST_USE_JWT = False
+
 # === Installed apps ===
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -52,12 +53,17 @@ INSTALLED_APPS = [
 
     "dj_rest_auth",
     "dj_rest_auth.registration",
+
+    "drf_spectacular",
 ]
 
 SITE_ID = 1
 
 # === Email (console) ===
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if IS_PRODUCTION:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # === Authentication settings ===
 ACCOUNT_LOGIN_METHODS = {'username'}
@@ -92,9 +98,9 @@ SOCIALACCOUNT_PROVIDERS = {
 
 # === Middleware ===
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -104,10 +110,28 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# === DRF ===
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'tracker.serializers.CustomUserDetailsSerializer',
+}
+
 # === CORS & CSRF ===
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://tracker-2528.onrender.com",
+    "http://localhost:8000",
+    "http://0.0.0.0:8000",
+    "http://127.0.0.1:8000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
@@ -120,11 +144,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = IS_PRODUCTION
 
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SAMESITE = "Lax"
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = IS_PRODUCTION
 CSRF_COOKIE_NAME = "csrftoken"
 
 # === URLs ===
@@ -134,7 +158,7 @@ ROOT_URLCONF = "mysite.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "frontend/build"] if IS_PRODUCTION else [],
+        "DIRS": [BASE_DIR / "frontend/build"] if (IS_PRODUCTION or SERVE_FRONTEND) else [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -150,12 +174,20 @@ TEMPLATES = [
 WSGI_APPLICATION = "mysite.wsgi.application"
 
 # === Database ===
-DATABASES = {
+if IS_PRODUCTION:
+    DATABASES = {
         "default": dj_database_url.config(
             default=config("DATABASE_URL"),
             conn_max_age=600,
-            ssl_require=True
+            ssl_require=config("DB_SSL", default=True, cast=bool)
         )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
     }
 
 # === Password validators ===
@@ -166,19 +198,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# === DRF ===
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-}
-
-REST_AUTH_SERIALIZERS = {
-    'USER_DETAILS_SERIALIZER': 'tracker.serializers.CustomUserDetailsSerializer',
-}
 
 # === Locale ===
 LANGUAGE_CODE = "en-us"
@@ -191,6 +210,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / "frontend/build/static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+WHITENOISE_ROOT = BASE_DIR / "staticfiles"
 
 # === Default PK field ===
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

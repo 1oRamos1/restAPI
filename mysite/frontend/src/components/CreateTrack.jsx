@@ -57,7 +57,6 @@ export default function CreateTrack() {
         language: sanitizeLanguage(language),
         level: sanitizeLevel(level),
       };
-      console.log("Payload sent to backend:", payload);
 
       const res = await api.post('/custom-track/options/', payload);
       if (res.data.options && res.data.options.length > 0) {
@@ -67,7 +66,6 @@ export default function CreateTrack() {
         setError('No options returned. Try different input.');
       }
     } catch (err) {
-      console.error('Error fetching options:', err.response?.data || err.message);
       setError(err.response?.data?.detail || 'Failed to fetch options.');
     } finally {
       setLoading(false);
@@ -97,7 +95,6 @@ export default function CreateTrack() {
 
       navigate(`/track/${track_id}/${user_track_id}`);
     } catch (error) {
-      console.error('Full error response:', error.response?.data);
       setError(error.response?.data?.detail || 'Failed to create track. Are you Pro?');
     } finally {
       setLoading(false);
@@ -120,7 +117,6 @@ export default function CreateTrack() {
         setError('No options returned. Try different input.');
       }
     } catch (err) {
-      console.error(err);
       setError(err.response?.data?.detail || 'Failed to fetch options.');
     } finally {
       setLoading(false);

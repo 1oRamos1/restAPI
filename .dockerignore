@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.git/
+.gitignore
+mysite/frontend/node_modules/
+mysite/frontend/build/
+*.sqlite3
+.DS_Store

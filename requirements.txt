@@ -9,12 +9,12 @@ gunicorn
 django-extensions
 django-cors-headers
 python-decouple
+drf-spectacular
 dj-rest-auth
 PyJWT~=2.9.0
 cryptography>=41.0.0
 dj_database_url
 psycopg2-binary
 whitenoise
-mistralai
-
+mistralai==1.9.10
 

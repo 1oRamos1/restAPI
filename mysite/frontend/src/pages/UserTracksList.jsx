@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import api from '../api/axios';
 import { Link } from 'react-router-dom';
 import { TrashIcon } from '@heroicons/react/24/outline';
 
 function UserTracksList() {
   const [tracks, setTracks] = useState([]);
-  const [filteredTracks, setFilteredTracks] = useState([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [currentSummary, setCurrentSummary] = useState('');
-
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [currentTrackId, setCurrentTrackId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [trackToDelete, setTrackToDelete] = useState(null);
+
+  const filteredTracks = useMemo(() =>
+    tracks.filter(track =>
+      track.learning_track.title.toLowerCase().includes(search.toLowerCase())
+    ),
+    [tracks, search]
+  );
 
   useEffect(() => {
     const fetchUserTracks = async () => {
@@ -21,9 +28,7 @@ function UserTracksList() {
         const res = await api.get('/user/tracks/');
         const sorted = res.data.sort((a, b) => new Date(b.last_updated) - new Date(a.last_updated));
         setTracks(sorted);
-        setFilteredTracks(sorted);
       } catch (err) {
-        console.error(err);
         setError('Failed to load your tracks.');
       } finally {
         setLoading(false);
@@ -32,21 +37,30 @@ function UserTracksList() {
     fetchUserTracks();
   }, []);
 
-  useEffect(() => {
-    const filtered = tracks.filter(track =>
-      track.learning_track.title.toLowerCase().includes(search.toLowerCase())
-    );
-    setFilteredTracks(filtered);
-  }, [search, tracks]);
-
-  const openSummaryModal = (summary) => {
-    setCurrentSummary(summary || 'No summary available.');
+  const openSummaryModal = async (track) => {
+    setCurrentTrackId(track.id);
     setSummaryModalOpen(true);
+    setSummaryLoading(true);
+    setCurrentSummary('');
+
+    try {
+      const res = await api.post(`/user/tracks/${track.id}/summary/`);
+      const newSummary = res.data.summary;
+      setCurrentSummary(newSummary);
+      setTracks(prev => prev.map(t =>
+        t.id === track.id ? { ...t, summary: newSummary } : t
+      ));
+    } catch (err) {
+      setCurrentSummary('Failed to generate summary. Please try again.');
+    } finally {
+      setSummaryLoading(false);
+    }
   };
 
   const closeSummaryModal = () => {
     setSummaryModalOpen(false);
     setCurrentSummary('');
+    setCurrentTrackId(null);
   };
 
   const openDeleteModal = (trackId) => {
@@ -64,9 +78,7 @@ function UserTracksList() {
     try {
       await api.delete(`/user/tracks/`, { data: { user_learning_track_id: trackToDelete } });
       setTracks(prev => prev.filter(t => t.id !== trackToDelete));
-      setFilteredTracks(prev => prev.filter(t => t.id !== trackToDelete));
     } catch (err) {
-      console.error(err);
       alert('Failed to delete track.');
     } finally {
       closeDeleteModal();
@@ -120,7 +132,7 @@ function UserTracksList() {
                   title="Delete Track"
                   className="text-red-500 hover:text-red-700 transition"
                 >
-                 <TrashIcon className="h-5 w-5 dark:bg-transparent text-blue0 hover:white dark:bg-gray-900 dark:hover:bg-cyan-700" />
+                  <TrashIcon className="h-5 w-5 dark:bg-transparent text-blue0 hover:white dark:bg-gray-900 dark:hover:bg-cyan-700" />
                 </button>
               </div>
 
@@ -132,7 +144,7 @@ function UserTracksList() {
                   {track.learning_track.title}
                 </h3>
                 <p className="text-md text-blue-100 dark:text-cyan-300">
-                  Tasks Done: {track.tasks?.length ?? 0}
+                  Tasks Done: {track.tasks?.filter(t => t.status === 'completed').length ?? 0}
                 </p>
                 <p className="text-md text-blue-100 dark:text-cyan-300">
                   Language: {track.learning_track.category.language || 'Unknown'}
@@ -149,7 +161,7 @@ function UserTracksList() {
                 <button
                   onClick={(e) => {
                     e.preventDefault();
-                    openSummaryModal(track.summary);
+                    openSummaryModal(track);
                   }}
                   className="bg-blue70/90 text-blue0 dark:bg-cyan-600 dark:text-blue0
                              border-2 border-blue5 dark:border-2 dark:border-blue5
@@ -170,10 +182,15 @@ function UserTracksList() {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white dark:bg-gray-900 rounded-lg p-6 max-w-lg w-full shadow-lg">
               <h3 className="text-xl font-bold mb-4 text-blue90 dark:text-cyan-300">Track Summary</h3>
-              <p className="whitespace-pre-line text-blue90 dark:text-cyan-200 mb-6">{currentSummary}</p>
+              {summaryLoading ? (
+                <p className="text-blue90 dark:text-cyan-200 mb-6">Generating summary...</p>
+              ) : (
+                <p className="whitespace-pre-line text-blue90 dark:text-cyan-200 mb-6">{currentSummary}</p>
+              )}
               <button
                 onClick={closeSummaryModal}
-                className="bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500 text-white px-6 py-2 rounded-lg font-semibold transition shadow-md"
+                disabled={summaryLoading}
+                className="bg-blue70 hover:bg-blue50 dark:bg-cyan-800 dark:text-cyan-100 dark:hover:bg-cyan-500 text-white px-6 py-2 rounded-lg font-semibold transition shadow-md disabled:opacity-50"
               >
                 Close
               </button>
@@ -212,4 +229,3 @@ function UserTracksList() {
 }
 
 export default UserTracksList;
-

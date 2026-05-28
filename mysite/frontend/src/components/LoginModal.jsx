@@ -5,32 +5,20 @@ import api from '../api/axios';
 
 const GOOGLE_CLIENT_ID = process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID;
 
-function getCsrfTokenFromCookie() {
-  return document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('csrftoken='))
-    ?.split('=')[1];
-}
-
-export default function LoginModal({ onClose }) {
+export default function LoginModal() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { checkAuthStatus, closeLoginModal } = useContext(AuthContext);
 
   const handleGoogleLogin = async (response) => {
-    console.log("Google callback fired:", response);
     try {
-      await api.get('/auth/csrf/'); // Get token
-      await api.post('/dj-rest-auth/google/', { id_token: response.credential }); // Login
-
-      setIsAuthenticated(true);
+      await api.post('/auth/google/', { id_token: response.credential });
+      await checkAuthStatus();
       setError('');
-      onClose();
-      window.location.reload();
+      closeLoginModal();
     } catch (err) {
-      console.error(err);
       setError('Google login failed. Try again.');
     }
   };
@@ -43,7 +31,7 @@ export default function LoginModal({ onClose }) {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleLogin,
         use_fedcm_for_prompt: false,
-        origin: origin,
+        origin: window.location.origin,
       });
 
       window.google.accounts.id.renderButton(
@@ -55,26 +43,15 @@ export default function LoginModal({ onClose }) {
         }
       );
     } catch (e) {
-      console.error('Google login script not ready:', e);
     }
   }, []);
 
   const handleLogin = async () => {
     try {
-      await api.post(
-        '/auth/login/',
-        { username, password },
-        {
-          withCredentials: true,
-          headers: {
-            'X-CSRFToken': getCsrfTokenFromCookie(),
-          },
-        }
-      );
-      setIsAuthenticated(true);
+      await api.post('/auth/login/', { username, password });
+      await checkAuthStatus();
       setError('');
-      onClose();
-      window.location.reload();
+      closeLoginModal();
     } catch (err) {
       const detail = err.response?.data?.detail;
       if (
@@ -84,7 +61,7 @@ export default function LoginModal({ onClose }) {
       ) {
         setError("You're not signed in. Please sign up.");
       } else {
-        setError('Login failed. Check your credentials.');
+        setError("Incorrect username or password. Please try again.");
       }
     }
   };
@@ -123,7 +100,7 @@ export default function LoginModal({ onClose }) {
             <div className="text-center">
               <button
                 onClick={() => {
-                  onClose();
+                  closeLoginModal();
                   navigate('/password-reset');
                 }}
                 className="text-sm text-blue70 dark:text-cyan-700 underline hover:text-blue90 dark:hover:text-cyan-400 mt-1"
@@ -141,7 +118,7 @@ export default function LoginModal({ onClose }) {
 
             <button
               onClick={() => {
-                onClose();
+                closeLoginModal();
                 navigate('/signup');
               }}
               className="mt-2 border border-cyan-600 text-blue70 py-2 rounded-md font-semibold hover:bg-blue70 hover:text-white dark:hover:bg-cyan-900 dark:hover:text-cyan-200"
@@ -151,7 +128,7 @@ export default function LoginModal({ onClose }) {
           </div>
 
           <button
-            onClick={onClose}
+            onClick={closeLoginModal}
             className="absolute top-2 right-4 text-2xl text-gray-400 hover:text-gray-600"
           >
             ×

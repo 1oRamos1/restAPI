@@ -1,41 +1,70 @@
 from django.urls import path, re_path
 from django.http import HttpResponseNotFound
-from .views import *
+
+from .views.auth_views import (
+    set_csrf_cookie, login_view, logout_view,
+    signup_view, upgrade_to_pro, GoogleLoginView,
+    CustomUserDetailsView, CustomPasswordResetView,
+)
+from .views.learning_views import (
+    CategoryList, LearningTracksByCategory,
+    LearningTrackDetail, UserLearningTrackList, UserLearningTrackDetail,
+    GenerateSummary,
+)
+from .views.ai_views import (
+    CustomTrackOptionsView, CustomTrackCreateView,
+    TaskDetail, GenerateNextTask,
+)
 
 app_name = "tracker"
 
 accounts_blocker = re_path(
-    r'^accounts/(?!google/login|google/login/callback).*$',  # allow only Google login
-    lambda request: HttpResponseNotFound()  # or: redirect_to_frontend
+    r'^accounts/(?!google/login|google/login/callback).*$',
+    lambda request: HttpResponseNotFound()
 )
 
 urlpatterns = [
 
-    # web general log-in
-    path('auth/csrf/', set_csrf_cookie, name='csrf'),
-    path('auth/login/', login_view, name='login'),
-    path('auth/logout/', logout_view, name='logout'),
-    path('auth/signup/', signup_view, name='signup'),
-    path('upgrade-to-pro/', upgrade_to_pro, name='upgrade-to-pro'),
+    # Auth
+    path('auth/csrf/',           set_csrf_cookie,                  name='csrf'),
+    path('auth/login/',          login_view,                       name='login'),
+    path('auth/logout/',         logout_view,                      name='logout'),
+    path('auth/signup/',         signup_view,                      name='signup'),
+    path('auth/google/',         GoogleLoginView.as_view(),        name='google-login'),
+    path('auth/user/',           CustomUserDetailsView.as_view(),  name='user-details'),
+    path('auth/password/reset/', CustomPasswordResetView.as_view(), name='password-reset'),
 
-    # web google log-in
-    path('dj-rest-auth/google/', GoogleLoginView.as_view(), name='google_login'),
-    path('dj-rest-auth/user/', CustomUserDetailsView.as_view(), name='rest_user_details'),
-    path('dj-rest-auth/password/reset/', CustomPasswordResetView.as_view(), name='password_reset'),
+    # User
+    path('user/upgrade-to-pro/', upgrade_to_pro, name='upgrade-to-pro'),
 
-    # API endpoints
-    path('categories/', CategoryList.as_view(), name='category-list'),
+    # Catalog
+    path('categories/',                          CategoryList.as_view(),             name='category-list'),
     path('categories/<int:category_id>/tracks/', LearningTracksByCategory.as_view(), name='tracks-by-category'),
-    path('tracks/<int:trackId>/', LearningTrackDetail.as_view(), name='user-track-retrieve'),
+    path('tracks/<int:trackId>/',                LearningTrackDetail.as_view(),      name='track-detail'),
 
-    path('custom-track/create/', CustomTrackCreateView.as_view(), name='custom-track-create'),
-    path('custom-track/options/', CustomTrackOptionsView.as_view(), name='custom-track-options'),
+    # User Tracks
+    path('user/tracks/',
+         UserLearningTrackList.as_view(),
+         name='user-track-list'),
 
-    path('user/tracks/', UserLearningTrackList.as_view(), name='user-learning-tracks-list'),
-    path('user/tracks/<int:learning_track_id>/<int:user_learning_track_id>/', UserLearningTrackDetail.as_view(),
-         name='user-learning-track'),
-    path('user/tracks/<int:user_learning_track_id>/generate-task/', GenerateNextTask.as_view(),
+    path('user/tracks/<int:user_learning_track_id>/',
+         UserLearningTrackDetail.as_view(),
+         name='user-track-detail'),
+
+    path('user/tracks/<int:user_learning_track_id>/generate-task/',
+         GenerateNextTask.as_view(),
          name='generate-next-task'),
-    path('user/tasks/<int:pk>/', TaskDetail.as_view(), name='task-detail'),
 
+    path('user/tracks/<int:user_learning_track_id>/summary/',
+         GenerateSummary.as_view(),
+         name='generate-summary'),
+
+    # Tasks
+    path('user/tasks/<int:pk>/',
+         TaskDetail.as_view(),
+         name='task-detail'),
+
+    # Custom Tracks (Pro)
+    path('custom-track/options/', CustomTrackOptionsView.as_view(), name='custom-track-options'),
+    path('custom-track/create/',  CustomTrackCreateView.as_view(),  name='custom-track-create'),
 ]

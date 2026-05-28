@@ -6,7 +6,7 @@ import { SparklesIcon } from '@heroicons/react/24/solid'
 
 export default function Navbar({ onLoginClick }) {
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated, user } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, user, checkAuthStatus } = useContext(AuthContext);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -26,34 +26,25 @@ export default function Navbar({ onLoginClick }) {
 
   const handleLogout = async () => {
       if (!window.confirm('Are you sure you want to logout?')) return;
+       try {
+      const csrftoken = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('csrftoken='))
+        ?.split('=')[1];
 
-      try {
-        // Get CSRF token
-        const csrftoken = document.cookie
-          .split('; ')
-          .find(row => row.startsWith('csrftoken='))
-          ?.split('=')[1];
+      await api.post('auth/logout/', {}, {
+        headers: { 'X-CSRFToken': csrftoken },
+        withCredentials: true,
+      });
 
-        // Logout from Django
-        await api.post('auth/logout/', {}, {
-          headers: { 'X-CSRFToken': csrftoken },
-          withCredentials: true,
-        });
+      window.google?.accounts?.id?.disableAutoSelect();
 
-        // Disable Google auto-login
-        if (window.google?.accounts?.id) {
-          window.google.accounts.id.disableAutoSelect();
-        }
-
-        // Update frontend state
-        setIsAuthenticated(false);
-        navigate('/');
-        window.location.reload();
-      } catch (err) {
-        console.error('Logout failed:', err);
-      }
-    };
-
+      setIsAuthenticated(false);
+      navigate('/');
+    } catch (err) {
+      console.error('Logout failed:', err);
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 shadow-lg border-b border-cyan-100 dark:border-gray-700">

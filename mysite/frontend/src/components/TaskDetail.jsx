@@ -36,27 +36,38 @@ function TaskDetail() {
       .then(res => {
         const taskData = res.data;
         setTask(taskData);
-        const taskText = taskData.task || '';
 
-        const titleMatch = taskText.match(/### Title:\s*(.+)/);
-        setTitle(titleMatch ? titleMatch[1].trim() : 'Task');
-
-        const descMatch = taskText.match(/### Description:\s*([\s\S]*?)### Code:/);
-        setDescription(descMatch ? descMatch[1].trim() : '');
-
-        const codeMatch = taskText.match(/```(\w+)?\s*([\s\S]*?)```/);
-        const lang = codeMatch?.[1]?.toLowerCase() || 'plaintext';
-        const code = codeMatch?.[2]?.trim() || '';
-
-        setEditorLang(lang);
-        setStarterCode(code);
-
-        if (isSubmitAgain) {
-          setReview('');
-          setEditorValue(code);
+        if (taskData.title) {
+          setTitle(taskData.title);
+          setDescription(taskData.description || '');
+          setEditorLang(taskData.language || 'plaintext');
+          setStarterCode(taskData.starter_code || '');
+          if (isSubmitAgain) {
+            setReview('');
+            setEditorValue(taskData.starter_code || '');
+          } else {
+            setReview(taskData.review || '');
+            setEditorValue(taskData.solution || taskData.starter_code || '');
+          }
         } else {
-          setReview(taskData.review || '');
-          setEditorValue(taskData.solution || code);
+          // task ישן — פרסור טקסט
+          const taskText = taskData.task || '';
+          const titleMatch = taskText.match(/### Title:\s*(.+)/);
+          setTitle(titleMatch ? titleMatch[1].trim() : 'Task');
+          const descMatch = taskText.match(/### Description:\s*([\s\S]*?)### Code:/);
+          setDescription(descMatch ? descMatch[1].trim() : '');
+          const codeMatch = taskText.match(/```(\w+)?\s*([\s\S]*?)```/);
+          const lang = codeMatch?.[1]?.toLowerCase() || 'plaintext';
+          const code = codeMatch?.[2]?.trim() || '';
+          setEditorLang(lang);
+          setStarterCode(code);
+          if (isSubmitAgain) {
+            setReview('');
+            setEditorValue(code);
+          } else {
+            setReview(taskData.review || '');
+            setEditorValue(taskData.solution || code);
+          }
         }
 
         setLoading(false);
@@ -87,7 +98,6 @@ function TaskDetail() {
       const newTask = res.data;
       navigate(`/tasks/${newTask.id}`);
     } catch (err) {
-      console.error('Failed to generate next task:', err);
       alert('Failed to generate next task.');
     } finally {
       setNextTaskLoading(false);
@@ -115,9 +125,9 @@ function TaskDetail() {
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
-       <h2 className="text-2xl font-semibold pb-5 text-blue70 dark:text-cyan-300">
-  {task.learning_track_name || 'Track Title'} - {task.learning_track_level || 'Level'}
-</h2>
+        <h2 className="text-2xl font-semibold pb-5 text-blue70 dark:text-cyan-300">
+          {task.learning_track_name || 'Track Title'} - {task.learning_track_level || 'Level'}
+        </h2>
 
         <h2 className="text-5xl font-extrabold mb-8 text-blue70 dark:text-cyan-300">
           Task {task.task_number}: {title}

@@ -20,7 +20,7 @@ export default function BuyProPage() {
     setIsProcessing(true);
     try {
       await api.post(
-        '/upgrade-to-pro/',
+        '/user/upgrade-to-pro/',
         {
           paypal_order_id: paymentDetails.id,
           payment_status: paymentDetails.status,
@@ -62,7 +62,7 @@ export default function BuyProPage() {
       <div className="min-h-screen bg-blue0 dark:bg-blue90 flex items-center justify-center px-4">
         <div className="w-full max-w-xl bg-white dark:bg-gray-900 text-center px-8 py-13 rounded-3xl shadow-xl ring-4 ring-green-500 dark:ring-green-400 border border-green-300 dark:border-green-600">
           <h1 className="text-6xl font-extrabold mb-8 text-green-600 dark:text-green-400">
-            👑 You're Already Pro!
+            👑 You're Already A Premium User!
           </h1>
           <p className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-8">
             Enjoy all Pro features without limits.
