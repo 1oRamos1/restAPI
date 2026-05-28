@@ -50,7 +50,7 @@ python manage.py migrate
 # ----------------------------------------
 # 6. Setup initial data
 # ----------------------------------------
-python manage.py create_render_superuser
+python manage.py create_superuser
 python manage.py create_sample_tracks
 
 echo "=== Build complete ==="
