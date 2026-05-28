@@ -10,7 +10,7 @@ function Signup() {
   const [password2, setPassword2] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, openLoginModal } = useContext(AuthContext);
 
   const handleSignup = async () => {
     if (password1 !== password2) {
@@ -78,7 +78,7 @@ function Signup() {
             </button>
 
             <button
-              onClick={() => navigate('/login')}
+              onClick={openLoginModal}
               className="mt-2 border border-cyan-600 text-blue70 py-2 rounded-md font-semibold hover:bg-blue70 hover:text-white dark:hover:bg-cyan-900 dark:hover:text-cyan-200"
             >
               Already have an account? Log In

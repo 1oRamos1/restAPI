@@ -17,6 +17,9 @@ from ..services.ai_service import generate_track_from_prompt, extract_json_from_
 from ..services.task_service import extract_student_code, grade_solution, generate_next_task_text
 from ..choices import MONACO_LANGUAGES
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class CustomTrackOptionsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -127,4 +130,5 @@ class GenerateNextTask(APIView):
             return Response(TaskListSerializer(new_task).data)
 
         except Exception as e:
+            logger.error(f"GenerateNextTask error: {str(e)}", exc_info=True)
             return Response({"error": str(e)}, status=500)

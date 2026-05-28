@@ -16,5 +16,6 @@ cryptography>=41.0.0
 dj_database_url
 psycopg2-binary
 whitenoise
+tenacity
 mistralai==1.9.10
 

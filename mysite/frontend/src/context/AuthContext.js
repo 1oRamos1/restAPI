@@ -8,7 +8,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  // 1. הוצאנו את הלוגיקה לפונקציה נפרדת שניתן לקרוא לי מכל מקום
   const checkAuthStatus = async () => {
     try {
       const res = await api.get('/auth/user/', { withCredentials: true });
@@ -25,7 +24,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 2. ה-useEffect המקורי רק קורא לפונקציה החדשה בטעינה הראשונית של האתר
   useEffect(() => {
     checkAuthStatus().catch(() => {});
   }, []);

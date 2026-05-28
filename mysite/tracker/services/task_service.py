@@ -3,6 +3,7 @@ import logging
 from django.db.models import Avg
 from ..models import Task
 from .ai_service import get_chat_completion, extract_json_from_text
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +65,7 @@ def validate_task_structure(data: dict):
         raise ValueError(f"AI returned invalid task structure, missing fields: {missing}")
 
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=4))
 def generate_next_task_text(user, user_track) -> dict:
     history_context = get_task_history_context(user_track)
 
@@ -73,12 +75,13 @@ def generate_next_task_text(user, user_track) -> dict:
         "{\n"
         '    "title": "Task title",\n'
         '    "description": "Clear task description explaining what the student needs to do",\n'
-        '    "starter_code": "def solution():\\n    pass",\n'
+        '    "starter_code": "def function_name(params):\\n    # TODO: implement this\\n    pass",\n'
         '    "language": "python"\n'
         "}\n"
+        "IMPORTANT: starter_code must be an EMPTY skeleton with pass and TODO comments — NOT the solution!\n"
         "Analyze the Student Performance History. "
         "If average grades are high (4-5), increase task complexity. "
-        "If grades are low (1-2), focus on review and simpler tasks. "
+        "If grades are low (1-2), focus on simpler tasks. "
         "NEVER repeat a task title already mentioned in history."
     )
     prompt = (

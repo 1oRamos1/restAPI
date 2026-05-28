@@ -40,13 +40,20 @@ def get_chat_completion(user, prompt: str, system_msg: str = "You are a helpful 
 def extract_json_from_text(text: str):
     if "```" in text:
         text = text.replace("```json", "").replace("```", "").strip()
+
     match = re.search(r'(\{.*\}|\[.*\])', text, re.DOTALL)
     if not match:
         raise ValidationError("AI response does not contain valid JSON.")
+
+    raw = match.group(1)
     try:
-        return json.loads(match.group(1))
-    except json.JSONDecodeError as e:
-        raise ValidationError(f"AI response JSON is malformed: {str(e)}")
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        cleaned = re.sub(r'(?<!\\)[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw)
+        try:
+            return json.loads(cleaned)
+        except json.JSONDecodeError as e:
+            raise ValidationError(f"AI response JSON is malformed: {str(e)}")
 
 
 def generate_track_from_prompt(prompt: str) -> str:

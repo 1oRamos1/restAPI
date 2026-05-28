@@ -97,7 +97,7 @@ function UserTrackDetail() {
 
       {!isAuthenticated ? (
         <div className="text-center py-20">
-          <h1 className="text-4xl font-bold mb-6">Please log in to see your track</h1>
+          <h1 className="text-md mb-6">Please log in to see your track</h1>
           <button
             onClick={openLoginModal}
             className="px-8 py-4 bg-blue70 text-white rounded-lg hover:bg-blue50 transition"
