@@ -20,9 +20,6 @@ cd ..
 # ----------------------------------------
 mkdir -p staticfiles templates
 
-# Copy React build to staticfiles
-cp -r frontend/build/static/* staticfiles/
-
 # Copy index.html to templates for Django TemplateView
 cp frontend/build/index.html templates/
 
