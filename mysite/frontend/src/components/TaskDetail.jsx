@@ -4,6 +4,38 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 
+const LEVELS = [
+  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500' },
+  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500' },
+  { key: 'master',   label: 'Master',   color: 'bg-yellow-500' },
+];
+
+function MiniProgressBar({ currentLevel, progressScore }) {
+  const idx = LEVELS.findIndex(l => l.key === currentLevel) ?? 0;
+  const level = LEVELS[idx] || LEVELS[0];
+  const fill = Math.min((progressScore / 15) * 100, 100);
+
+  return (
+    <div className="fixed top-20 right-6 z-50 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 w-40 border border-gray-200 dark:border-gray-700">
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{level.label}</span>
+        <span className="text-xs text-gray-400">{progressScore}/15</span>
+      </div>
+      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${level.color}`}
+          style={{ width: `${fill}%` }}
+        />
+      </div>
+      <div className="flex justify-between mt-1">
+        {LEVELS.map((l, i) => (
+          <div key={l.key} className={`w-2 h-2 rounded-full ${i <= idx ? level.color : 'bg-gray-300 dark:bg-gray-600'}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function TaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();
@@ -63,6 +95,7 @@ function TaskDetail() {
     setSubmitting(true);
     try {
       const res = await api.put(`user/tasks/${taskId}/`, { solution: editorValue });
+      setTask(res.data);
       setReview(res.data.review);
     } catch {
       alert('Failed to submit solution.');
@@ -104,6 +137,10 @@ function TaskDetail() {
 
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
+      <MiniProgressBar
+        currentLevel={task?.current_level || 'explorer'}
+        progressScore={task?.progress_score || 0}
+      />
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
         <h2 className="text-2xl font-semibold pb-5 text-blue70 dark:text-cyan-300">
           {task.learning_track_name || 'Track Title'} - {task.learning_track_level || 'Level'}

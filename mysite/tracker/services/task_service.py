@@ -27,7 +27,8 @@ def grade_solution(user, task) -> dict:
     prompt = (
         f"Task:\n{task_content}\n\n"
         f"Solution:\n{task.solution}\n"
-        f"Review this code as a teacher. The last line must be: Grade: X/5"
+        f"Review this code briefly as a teacher. Give 2-3 bullet points only: what's good, what's wrong, how to improve. "
+        f"Be concise. The last line must be exactly: Grade: X/5"
     )
     ai_content = get_chat_completion(user, prompt)
 
