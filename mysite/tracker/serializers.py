@@ -76,7 +76,7 @@ class LearningTrackListSerializer(serializers.ModelSerializer):
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'starter_code', 'language', 'task', 'status', 'solution', 'grade', 'review']
+        fields = ['id', 'title', 'description', 'task_code', 'language', 'status', 'solution', 'grade', 'review']
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
@@ -88,8 +88,8 @@ class TaskDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = [
-            'id', 'title', 'description', 'starter_code', 'language',
-            'task', 'solution', 'grade', 'review', 'status',
+            'id', 'title', 'description', 'task_code', 'language',
+            'solution', 'grade', 'review', 'status',
             'user_learning_track_id', 'task_number',
             'learning_track_name', 'learning_track_level'
         ]
@@ -117,6 +117,8 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
     learning_track = serializers.SerializerMethodField()
     tasks = TaskListSerializer(many=True, read_only=True)
     category = CategorySerializer(read_only=True)
+    current_level = serializers.CharField(read_only=True)
+    progress_score = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = UserLearningTrack
@@ -128,9 +130,11 @@ class UserLearningTrackSerializer(serializers.ModelSerializer):
             'category',
             'last_updated',
             'summary',
-            'tasks'
+            'tasks',
+            'current_level',
+            'progress_score',
         ]
-        read_only_fields = ['id', 'start_date', 'last_updated', 'learning_track', 'tasks']
+        read_only_fields = ['id', 'start_date', 'last_updated', 'learning_track', 'tasks', 'current_level', 'progress_score']
 
     def get_learning_track(self, obj):
         track = obj.learning_track

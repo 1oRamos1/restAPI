@@ -14,7 +14,13 @@ from ..serializers import (
     CustomTrackCreateSerializer,
 )
 from ..services.ai_service import generate_track_from_prompt, extract_json_from_text
-from ..services.task_service import extract_student_code, grade_solution, generate_next_task_text
+from ..services.task_service import (
+    extract_student_code,
+    grade_solution,
+    generate_next_task_text,
+    update_progress,
+    get_weak_topic,
+)
 from ..choices import MONACO_LANGUAGES
 
 import logging
@@ -76,23 +82,28 @@ class TaskDetail(RetrieveUpdateDestroyAPIView):
         task.solution = solution
         task.save(update_fields=["solution"])
 
-        # תמיכה בtasks ישנים (שדה task) וחדשים (שדה starter_code)
-        task_text = task.starter_code or task.task
-        student_code = extract_student_code(task_text, solution)
+        student_code = extract_student_code(task.task_code, solution)
 
         if not student_code.strip():
             task.grade = 0
             task.review = "No actual implementation.\n\nGrade: 0/5"
-            task.status = "in_progress"
+            task.status = "completed"
             task.save()
+            update_progress(task.user_learning_track, 0)
             return Response(self.get_serializer(task).data)
 
         try:
             result = grade_solution(request.user, task)
             task.grade = result["grade"]
             task.review = result["review"]
-            task.status = "in_progress"
+            task.status = "completed"
             task.save()
+            # Update progress bar
+            needs_reinforcement = update_progress(task.user_learning_track, result["grade"])
+            if needs_reinforcement:
+                # Store the weak topic on the task for later use
+                task.weak_topic = task.title
+                task.save(update_fields=["weak_topic"])
         except Exception:
             return Response({"error": "Failed to grade solution."}, status=500)
 
@@ -117,15 +128,27 @@ class GenerateNextTask(APIView):
                 last_task.status = "completed"
                 last_task.save()
 
-            task_data = generate_next_task_text(request.user, user_track)
+            # Check if last completed task needs reinforcement
+            last_completed = Task.objects.filter(
+                user_learning_track=user_track,
+                status="completed",
+                grade__isnull=False,
+            ).order_by("-id").first()
+
+            reinforcement_topic = None
+            if last_completed and last_completed.weak_topic:
+                reinforcement_topic = last_completed.weak_topic
+
+            task_data = generate_next_task_text(request.user, user_track, reinforcement_topic)
+
             new_task = Task.objects.create(
                 user_learning_track=user_track,
                 title=task_data["title"],
                 description=task_data["description"],
-                starter_code=task_data["starter_code"],
+                task_code=task_data["task_code"],
                 language=task_data["language"],
-                task="",
                 status="pending",
+                is_reinforcement=bool(reinforcement_topic),
             )
             return Response(TaskListSerializer(new_task).data)
 

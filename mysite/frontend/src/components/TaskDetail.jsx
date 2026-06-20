@@ -14,7 +14,7 @@ function TaskDetail() {
   const [description, setDescription] = useState('');
   const [editorLang, setEditorLang] = useState('plaintext');
   const [editorValue, setEditorValue] = useState('');
-  const [starterCode, setStarterCode] = useState('');
+  const [taskCode, setTaskCode] = useState('');
   const [review, setReview] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -36,38 +36,17 @@ function TaskDetail() {
       .then(res => {
         const taskData = res.data;
         setTask(taskData);
+        setTitle(taskData.title || 'Task');
+        setDescription(taskData.description || '');
+        setEditorLang(taskData.language || 'plaintext');
+        setTaskCode(taskData.task_code || '');
 
-        if (taskData.title) {
-          setTitle(taskData.title);
-          setDescription(taskData.description || '');
-          setEditorLang(taskData.language || 'plaintext');
-          setStarterCode(taskData.starter_code || '');
-          if (isSubmitAgain) {
-            setReview('');
-            setEditorValue(taskData.starter_code || '');
-          } else {
-            setReview(taskData.review || '');
-            setEditorValue(taskData.solution || taskData.starter_code || '');
-          }
+        if (isSubmitAgain) {
+          setReview('');
+          setEditorValue(taskData.task_code || '');
         } else {
-          // task ישן — פרסור טקסט
-          const taskText = taskData.task || '';
-          const titleMatch = taskText.match(/### Title:\s*(.+)/);
-          setTitle(titleMatch ? titleMatch[1].trim() : 'Task');
-          const descMatch = taskText.match(/### Description:\s*([\s\S]*?)### Code:/);
-          setDescription(descMatch ? descMatch[1].trim() : '');
-          const codeMatch = taskText.match(/```(\w+)?\s*([\s\S]*?)```/);
-          const lang = codeMatch?.[1]?.toLowerCase() || 'plaintext';
-          const code = codeMatch?.[2]?.trim() || '';
-          setEditorLang(lang);
-          setStarterCode(code);
-          if (isSubmitAgain) {
-            setReview('');
-            setEditorValue(code);
-          } else {
-            setReview(taskData.review || '');
-            setEditorValue(taskData.solution || code);
-          }
+          setReview(taskData.review || '');
+          setEditorValue(taskData.solution || taskData.task_code || '');
         }
 
         setLoading(false);
@@ -206,5 +185,3 @@ function TaskDetail() {
 }
 
 export default TaskDetail;
-
-
