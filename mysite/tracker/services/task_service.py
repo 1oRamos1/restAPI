@@ -124,25 +124,28 @@ def generate_next_task_text(user, user_track, reinforcement_topic: str = None) -
             "If grades are low (1-2), focus on simpler tasks. "
         )
 
+    track_language = user_track.learning_track.category.language or 'python'
+
     system_msg = (
         "You are a professional coding mentor. "
         "Return ONLY a JSON object in this exact format, no markdown, no explanations:\n"
         "{\n"
         '    "title": "Task title",\n'
         '    "description": "Clear task description explaining what the student needs to do",\n'
-        '    "task_code": "def function_name(params):\\n    # TODO: implement this\\n    pass",\n'
-        '    "language": "python"\n'
+        f'    "task_code": "// TODO: implement this function in {track_language}",\n'
+        f'    "language": "{track_language}"\n'
         "}\n"
-        "IMPORTANT: task_code must be an EMPTY skeleton with pass and TODO comments — NOT the solution!\n"
+        f"CRITICAL: The task MUST be in {track_language.upper()}. task_code must be an EMPTY skeleton with TODO comments — NOT the solution!\n"
         + reinforcement_instruction +
         "NEVER repeat a task title already mentioned in history."
     )
     prompt = (
         f"Track: {user_track.learning_track.title}\n"
+        f"Language: {track_language}\n"
         f"Student Level: {user_track.current_level}\n"
         f"Progress: {user_track.progress_score}/15\n"
         f"History:\n{history_context}\n\n"
-        f"Suggest the next task."
+        f"Suggest the next {track_language} task."
     )
 
     raw_text = get_chat_completion(user, prompt, system_msg=system_msg)

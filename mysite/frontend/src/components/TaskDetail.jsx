@@ -11,26 +11,46 @@ const LEVELS = [
 ];
 
 function MiniProgressBar({ currentLevel, progressScore }) {
-  const idx = LEVELS.findIndex(l => l.key === currentLevel) ?? 0;
-  const level = LEVELS[idx] || LEVELS[0];
-  const fill = Math.min((progressScore / 15) * 100, 100);
+  const idx = Math.max(0, LEVELS.findIndex(l => l.key === currentLevel));
+  const level = LEVELS[idx];
+  const isMaster = idx === LEVELS.length - 1;
+  const fillPercent = isMaster && progressScore >= 15 ? 100 : Math.min((progressScore / 15) * 100, 100);
 
   return (
-    <div className="fixed top-20 right-6 z-50 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 w-40 border border-gray-200 dark:border-gray-700">
-      <div className="flex justify-between items-center mb-1">
-        <span className="text-xs font-bold text-gray-600 dark:text-gray-300">{level.label}</span>
-        <span className="text-xs text-gray-400">{progressScore}/15</span>
+    <div className="w-full mb-8">
+      {/* Level labels */}
+      <div className="flex justify-between mb-2">
+        {LEVELS.map((l, i) => (
+          <div key={l.key} className="flex flex-col items-center" style={{ width: '33%' }}>
+            <span className={`text-xs font-bold ${i === idx ? (i === 0 ? 'text-blue-500' : i === 1 ? 'text-purple-500' : 'text-yellow-500') : 'text-gray-400 dark:text-gray-600'}`}>
+              {l.emoji} {l.label}
+            </span>
+          </div>
+        ))}
       </div>
-      <div className="h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+
+      {/* Bar */}
+      <div className="relative h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+        <div className="absolute inset-0 flex pointer-events-none">
+          <div className="w-1/3 border-r-2 border-white dark:border-gray-800 opacity-50" />
+          <div className="w-1/3 border-r-2 border-white dark:border-gray-800 opacity-50" />
+          <div className="w-1/3" />
+        </div>
+        {idx > 0 && (
+          <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-40"
+            style={{ width: `${(idx / 3) * 100}%` }} />
+        )}
         <div
-          className={`h-full rounded-full transition-all duration-500 ${level.color}`}
-          style={{ width: `${fill}%` }}
+          className={`absolute top-0 h-full transition-all duration-700 rounded-full ${level.color}`}
+          style={{ left: `${(idx / 3) * 100}%`, width: `${(fillPercent / 100) * (100 / 3)}%` }}
         />
       </div>
-      <div className="flex justify-between mt-1">
-        {LEVELS.map((l, i) => (
-          <div key={l.key} className={`w-2 h-2 rounded-full ${i <= idx ? level.color : 'bg-gray-300 dark:bg-gray-600'}`} />
-        ))}
+
+      <div className="flex justify-between mt-1 text-xs text-gray-400">
+        <span>{progressScore}/15 tasks</span>
+        <span className={`font-semibold ${idx === 0 ? 'text-blue-500' : idx === 1 ? 'text-purple-500' : 'text-yellow-500'}`}>
+          {level.label} {level.emoji}
+        </span>
       </div>
     </div>
   );
@@ -137,11 +157,11 @@ function TaskDetail() {
 
   return (
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
-      <MiniProgressBar
-        currentLevel={task?.current_level || 'explorer'}
-        progressScore={task?.progress_score || 0}
-      />
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
+        <MiniProgressBar
+          currentLevel={task?.current_level || 'explorer'}
+          progressScore={task?.progress_score || 0}
+        />
         <h2 className="text-2xl font-semibold pb-5 text-blue70 dark:text-cyan-300">
           {task.learning_track_name || 'Track Title'} - {task.learning_track_level || 'Level'}
         </h2>
