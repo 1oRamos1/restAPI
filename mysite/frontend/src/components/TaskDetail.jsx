@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
+import ReactMarkdown from 'react-markdown';
 
 function TaskDetail() {
   const { taskId } = useParams();
@@ -14,7 +15,7 @@ function TaskDetail() {
   const [description, setDescription] = useState('');
   const [editorLang, setEditorLang] = useState('plaintext');
   const [editorValue, setEditorValue] = useState('');
-  const [taskCode, setTaskCode] = useState('');
+
   const [review, setReview] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -39,7 +40,7 @@ function TaskDetail() {
         setTitle(taskData.title || 'Task');
         setDescription(taskData.description || '');
         setEditorLang(taskData.language || 'plaintext');
-        setTaskCode(taskData.task_code || '');
+
 
         if (isSubmitAgain) {
           setReview('');
@@ -83,9 +84,9 @@ function TaskDetail() {
     }
   };
 
-  const gradeMatch = review.match(/Grade:\s*([0-5]\/5)/i);
-  const extractedGrade = gradeMatch ? gradeMatch[1] : '';
-  const reviewBody = gradeMatch ? review.replace(gradeMatch[0], '').trim() : review;
+  const gradeMatch = review.match(/Grade:\s*([0-5])\/5\s*$/im);
+  const extractedGrade = gradeMatch ? `${gradeMatch[1]}/5` : '';
+  const reviewBody = gradeMatch ? review.slice(0, gradeMatch.index).trim() : review;
 
   if (loading)
     return (
@@ -146,7 +147,9 @@ function TaskDetail() {
           <>
             <div className="mt-6 p-6 bg-white dark:bg-gray-900 rounded-lg border border-blue80 dark:border-gray-700 shadow-md">
               <h3 className="font-bold mb-4 text-blue90 dark:text-cyan-300 text-xl">Review:</h3>
-              <p className="whitespace-pre-line text-blue90 dark:text-cyan-200">{reviewBody}</p>
+              <div className="prose prose-sm dark:prose-invert max-w-none text-blue90 dark:text-cyan-200">
+                <ReactMarkdown>{reviewBody}</ReactMarkdown>
+              </div>
               {extractedGrade && (
                 <p className="mt-6 text-lg text-blue50 dark:text-cyan-100 font-semibold">
                   Grade: <span className="font-bold">{extractedGrade}</span>
