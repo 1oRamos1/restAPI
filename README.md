@@ -8,6 +8,8 @@
 
 - **Personalized Learning Tracks** – Choose a language, category, and difficulty level
 - **AI-Powered Tasks** – Tasks are dynamically generated and graded by AI based on your performance
+- **Progress System** – 3-level progression (Explorer 🥉 → Builder 🥈 → Master 🥇) with 15 tasks per level. Score thresholds increase as you advance — tasks 1–5 require 2/5, tasks 6–10 require 3/5, tasks 11–15 require 4/5
+- **Smart Reinforcement** – If you score below the threshold, AI generates a reinforcement task on the same topic before moving on
 - **Premium Experience** – Pro users can generate custom learning tracks using OpenAI GPT-4
 - **Progress Tracking** – Save solutions, track completion, and get AI-generated progress summaries
 - **Multi-Language Support** – Python, JavaScript, C++ and more
@@ -53,7 +55,7 @@ Backend (Django REST Framework)
      ↓
 Services Layer
   ├── ai_service.py     — OpenAI / Mistral integration
-  ├── task_service.py   — Task generation & grading
+  ├── task_service.py   — Task generation, grading & progress logic
   └── track_service.py  — Track creation & summaries
      ↓
 PostgreSQL
@@ -66,8 +68,11 @@ PostgreSQL
 1. Browse categories and select a programming language
 2. Follow curated learning tracks with practical coding tasks
 3. Submit solutions — AI grades your code and gives feedback
-4. Generate AI progress summaries after completing tasks
-5. Pro users can create fully custom tracks by entering learning goals
+4. Progress through 3 levels (Explorer → Builder → Master) — each level requires 15 tasks with increasing score thresholds
+5. If you score below the threshold, AI automatically generates a reinforcement task on the weak topic
+6. Reach Master level and restart the track in Master Mode (min score 4/5 on all tasks)
+7. Generate AI progress summaries after completing tasks
+8. Pro users can create fully custom tracks by entering learning goals
 
 ---
 
