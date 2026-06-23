@@ -51,23 +51,40 @@ def update_progress(user_track, grade: int):
     - If yes: increments progress_score, checks for level-up at 15
     - If no: returns the weak topic so AI can generate reinforcement
     """
-    required = get_required_grade(user_track.progress_score)
+    required = get_required_grade(user_track.progress_score, user_track.current_level)
 
     if grade >= required:
         user_track.progress_score += 1
 
-        # Check for level up
+        # Check for level up (only if not already master)
         if user_track.progress_score >= 15:
             current_idx = LEVEL_ORDER.index(user_track.current_level)
             if current_idx < len(LEVEL_ORDER) - 1:
                 user_track.current_level = LEVEL_ORDER[current_idx + 1]
-            user_track.progress_score = 0  # reset for next level
+                user_track.progress_score = 0
+            # If master — keep at 15 (completed state, frontend shows popup)
 
         user_track.save(update_fields=['progress_score', 'current_level'])
         return None  # no reinforcement needed
     else:
         user_track.save(update_fields=['progress_score', 'current_level'])
         return True  # signal that reinforcement is needed
+
+
+def cleanup_old_tasks(user_track):
+    """Keep only the last 15 tasks, delete older ones."""
+    tasks = Task.objects.filter(user_learning_track=user_track).order_by('-id')
+    if tasks.count() > 15:
+        ids_to_keep = tasks.values_list('id', flat=True)[:15]
+        Task.objects.filter(user_learning_track=user_track).exclude(id__in=ids_to_keep).delete()
+
+
+def restart_track(user_track):
+    """Reset progress but keep master level with min score 4 for all questions."""
+    user_track.progress_score = 0
+    user_track.current_level = 'master'
+    user_track.save(update_fields=['progress_score', 'current_level'])
+    cleanup_old_tasks(user_track)
 
 
 def get_weak_topic(user_track) -> str:

@@ -20,6 +20,8 @@ from ..services.task_service import (
     generate_next_task_text,
     update_progress,
     get_weak_topic,
+    restart_track,
+    cleanup_old_tasks,
 )
 from ..choices import MONACO_LANGUAGES
 
@@ -150,8 +152,20 @@ class GenerateNextTask(APIView):
                 status="pending",
                 is_reinforcement=bool(reinforcement_topic),
             )
+            cleanup_old_tasks(user_track)
             return Response(TaskListSerializer(new_task).data)
 
         except Exception as e:
             logger.error(f"GenerateNextTask error: {str(e)}", exc_info=True)
             return Response({"error": str(e)}, status=500)
+
+
+class RestartTrack(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_learning_track_id):
+        user_track = get_object_or_404(
+            UserLearningTrack, pk=user_learning_track_id, user=request.user
+        )
+        restart_track(user_track)
+        return Response({"status": "restarted", "current_level": "master", "progress_score": 0})

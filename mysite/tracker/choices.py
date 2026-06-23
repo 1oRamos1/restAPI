@@ -23,7 +23,9 @@ MONACO_LANGUAGES = [
 
 # Progress thresholds per position in the 15-task cycle
 # positions 0-4: need >= 2, positions 5-9: need >= 3, positions 10-14: need >= 4
-def get_required_grade(progress_score: int) -> int:
+def get_required_grade(progress_score: int, current_level: str = 'explorer') -> int:
+    if current_level == 'master':
+        return 4
     pos = progress_score % 15
     if pos < 5:
         return 2

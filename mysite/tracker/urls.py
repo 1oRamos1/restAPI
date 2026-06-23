@@ -13,7 +13,7 @@ from .views.learning_views import (
 )
 from .views.ai_views import (
     CustomTrackOptionsView, CustomTrackCreateView,
-    TaskDetail, GenerateNextTask,
+    TaskDetail, GenerateNextTask, RestartTrack,
 )
 
 app_name = "tracker"
@@ -58,6 +58,10 @@ urlpatterns = [
     path('user/tracks/<int:user_learning_track_id>/summary/',
          GenerateSummary.as_view(),
          name='generate-summary'),
+
+    path('user/tracks/<int:user_learning_track_id>/restart/',
+         RestartTrack.as_view(),
+         name='restart-track'),
 
     # Tasks
     path('user/tasks/<int:pk>/',

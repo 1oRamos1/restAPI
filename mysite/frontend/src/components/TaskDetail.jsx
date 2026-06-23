@@ -5,9 +5,9 @@ import Editor from '@monaco-editor/react';
 import ReactMarkdown from 'react-markdown';
 
 const LEVELS = [
-  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500' },
-  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500' },
-  { key: 'master',   label: 'Master',   color: 'bg-yellow-500' },
+  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500', emoji: '🥉' },
+  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500', emoji: '🥈' },
+  { key: 'master',   label: 'Master',   color: 'bg-yellow-500', emoji: '🥇' },
 ];
 
 function MiniProgressBar({ currentLevel, progressScore }) {
@@ -15,6 +15,7 @@ function MiniProgressBar({ currentLevel, progressScore }) {
   const level = LEVELS[idx];
   const isMaster = idx === LEVELS.length - 1;
   const fillPercent = isMaster && progressScore >= 15 ? 100 : Math.min((progressScore / 15) * 100, 100);
+  const minScore = currentLevel === 'master' ? 4 : progressScore < 5 ? 2 : progressScore < 10 ? 3 : 4;
 
   return (
     <div className="w-full mb-8">
@@ -48,13 +49,21 @@ function MiniProgressBar({ currentLevel, progressScore }) {
 
       <div className="flex justify-between mt-1 text-xs text-gray-400">
         <span>{progressScore}/15 tasks</span>
-        <span className={`font-semibold ${idx === 0 ? 'text-blue-500' : idx === 1 ? 'text-purple-500' : 'text-yellow-500'}`}>
-          {level.label} {level.emoji}
+        <span className="font-semibold">
+          Min score required: {minScore}/5
         </span>
       </div>
     </div>
   );
 }
+
+const LANGUAGE_MAP = {
+  'c++': 'cpp',
+  'c#': 'csharp',
+  'js': 'javascript',
+  'ts': 'typescript',
+  'py': 'python',
+};
 
 function TaskDetail() {
   const { taskId } = useParams();
@@ -91,7 +100,8 @@ function TaskDetail() {
         setTask(taskData);
         setTitle(taskData.title || 'Task');
         setDescription(taskData.description || '');
-        setEditorLang(taskData.language || 'plaintext');
+        const lang = taskData.language?.toLowerCase() || 'plaintext';
+        setEditorLang(LANGUAGE_MAP[lang] || lang);
 
 
         if (isSubmitAgain) {
@@ -156,7 +166,7 @@ function TaskDetail() {
     );
 
   return (
-    <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
+    <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-8 flex flex-col rounded-xl">
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
         <MiniProgressBar
           currentLevel={task?.current_level || 'explorer'}
@@ -181,7 +191,7 @@ function TaskDetail() {
                 language={editorLang}
                 value={editorValue}
                 onChange={(value) => setEditorValue(value || '')}
-                theme={isDarkMode ? 'vs-dark' : 'vs-light'}
+                theme="vs-dark"
                 options={{
                   fontSize: 14,
                   minimap: { enabled: false },

@@ -4,10 +4,93 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const LEVELS = [
-  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-blue-400', emoji: '🧭' },
-  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500', textColor: 'text-purple-600 dark:text-purple-400', emoji: '🔨' },
-  { key: 'master',   label: 'Master',   color: 'bg-yellow-500', textColor: 'text-yellow-600 dark:text-yellow-400', emoji: '🏆' },
+  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-blue-400', emoji: '🥉' },
+  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500', textColor: 'text-purple-600 dark:text-purple-400', emoji: '🥈' },
+  { key: 'master',   label: 'Master',   color: 'bg-yellow-500', textColor: 'text-yellow-600 dark:text-yellow-400', emoji: '🥇' },
 ];
+
+function Fireworks() {
+  const items = [
+    { emoji: '✨', left: '80%', top: '5%', delay: '0.2s' },
+    { emoji: '🌟', left: '20%', top: '60%', delay: '0.1s' },
+    { emoji: '🎉', left: '75%', top: '55%', delay: '0.3s' },
+    { emoji: '✨', left: '90%', top: '30%', delay: '0.5s' },
+    { emoji: '🌟', left: '5%', top: '40%', delay: '0.6s' },
+    { emoji: '🎉', left: '50%', top: '65%', delay: '0.4s' },
+    { emoji: '✨', left: '30%', top: '20%', delay: '0.7s' },
+    { emoji: '🌟', left: '60%', top: '10%', delay: '0.8s' },
+    { emoji: '🎉', left: '10%', top: '50%', delay: '0.9s' },
+  ];
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {items.map((item, i) => (
+        <div
+          key={i}
+          className="absolute text-xl animate-bounce"
+          style={{ left: item.left, top: item.top, animationDelay: item.delay, animationDuration: '1s' }}
+        >
+          {item.emoji}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function CompletionPopup({ userTrackId, onClose, onRestart }) {
+  const navigate = useNavigate();
+  const [restarting, setRestarting] = useState(false);
+
+  const handleRestart = async () => {
+    setRestarting(true);
+    try {
+      await api.post(`/user/tracks/${userTrackId}/restart/`);
+      onRestart();
+      onClose();
+    } catch {
+      alert('Failed to restart track.');
+    } finally {
+      setRestarting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center px-4">
+      <div className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center overflow-hidden">
+        <Fireworks />
+        <div className="relative z-10">
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-4 text-2xl text-gray-400 hover:text-gray-600"
+        >×</button>
+
+        <div className="text-5xl mb-4">🥇</div>
+        <h2 className="text-3xl font-extrabold text-yellow-500 mb-2">Congratulations!</h2>
+        <p className="text-gray-600 dark:text-gray-300 mb-8">
+          You've completed all 15 tasks and reached <strong>Master</strong> level!
+          Ready for your next challenge?
+        </p>
+
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={handleRestart}
+            disabled={restarting}
+            className="w-full py-3 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-white font-bold transition shadow-md disabled:opacity-50"
+          >
+            {restarting ? 'Restarting...' : '🔄 Restart This Track (Master Mode)'}
+          </button>
+
+          <button
+            onClick={() => navigate('/courses')}
+            className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold transition shadow-md"
+          >
+            🚀 Start New Journey
+          </button>
+        </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function ProgressBar({ currentLevel, progressScore }) {
   const currentIdx = LEVELS.findIndex(l => l.key === currentLevel);
@@ -73,8 +156,11 @@ function UserTrackDetail() {
   const [loading, setLoading] = useState(true);
   const [btnLoading, setBtnLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showCompletion, setShowCompletion] = useState(false);
   const { isAuthenticated, openLoginModal } = useContext(AuthContext);
   const navigate = useNavigate();
+
+  const isCompleted = userTrack?.current_level === 'master' && userTrack?.progress_score >= 15;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -86,6 +172,10 @@ function UserTrackDetail() {
           const res = await api.get(`/user/tracks/${userTrackId}/`);
           setUserTrack(res.data);
           setTrackInfo(res.data.learning_track);
+          // Show popup if completed
+          if (res.data.current_level === 'master' && res.data.progress_score >= 15) {
+            setShowCompletion(true);
+          }
         }
       } catch (err) {
         setError('Something went wrong loading the track info.');
@@ -151,6 +241,16 @@ function UserTrackDetail() {
     <div className="min-h-screen w-full bg-blue0 dark:bg-blue90 text-black dark:text-white px-6 py-40 flex flex-col rounded-xl">
       <div className="w-full max-w-6xl mx-auto flex-grow rounded-xl">
 
+        {showCompletion && (
+          <CompletionPopup
+            userTrackId={userTrackId}
+            onClose={() => setShowCompletion(false)}
+            onRestart={() => {
+              setUserTrack(prev => ({ ...prev, current_level: 'master', progress_score: 0 }));
+            }}
+          />
+        )}
+
         {!isAuthenticated ? (
           <div className="text-center py-20">
             <h1 className="text-md mb-6">Please log in to see your track</h1>
@@ -189,11 +289,15 @@ function UserTrackDetail() {
               <>
                 <div className="flex items-center justify-center mb-12">
                   <button
-                    onClick={generateTask}
+                    onClick={isCompleted ? () => setShowCompletion(true) : generateTask}
                     disabled={btnLoading}
-                    className="px-10 py-4 text-lg font-bold rounded-lg bg-blue70 text-blue0 dark:bg-cyan-900 dark:text-cyan-100 hover:bg-blue50 border border-blue70 dark:border-none transition shadow-md hover:scale-[1.05] disabled:opacity-50"
+                    className={`px-10 py-4 text-lg font-bold rounded-lg border transition shadow-md hover:scale-[1.05] disabled:opacity-50 ${
+                      isCompleted
+                        ? 'bg-yellow-500 text-white border-yellow-500 cursor-pointer hover:bg-yellow-400'
+                        : 'bg-blue70 text-blue0 dark:bg-cyan-900 dark:text-cyan-100 hover:bg-blue50 border-blue70 dark:border-none'
+                    }`}
                   >
-                    {btnLoading ? 'Generating...' : 'Continue Track'}
+                    {isCompleted ? '🥇 View Completion' : btnLoading ? 'Generating...' : 'Continue Track'}
                   </button>
                 </div>
 
