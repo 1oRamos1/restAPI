@@ -146,7 +146,7 @@ class TaskTests(TestCase):
             user_learning_track=self.user_track,
             title="Learn Loops",
             description="Write a function that sums a list.",
-            starter_code="def sum_list(lst):\n    pass",
+            task_code="def sum_list(lst):\n    pass",  # starter_code → task_code
             language="python",
             status="pending",
         )
@@ -176,7 +176,7 @@ class TaskTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.task.refresh_from_db()
         self.assertEqual(self.task.grade, 4)
-        self.assertEqual(self.task.status, "in_progress")
+        self.assertEqual(self.task.status, "completed")  # in_progress → completed
 
     @patch('tracker.services.task_service.get_chat_completion')
     def test_submit_no_real_code_gives_zero(self, mock_ai):
@@ -203,14 +203,14 @@ class GenerateNextTaskTests(TestCase):
 
     @patch('tracker.services.task_service.get_chat_completion')
     def test_generate_task_creates_new_task(self, mock_ai):
-        mock_ai.return_value = '{"title": "New Task", "description": "Do this", "starter_code": "pass", "language": "python"}'
+        mock_ai.return_value = '{"title": "New Task", "description": "Do this", "task_code": "pass", "language": "python"}'
         res = self.client.post(f'{BASE}/user/tracks/{self.user_track.id}/generate-task/')
         self.assertEqual(res.status_code, 200)
         self.assertEqual(Task.objects.filter(user_learning_track=self.user_track).count(), 1)
 
     @patch('tracker.services.task_service.get_chat_completion')
     def test_generate_task_completes_previous_task(self, mock_ai):
-        mock_ai.return_value = '{"title": "New Task", "description": "Do this", "starter_code": "pass", "language": "python"}'
+        mock_ai.return_value = '{"title": "New Task", "description": "Do this", "task_code": "pass", "language": "python"}'
         Task.objects.create(
             user_learning_track=self.user_track,
             title="Old Task",
