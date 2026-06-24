@@ -78,7 +78,7 @@ PostgreSQL
 
 ## 🚀 Running Locally
 
-### Option 1 — Docker (recommended)
+### Option 1 — Docker
 
 ```bash
 git clone https://github.com/1oRamos1/restAPI.git
