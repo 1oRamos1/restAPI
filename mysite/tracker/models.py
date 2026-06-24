@@ -36,6 +36,7 @@ class LearningTrack(models.Model):
 class UserLearningTrack(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_learning_tracks')
     learning_track = models.ForeignKey(LearningTrack, on_delete=models.CASCADE, related_name='user_learning_tracks')
+
     summary = models.TextField(blank=True, null=True)
     start_date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
