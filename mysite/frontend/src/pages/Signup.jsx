@@ -17,6 +17,18 @@ function Signup() {
       setError("Passwords do not match");
       return;
     }
+    if (password1.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+    if (!/[0-9]/.test(password1)) {
+      setError("Password must contain at least one number");
+      return;
+    }
+    if (!/[A-Z]/.test(password1)) {
+      setError("Password must contain at least one uppercase letter");
+      return;
+    }
     try {
       await api.post('/auth/signup/', {
         username,
