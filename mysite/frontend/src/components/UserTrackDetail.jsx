@@ -106,7 +106,7 @@ function ProgressBar({ currentLevel, progressScore }) {
         {LEVELS.map((l, idx) => (
           <div key={l.key} className="flex flex-col items-center gap-1" style={{ width: '33%' }}>
             <span className="text-lg">{l.emoji}</span>
-            <span className={`text-xs font-bold ${idx === safeIdx ? l.textColor : 'text-gray-400 dark:text-gray-600'}`}>
+            <span className={`text-xs font-bold ${idx === safeIdx ? l.textColor : 'text-gray-400 dark:text-cyan-700'}`}>
               {l.label}
             </span>
           </div>
@@ -114,7 +114,7 @@ function ProgressBar({ currentLevel, progressScore }) {
       </div>
 
       {/* Progress track */}
-      <div className="relative h-4 bg-gray-200 dark:bg-cyan-950 rounded-full overflow-hidden shadow-inner">
+      <div className="relative h-4 bg-gray-200 dark:bg-cyan-800 rounded-full overflow-hidden shadow-inner">
         {/* Level segment dividers */}
         <div className="absolute inset-0 flex pointer-events-none">
           <div className="w-1/3 border-r-2 border-white dark:border-gray-800 opacity-50" />
