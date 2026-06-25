@@ -18,6 +18,7 @@ def get_chat_completion(user, prompt: str, system_msg: str = "You are a helpful 
     ]
     try:
         if use_openai(user):
+            print(f">>> USING OPENAI for user: {user.username}")
             response = openai.ChatCompletion.create(
                 model="gpt-4.1",
                 messages=messages,
@@ -26,6 +27,7 @@ def get_chat_completion(user, prompt: str, system_msg: str = "You are a helpful 
             )
             return response.choices[0].message["content"]
         else:
+            print(f">>> USING MISTRAL for user: {user.username}")
             response = mistral_client.chat.complete(
                 model="ministral-3b-latest",
                 messages=messages,
