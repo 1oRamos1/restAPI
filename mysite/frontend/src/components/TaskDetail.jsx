@@ -23,7 +23,7 @@ function MiniProgressBar({ currentLevel, progressScore }) {
       <div className="flex justify-between mb-2">
         {LEVELS.map((l, i) => (
           <div key={l.key} className="flex flex-col items-center" style={{ width: '33%' }}>
-            <span className={`text-xs font-bold ${i === idx ? (i === 0 ? 'text-blue-500' : i === 1 ? 'text-purple-500' : 'text-yellow-500') : 'text-gray-400 dark:text-cyan-400'}`}>
+            <span className={`text-xs font-bold ${i === idx ? (i === 0 ? 'text-blue-500 dark:text-cyan-300' : i === 1 ? 'text-purple-500 dark:text-cyan-300' : 'text-yellow-500 dark:text-cyan-300') : 'text-gray-400 dark:text-cyan-100'}`}>
               {l.emoji} {l.label}
             </span>
           </div>

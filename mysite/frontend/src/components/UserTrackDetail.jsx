@@ -4,9 +4,9 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 
 const LEVELS = [
-  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-blue-400', emoji: '🥉' },
-  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500', textColor: 'text-purple-600 dark:text-purple-400', emoji: '🥈' },
-  { key: 'master',   label: 'Master',   color: 'bg-yellow-500', textColor: 'text-yellow-600 dark:text-yellow-400', emoji: '🥇' },
+  { key: 'explorer', label: 'Explorer', color: 'bg-blue-500', textColor: 'text-blue-600 dark:text-cyan-300', emoji: '🥉' },
+  { key: 'builder',  label: 'Builder',  color: 'bg-purple-500', textColor: 'text-purple-600 dark:text-cyan-300', emoji: '🥈' },
+  { key: 'master',   label: 'Master',   color: 'bg-yellow-500', textColor: 'text-yellow-600 dark:text-cyan-300', emoji: '🥇' },
 ];
 
 function Fireworks() {
@@ -106,7 +106,7 @@ function ProgressBar({ currentLevel, progressScore }) {
         {LEVELS.map((l, idx) => (
           <div key={l.key} className="flex flex-col items-center gap-1" style={{ width: '33%' }}>
             <span className="text-lg">{l.emoji}</span>
-            <span className={`text-xs font-bold ${idx === safeIdx ? l.textColor : 'text-gray-400 dark:text-cyan-400'}`}>
+            <span className={`text-xs font-bold ${idx === safeIdx ? l.textColor : 'text-gray-400 dark:text-cyan-100'}`}>
               {l.label}
             </span>
           </div>
