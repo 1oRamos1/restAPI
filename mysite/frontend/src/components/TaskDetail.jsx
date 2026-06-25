@@ -31,7 +31,7 @@ function MiniProgressBar({ currentLevel, progressScore }) {
       </div>
 
       {/* Bar */}
-      <div className="relative h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+      <div className="relative h-3 bg-gray-200 dark:bg-cyan-950 rounded-full overflow-hidden">
         <div className="absolute inset-0 flex pointer-events-none">
           <div className="w-1/3 border-r-2 border-white dark:border-gray-800 opacity-50" />
           <div className="w-1/3 border-r-2 border-white dark:border-gray-800 opacity-50" />
