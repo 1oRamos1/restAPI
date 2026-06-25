@@ -80,14 +80,14 @@ export default function LoginModal() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
 
             <button
