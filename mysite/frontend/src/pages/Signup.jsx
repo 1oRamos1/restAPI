@@ -46,28 +46,28 @@ function Signup() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
             <input
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
             <input
               type="password"
               placeholder="Password"
               value={password1}
               onChange={(e) => setPassword1(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
             <input
               type="password"
               placeholder="Confirm Password"
               value={password2}
               onChange={(e) => setPassword2(e.target.value)}
-              className="p-3 border border-gray-300 rounded-md"
+              className="p-3 border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400"
             />
 
             <button
