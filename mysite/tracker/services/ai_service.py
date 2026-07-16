@@ -59,7 +59,10 @@ def extract_json_from_text(text: str):
 def generate_track_from_prompt(prompt: str) -> str:
     system_msg = (
         "You are an AI that converts a user's learning goal into a structured JSON object. "
-        "Return ONLY valid JSON, no markdown, no explanations."
+        "Return ONLY valid JSON, no markdown, no explanations. "
+        "The JSON must have exactly these fields:\n"
+        '{"title": "Track title", "category": "Category name (e.g. Python, Algorithms, Web)", '
+        '"language": "python|js|cpp|etc", "level": "beginner|advanced|master"}'
     )
     try:
         response = openai.ChatCompletion.create(
