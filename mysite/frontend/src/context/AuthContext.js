@@ -13,9 +13,6 @@ export const AuthProvider = ({ children }) => {
       const res = await api.get('/auth/user/', { withCredentials: true });
       setIsAuthenticated(true);
       setUser(res.data);
-      if (res.data?.is_pro === true) {
-      } else {
-      }
       return res.data;
     } catch (err) {
       setIsAuthenticated(false);
@@ -39,6 +36,7 @@ export const AuthProvider = ({ children }) => {
         user,
         setUser,
         checkAuthStatus,
+        refreshUser: checkAuthStatus,
         isPro: user?.is_pro === true,
         showLoginModal,
         openLoginModal,
