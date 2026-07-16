@@ -39,7 +39,7 @@ class CustomTrackOptionsView(APIView):
 
         lang_prompt = (
             data["language"] if data["language"] != "auto"
-            else f"one of the following: {', '.join(MONACO_LANGUAGES)}"
+            else "one of the following: python, javascript, cpp"
         )
         prompt = (
             f"User wants a {data['level']} programming learning track.\n"
