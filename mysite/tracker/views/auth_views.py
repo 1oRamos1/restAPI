@@ -61,7 +61,9 @@ def login_view(request):
 @permission_classes([AllowAny])
 def logout_view(request):
     logout(request)
-    return Response({"message": "Logged out successfully"}, status=200)
+    response = Response({"message": "Logged out successfully"}, status=200)
+    response.delete_cookie('sessionid')
+    return response
 
 
 @api_view(['POST'])
