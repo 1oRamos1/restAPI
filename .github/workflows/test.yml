@@ -50,6 +50,7 @@ jobs:
           SOCIAL_AUTH_GOOGLE_CLIENT_ID: test-key
           SOCIAL_AUTH_GOOGLE_SECRET: test-key
           PAYPAL_CLIENT_ID: test-key
+          PAYPAL_SECRET: test-key
           DATABASE_URL: postgresql://tracker_user:tracker_password@localhost:5432/tracker_db
           DB_SSL: False
         run: |
