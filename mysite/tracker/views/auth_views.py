@@ -129,9 +129,33 @@ class GoogleLoginView(APIView):
             return Response({'error': str(e)}, status=400)
 
 
+def verify_paypal_order(order_id):
+    response = requests.post(
+        "https://api-m.sandbox.paypal.com/v1/oauth2/token",
+        auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET),
+        data={"grant_type": "client_credentials"}
+    )
+    token = response.json()["access_token"]
+
+    order_response = requests.get(
+        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    order = order_response.json()
+    return order.get("status") == "COMPLETED"
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upgrade_to_pro(request):
+    order_id = request.data.get("paypal_order_id")
+
+    if not order_id:
+        return Response({'error': 'Missing order ID'}, status=400)
+
+    if not verify_paypal_order(order_id):
+        return Response({'error': 'Payment not verified'}, status=400)
+
     profile, _ = Profile.objects.get_or_create(user=request.user)
     profile.is_pro = True
     profile.save()

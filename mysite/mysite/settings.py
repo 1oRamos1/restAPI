@@ -23,6 +23,7 @@ MISTRAL_API_KEY = config('MISTRAL_API_KEY')
 
 # === Paypal ===
 PAYPAL_CLIENT_ID = config('PAYPAL_CLIENT_ID')
+PAYPAL_SECRET = config('PAYPAL_SECRET')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 ALLOWED_HOSTS = ['tracker-2528.onrender.com', 'localhost', '127.0.0.1', '0.0.0.0']
