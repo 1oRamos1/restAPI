@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 
 from google.oauth2 import id_token
 from google.auth.transport import requests
+import requests as http_requests
 
 from dj_rest_auth.views import PasswordResetView, UserDetailsView
 
@@ -131,7 +132,7 @@ class GoogleLoginView(APIView):
 
 def verify_paypal_order(order_id):
     try:
-        response = requests.post(
+        response = http_requests.post(
             "https://api-m.sandbox.paypal.com/v1/oauth2/token",
             auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET),
             data={"grant_type": "client_credentials"}
@@ -139,7 +140,7 @@ def verify_paypal_order(order_id):
         print("PayPal token response:", response.status_code, response.text)
         token = response.json()["access_token"]
 
-        order_response = requests.get(
+        order_response = http_requests.get(
             f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
             headers={"Authorization": f"Bearer {token}"}
         )
