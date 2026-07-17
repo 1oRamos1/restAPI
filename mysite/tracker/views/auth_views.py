@@ -130,19 +130,25 @@ class GoogleLoginView(APIView):
 
 
 def verify_paypal_order(order_id):
-    response = requests.post(
-        "https://api-m.sandbox.paypal.com/v1/oauth2/token",
-        auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET),
-        data={"grant_type": "client_credentials"}
-    )
-    token = response.json()["access_token"]
+    try:
+        response = requests.post(
+            "https://api-m.sandbox.paypal.com/v1/oauth2/token",
+            auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET),
+            data={"grant_type": "client_credentials"}
+        )
+        print("PayPal token response:", response.status_code, response.text)
+        token = response.json()["access_token"]
 
-    order_response = requests.get(
-        f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
-        headers={"Authorization": f"Bearer {token}"}
-    )
-    order = order_response.json()
-    return order.get("status") == "COMPLETED"
+        order_response = requests.get(
+            f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        print("PayPal order response:", order_response.status_code, order_response.text)
+        order = order_response.json()
+        return order.get("status") == "COMPLETED"
+    except Exception as e:
+        print("PayPal error:", str(e))
+        return False
 
 
 @api_view(['POST'])
