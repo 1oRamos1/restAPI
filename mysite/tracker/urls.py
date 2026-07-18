@@ -11,7 +11,7 @@ from .views.learning_views import (
     LearningTrackDetail, UserLearningTrackList, UserLearningTrackDetail,
     GenerateSummary,
 )
-from .views.ai_views import (
+from .views.task_views import (
     CustomTrackOptionsView, CustomTrackCreateView,
     TaskDetail, GenerateNextTask, RestartTrack,
 )
