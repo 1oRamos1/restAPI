@@ -1,17 +1,29 @@
 # Python
 __pycache__/
 *.pyc
+*.pyo
 db.sqlite3
 .env
 
 # Django
 /static/
+staticfiles/
 media/
+
+# Virtual Environment
+venv/
+env/
 
 # Node/React
 node_modules/
 build/
 .env.local
+.next/
+
+# IDE
+.idea/
+.vscode/
 
 # General
 *.log
+*.DS_Store
