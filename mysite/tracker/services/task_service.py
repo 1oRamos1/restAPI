@@ -32,10 +32,10 @@ def grade_solution(user, task) -> dict:
     )
     ai_content = get_chat_completion(user, prompt)
 
-    grade_match = re.search(r"Grade[:：]?\s*(\d)\s*/\s*5\s*$", ai_content, re.IGNORECASE)
+    grade_match = re.search(r"Grade[::]?\s*(\d)\s*/\s*5\s*$", ai_content, re.IGNORECASE)
     grade = int(grade_match.group(1)) if grade_match else 0
     review_body = re.sub(
-        r"Grade[:：]?\s*\d\s*/\s*5\s*$", "", ai_content, flags=re.IGNORECASE
+        r"Grade[::]?\s*\d\s*/\s*5\s*$", "", ai_content, flags=re.IGNORECASE
     ).strip()
 
     return {
@@ -101,7 +101,8 @@ def get_weak_topic(user_track) -> str:
 
 def get_task_history_context(user_track) -> str:
     tasks = Task.objects.filter(
-        user_learning_track=user_track
+        user_learning_track=user_track,
+        grade__isnull=False
     ).order_by("-id")[:5]
 
     avg_grade = Task.objects.filter(
@@ -142,6 +143,7 @@ def generate_next_task_text(user, user_track, reinforcement_topic: str = None) -
         )
 
     track_language = user_track.learning_track.category.language or 'python'
+    track_difficulty = user_track.learning_track.level
 
     system_msg = (
         "You are a professional coding mentor. "
@@ -159,10 +161,11 @@ def generate_next_task_text(user, user_track, reinforcement_topic: str = None) -
     prompt = (
         f"Track: {user_track.learning_track.title}\n"
         f"Language: {track_language}\n"
-        f"Student Level: {user_track.current_level}\n"
+        f"Track Difficulty: {track_difficulty}\n"
+        f"Student Progress Level: {user_track.current_level}\n"
         f"Progress: {user_track.progress_score}/15\n"
         f"History:\n{history_context}\n\n"
-        f"Suggest the next {track_language} task."
+        f"Suggest the next {track_language} task appropriate for a {track_difficulty} track."
     )
 
     raw_text = get_chat_completion(user, prompt, system_msg=system_msg)
