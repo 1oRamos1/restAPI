@@ -6,7 +6,7 @@ import { SparklesIcon } from '@heroicons/react/24/solid'
 
 export default function Navbar({ onLoginClick }) {
   const navigate = useNavigate();
-  const { isAuthenticated, setIsAuthenticated, user, checkAuthStatus } = useContext(AuthContext);
+  const { isAuthenticated, setIsAuthenticated, user, setUser, checkAuthStatus } = useContext(AuthContext);
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export default function Navbar({ onLoginClick }) {
       window.google?.accounts?.id?.disableAutoSelect();
 
       setIsAuthenticated(false);
+      setUser(null);
       navigate('/');
     } catch (err) {
       console.error('Logout failed:', err);

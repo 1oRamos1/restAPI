@@ -27,6 +27,8 @@ export default function LoginModal() {
     try {
       if (!window.google?.accounts?.id) return;
 
+      window.google.accounts.id.disableAutoSelect();
+
       window.google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleLogin,

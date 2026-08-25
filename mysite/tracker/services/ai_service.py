@@ -37,6 +37,39 @@ def get_chat_completion(user, prompt: str, system_msg: str = "You are a helpful 
         raise ConnectionError("AI service is temporarily unavailable.")
 
 
+def _escape_control_chars_in_strings(raw: str) -> str:
+    """AI-generated code often contains literal newlines/tabs inside JSON
+    string values, which is illegal per the JSON spec. Escape control
+    characters found inside string literals without touching whitespace
+    used to format the JSON itself (outside of strings)."""
+    result = []
+    in_string = False
+    escaped = False
+    control_escapes = {"\n": "\\n", "\r": "\\r", "\t": "\\t"}
+    for ch in raw:
+        if in_string:
+            if escaped:
+                result.append(ch)
+                escaped = False
+            elif ch == "\\":
+                result.append(ch)
+                escaped = True
+            elif ch == '"':
+                result.append(ch)
+                in_string = False
+            elif ch in control_escapes:
+                result.append(control_escapes[ch])
+            elif ord(ch) < 0x20:
+                result.append(f"\\u{ord(ch):04x}")
+            else:
+                result.append(ch)
+        else:
+            if ch == '"':
+                in_string = True
+            result.append(ch)
+    return "".join(result)
+
+
 def extract_json_from_text(text: str):
     if "```" in text:
         text = text.replace("```json", "").replace("```", "").strip()
@@ -49,7 +82,7 @@ def extract_json_from_text(text: str):
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
-        cleaned = re.sub(r'(?<!\\)[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', raw)
+        cleaned = _escape_control_chars_in_strings(raw)
         try:
             return json.loads(cleaned)
         except json.JSONDecodeError as e:
