@@ -78,18 +78,6 @@ PostgreSQL
 
 ## 🚀 Running Locally
 
-### Option 1 — Docker
-
-```bash
-git clone https://github.com/1oRamos1/restAPI.git
-cd restAPI
-docker-compose up --build
-```
-
-Open: `http://localhost:8000`
-
-### Option 2 — Manual setup
-
 ```bash
 git clone https://github.com/1oRamos1/restAPI.git
 
