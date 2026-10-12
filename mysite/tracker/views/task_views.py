@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 
-from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,10 +9,7 @@ from ..models import Task, UserLearningTrack
 from ..serializers import (
     TaskDetailSerializer,
     TaskListSerializer,
-    CustomTrackOptionsSerializer,
-    CustomTrackCreateSerializer,
 )
-from ..services.ai_service import generate_track_from_prompt, extract_json_from_text
 from ..services.task_service import (
     extract_student_code,
     grade_solution,
@@ -27,46 +23,6 @@ from ..choices import MONACO_LANGUAGES
 
 import logging
 logger = logging.getLogger(__name__)
-
-
-class CustomTrackOptionsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = CustomTrackOptionsSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
-        lang_prompt = (
-            data["language"] if data["language"] != "auto"
-            else "one of the following: python, javascript, cpp"
-        )
-        prompt = (
-            f"User wants a {data['level']} programming learning track.\n"
-            f"Language preference: {lang_prompt}.\n"
-            f"Learning goal: {data['description']}\n"
-            f"Suggest 3 to 5 learning tracks as a JSON ARRAY ONLY with this format:\n"
-            f'[{{"title": "...", "language": "...", "level": "beginner|advanced|master", "short_description": "..."}}]\n'
-            f"Return ONLY valid JSON."
-        )
-
-        options = extract_json_from_text(generate_track_from_prompt(prompt))
-        return Response({"options": options})
-
-
-class CustomTrackCreateView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        if not getattr(request.user.profile, "is_pro", False):
-            return Response({"detail": "Pro membership required."}, status=403)
-        serializer = CustomTrackCreateSerializer(data=request.data, context={"request": request})
-        serializer.is_valid(raise_exception=True)
-        ult = serializer.save()
-        return Response(
-            {"track_id": ult.learning_track.id, "user_track_id": ult.id},
-            status=status.HTTP_201_CREATED,
-        )
 
 
 class TaskDetail(RetrieveUpdateDestroyAPIView):

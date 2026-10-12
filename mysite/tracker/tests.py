@@ -10,7 +10,12 @@ BASE = '/api/v1/tracker'
 
 def create_user(username="testuser", password="testpass123", is_pro=False):
     user = User.objects.create_user(username=username, password=password, email=f"{username}@test.com")
-    Profile.objects.get_or_create(user=user, defaults={"is_pro": is_pro})
+    # The post_save signal already creates the Profile (is_pro=False) and caches
+    # it on `user`, so get_or_create(defaults=...) would be ignored. Update that
+    # same cached instance so `user.profile.is_pro` is correct in the views.
+    profile = getattr(user, "profile", None) or Profile.objects.create(user=user)
+    profile.is_pro = is_pro
+    profile.save()
     return user
 
 
@@ -261,3 +266,48 @@ class SummaryTests(TestCase):
         other_client.force_authenticate(user=other_user)
         res = other_client.post(f'{BASE}/user/tracks/{self.user_track.id}/summary/')
         self.assertEqual(res.status_code, 404)
+
+
+# ==========================================
+# 6. Custom Track (Pro) Tests
+# ==========================================
+
+class CustomTrackAccessTests(TestCase):
+
+    def setUp(self):
+        self.client = APIClient()
+        self.payload = {
+            "language": "python",
+            "level": "beginner",
+            "description": "learn python decorators and generators",
+        }
+
+    @patch('tracker.views.track_views.generate_track_from_prompt')
+    def test_options_free_user_forbidden_and_ai_not_called(self, mock_ai):
+        self.client.force_authenticate(user=create_user())
+        res = self.client.post(f'{BASE}/custom-track/options/', self.payload)
+        self.assertEqual(res.status_code, 403)
+        mock_ai.assert_not_called()
+
+    @patch('tracker.views.track_views.generate_track_from_prompt')
+    def test_options_anonymous_forbidden_and_ai_not_called(self, mock_ai):
+        res = self.client.post(f'{BASE}/custom-track/options/', self.payload)
+        self.assertEqual(res.status_code, 403)
+        mock_ai.assert_not_called()
+
+    @patch('tracker.serializers.is_valid_learning_goal', return_value=True)
+    @patch('tracker.views.track_views.generate_track_from_prompt')
+    def test_options_pro_user_gets_options(self, mock_ai, _mock_goal):
+        mock_ai.return_value = (
+            '[{"title": "Decorators 101", "language": "python", '
+            '"level": "beginner", "short_description": "Intro"}]'
+        )
+        self.client.force_authenticate(user=create_user(username="pro", is_pro=True))
+        res = self.client.post(f'{BASE}/custom-track/options/', self.payload)
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json()["options"][0]["title"], "Decorators 101")
+
+    def test_create_free_user_forbidden(self):
+        self.client.force_authenticate(user=create_user())
+        res = self.client.post(f'{BASE}/custom-track/create/', self.payload)
+        self.assertEqual(res.status_code, 403)

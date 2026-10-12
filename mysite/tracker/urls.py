@@ -6,13 +6,12 @@ from .views.auth_views import (
     signup_view, upgrade_to_pro, GoogleLoginView,
     CustomUserDetailsView, CustomPasswordResetView,
 )
-from .views.learning_views import (
+from .views.track_views import (
     CategoryList, LearningTracksByCategory,
     LearningTrackDetail, UserLearningTrackList, UserLearningTrackDetail,
-    GenerateSummary,
+    GenerateSummary, CustomTrackOptionsView, CustomTrackCreateView,
 )
 from .views.task_views import (
-    CustomTrackOptionsView, CustomTrackCreateView,
     TaskDetail, GenerateNextTask, RestartTrack,
 )
 
