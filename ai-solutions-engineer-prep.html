@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>הכנה ל-AI Solutions Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f8; --text:#1a2030; --muted:#5b6478;
+  --border:#dde2ee; --accent:#2f5bd3; --accent-soft:#e3eafc; --ok:#1d7a4c; --ok-soft:#e2f4ea;
+  --warn:#9a6a00; --warn-soft:#fbf1d6; --bad:#b33a2b; --bad-soft:#fbe5e1; --code-bg:#f1f3f9;
+  --shadow:0 1px 2px rgba(20,30,60,.06),0 4px 14px rgba(20,30,60,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f131c; --surface:#171c28; --surface-2:#1f2533; --text:#e6e9f2; --muted:#9aa3b8;
+    --border:#2a3142; --accent:#7c9cff; --accent-soft:#232d4a; --ok:#5fd39a; --ok-soft:#183427;
+    --warn:#f0c157; --warn-soft:#3a2f12; --bad:#ff8a78; --bad-soft:#3d1f1b; --code-bg:#11151f;
+    --shadow:none;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f131c; --surface:#171c28; --surface-2:#1f2533; --text:#e6e9f2; --muted:#9aa3b8;
+  --border:#2a3142; --accent:#7c9cff; --accent-soft:#232d4a; --ok:#5fd39a; --ok-soft:#183427;
+  --warn:#f0c157; --warn-soft:#3a2f12; --bad:#ff8a78; --bad-soft:#3d1f1b; --code-bg:#11151f;
+  --shadow:none;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 Heebo,system-ui,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+code{background:var(--code-bg);padding:.05em .35em;border-radius:4px;font-size:.88em;direction:ltr;unicode-bidi:embed}
+pre{background:var(--code-bg);border:1px solid var(--border);border-radius:10px;padding:14px;overflow:auto;direction:ltr;text-align:left;font-size:13px;line-height:1.55;margin:10px 0}
+pre code{background:none;padding:0;font-size:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+header.top{padding:28px 0 8px}
+.eyebrow{color:var(--accent);font-weight:700;font-size:13px;letter-spacing:.04em}
+h1{font-size:clamp(26px,5vw,40px);line-height:1.15;margin:6px 0 8px;font-weight:800}
+.sub{color:var(--muted);margin:0 0 16px;max-width:760px}
+.progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:8px 0 4px}
+.bar{flex:1;min-width:160px;height:10px;background:var(--surface-2);border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.bar>i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.small{font-size:13px;color:var(--muted)}
+.theme-btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:4px 10px;cursor:pointer;font:inherit;font-size:13px}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--border);margin-top:10px}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin;padding-top:6px}
+nav.tabs button{flex:0 0 auto;border:0;background:none;color:var(--muted);font:inherit;font-weight:500;padding:10px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+main{padding:20px 0 60px}
+section.panel{display:none}
+section.panel.active{display:block}
+h2{font-size:24px;margin:8px 0 12px}
+h3{font-size:18px;margin:22px 0 8px}
+h4{font-size:16px;margin:14px 0 6px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow);margin:12px 0}
+.grid{display:grid;gap:12px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.note{border-inline-start:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:8px;margin:10px 0}
+.note.ok{border-color:var(--ok);background:var(--ok-soft)}
+.note.warn{border-color:var(--warn);background:var(--warn-soft)}
+.note.bad{border-color:var(--bad);background:var(--bad-soft)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted);margin-inline-start:6px;vertical-align:middle}
+.tag.new{background:var(--ok-soft);color:var(--ok)}
+.tag.fix{background:var(--warn-soft);color:var(--warn)}
+.tag.upd{background:var(--accent-soft);color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+.tbl{overflow-x:auto;border:1px solid var(--border);border-radius:10px;margin:10px 0}
+th,td{text-align:right;padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+th{background:var(--surface-2);font-weight:700}
+tr:last-child td{border-bottom:0}
+td:first-child{font-weight:600;white-space:nowrap}
+ul{padding-inline-start:20px;margin:6px 0}
+li{margin:3px 0}
+details{border:1px solid var(--border);border-radius:12px;background:var(--surface);margin:10px 0;box-shadow:var(--shadow)}
+details>summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"◂";color:var(--muted);transition:transform .2s;font-size:14px}
+details[open]>summary::before{transform:rotate(-90deg)}
+details .body{padding:0 16px 16px}
+.num{display:inline-grid;place-items:center;min-width:30px;height:30px;border-radius:8px;background:var(--accent);color:#fff;font-weight:800}
+:root[data-theme="dark"] .num{color:#0f131c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .num{color:#0f131c}}
+.check{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+.check input{margin-top:6px;width:17px;height:17px;accent-color:var(--accent);flex:0 0 auto}
+.check.done span{color:var(--muted);text-decoration:line-through}
+.layer{border:1.5px solid var(--accent);border-radius:12px;padding:12px 16px;margin:14px 0;background:var(--surface)}
+.layer .lh{color:var(--accent);font-weight:700;font-size:13px}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.flow span{background:var(--accent-soft);border-radius:8px;padding:4px 10px;font-size:14px}
+.flow b{color:var(--muted);font-weight:400}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+:root[data-theme="dark"] .btn.primary{color:#0f131c}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.primary{color:#0f131c}}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input[type=number],input[type=text]{font:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 10px;max-width:100%}
+/* flashcards */
+.fc-stage{perspective:1200px;margin:14px 0}
+.fc{position:relative;min-height:230px;cursor:pointer;transform-style:preserve-3d;transition:transform .45s}
+.fc.flipped{transform:rotateY(180deg)}
+.fc>div{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid var(--border);background:var(--surface);box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:22px;text-align:center}
+.fc .back{transform:rotateY(180deg);background:var(--accent-soft)}
+.fc .term{font-size:clamp(22px,4vw,30px);font-weight:800;direction:ltr}
+.fc .def{font-size:17px;max-width:640px}
+/* quiz */
+.q{margin:14px 0}
+.q .opts{display:grid;gap:8px;margin-top:8px}
+.q .opt{text-align:right;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:10px;padding:10px 12px;font:inherit;cursor:pointer}
+.q .opt:hover:not(:disabled){border-color:var(--accent)}
+.q .opt.right{background:var(--ok-soft);border-color:var(--ok)}
+.q .opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.q .opt:disabled{cursor:default}
+.q .exp{display:none;margin-top:8px}
+.q.answered .exp{display:block}
+.score{font-weight:800;font-size:20px}
+/* interview */
+.timer{font-family:"JetBrains Mono",monospace;font-size:28px;font-weight:600}
+.iv-q{font-size:20px;font-weight:700;margin:8px 0}
+.hidden{display:none!important}
+.kbd{border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:12px}
+.calc label{display:block;font-size:14px;color:var(--muted);margin-bottom:3px}
+.calc .out{font-size:26px;font-weight:800;color:var(--accent)}
+.week{display:flex;gap:10px;align-items:flex-start}
+@media (max-width:560px){
+  th,td{padding:8px}
+  td:first-child{white-space:normal}
+  .fc{min-height:280px}
+}
+</style>
+</head>
+<body>
+<header class="top wrap">
+  <div class="row" style="justify-content:space-between">
+    <div class="eyebrow">ערכת הכנה · גרסה מעודכנת · נובמבר 2026</div>
+    <button class="theme-btn" id="themeBtn" type="button">מצב תצוגה</button>
+  </div>
+  <h1>ללמוד, לבנות, לתרגל: <span dir="ltr">AI Solutions Engineer</span></h1>
+  <p class="sub">מפת הלמידה שלך אחרי בדיקה ועדכון: 7 שלבים, פרויקט ראשי אחד שגדל משלב לשלב, ומעל זה כרטיסיות, מבחנים, סימולציית ראיון, תרגילי קוד ומחשבון עלויות. ההתקדמות נשמרת בדפדפן הזה.</p>
+  <div class="progress">
+    <div class="bar" aria-hidden="true"><i id="pbar"></i></div>
+    <span class="small" id="ptext">0% הושלם</span>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="ניווט">
+  <div class="wrap" role="tablist" id="tablist">
+    <button role="tab" data-tab="review" aria-selected="true">מה עודכן</button>
+    <button role="tab" data-tab="map">מפת הלמידה</button>
+    <button role="tab" data-tab="project">הפרויקט הראשי</button>
+    <button role="tab" data-tab="cards">כרטיסיות</button>
+    <button role="tab" data-tab="quiz">מבחנים</button>
+    <button role="tab" data-tab="interview">סימולציית ראיון</button>
+    <button role="tab" data-tab="code">תרגילי קוד</button>
+    <button role="tab" data-tab="calc">מחשבון עלויות</button>
+    <button role="tab" data-tab="plan">לוח זמנים</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- ============ REVIEW ============ -->
+<section class="panel active" id="review">
+  <h2>בדיקה חוזרת: מה תקין ומה שיניתי</h2>
+  <div class="note ok"><b>השורה התחתונה:</b> המפה במצב טוב. המבנה (פרויקט אחד שגדל בשכבות), סדר השלבים, היקף השעות (כ-185 שעות, כ-11.5 בשבוע) והדגש על עבודה מול לקוח נכונים ומתאימים לתפקיד. מצאתי כמה פרטים שהתיישנו מאז, וכמה נושאים שכדאי להוסיף.</div>
+
+  <h3>אומת ונשאר כמו שהוא</h3>
+  <div class="card"><ul>
+    <li><b>Bedrock Agents → AgentCore:</b> נכון. השירות נקרא עכשיו <i>Bedrock Agents Classic</i>, נסגר ללקוחות חדשים ב-30 ביולי 2026 ונשאר במצב תחזוקה ללקוחות קיימים. Knowledge Bases ו-Guardrails לא הושפעו.</li>
+    <li><b>Amazon Nova</b> כמשפחת המודלים של אמזון במקום Titan: נכון (Titan Text Embeddings עדיין בשימוש להטמעות).</li>
+    <li><b>תיקון 13 לחוק הגנת הפרטיות</b> ו-<b>EU AI Act</b>: רלוונטיים ונכונים.</li>
+    <li>הסדר "קודם בלי ספריות, אחר כך ספרייה אחת לעומק" ב-RAG ובסוכנים: נשאר. זו הדרך הנכונה ללמוד.</li>
+  </ul></div>
+
+  <h3>תיקונים ועדכונים</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>איפה</th><th>מה היה</th><th>מה נכון עכשיו</th></tr></thead>
+    <tbody>
+      <tr><td>שלב 5 · Azure <span class="tag fix">תיקון</span></td><td>Azure AI Foundry</td><td>השם הוא עכשיו <b>Microsoft Foundry</b> (הוכרז בנובמבר 2025, בתוקף מינואר 2026). בראיונות ובמסמכים תשתמשו בשם החדש, אבל תכירו גם את הישן כי לקוחות עדיין אומרים אותו.</td></tr>
+      <tr><td>שלב 3 · MCP <span class="tag upd">עדכון</span></td><td>"תקן פתוח של Anthropic"</td><td>MCP נתרם ל-<b>Agentic AI Foundation</b> תחת Linux Foundation (יחד עם AGENTS.md של OpenAI ו-goose של Block). זה מחזק את הטיעון מול לקוחות שזה תקן ניטרלי ולא נעילה לספק.</td></tr>
+      <tr><td>שלב 1 · Temperature <span class="tag upd">עדכון</span></td><td>"שולט באקראיות הפלט"</td><td>עדיין מושג חובה, אבל במודלים החדשים (reasoning) הפרמטרים האלה מוגבלים או הוסרו לגמרי (למשל במודלי Claude האחרונים <code>temperature</code> מחזיר שגיאה). השליטה עברה ל-<b>effort / reasoning level</b>. חשוב לדעת להסביר את השינוי.</td></tr>
+      <tr><td>שלב 1 · Prefill <span class="tag upd">עדכון</span></td><td>מילוי מוקדם של תשובת ה-Assistant כטכניקה</td><td>במודלים החדשים של Claude, prefill הוסר (מחזיר 400). כדי לכפות פורמט משתמשים ב-<b>Structured Outputs</b>.</td></tr>
+      <tr><td>שלב 1 · Structured Output <span class="tag upd">עדכון</span></td><td>"מגדירים סכמה עם Pydantic ומשתמשים במצב פלט מובנה"</td><td>מדויק יותר: הספקים הגדולים אוכפים JSON Schema בצד השרת (constrained decoding). ב-SDK של Anthropic: <code>client.messages.parse(output_format=Model)</code>. ב-OpenAI: Structured Outputs. Pydantic נשאר שכבת הוולידציה אצלכם.</td></tr>
+      <tr><td>שלב 2 · שירותים <span class="tag upd">עדכון</span></td><td>—</td><td><b>Amazon Kendra</b> ו-<b>Q Business</b> נכנסו למצב תחזוקה באותה הודעה של יוני 2026. אל תציעו אותם ללקוח חדש; ב-AWS הולכים ל-Bedrock Knowledge Bases או OpenSearch.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>מה הוספתי</h3>
+  <div class="grid g2">
+    <div class="card"><h4>Context Engineering <span class="tag new">חדש</span></h4>המונח שהחליף במידה רבה את "הנדסת הנחיות": איך מנהלים את כל מה שנכנס לחלון (הנחיות, כלים, תוצאות כלים, היסטוריה, זיכרון). כולל compaction (סיכום אוטומטי של היסטוריה ארוכה) וניקוי תוצאות כלים ישנות. נוסף לשלבים 1 ו-3.</div>
+    <div class="card"><h4>OWASP Top 10 ל-LLM ולסוכנים <span class="tag new">חדש</span></h4>הרשימה שצוותי אבטחה בארגונים מכירים. כשמדברים איתם בשפה שלהם, הפגישה הולכת אחרת. נוסף גם המושג <b>Lethal Trifecta</b>: סוכן עם גישה למידע פרטי + חשיפה לתוכן לא אמין + יכולת לשלוח החוצה = סיכון לדליפה.</div>
+    <div class="card"><h4>A2A ו-Agent Skills <span class="tag new">להכיר</span></h4><b>A2A</b> (Agent2Agent): פרוטוקול לתקשורת בין סוכנים של ספקים שונים, משלים ל-MCP. <b>Skills / AGENTS.md</b>: חבילות הוראות וקבצים שסוכן טוען לפי צורך. מספיק לדעת מה הם ומתי עולים.</div>
+    <div class="card"><h4>Batch ו-Prompt Caching כמנופי עלות <span class="tag new">חדש</span></h4>Batch API (בדרך כלל כ-50% הנחה לעיבוד לא דחוף) ו-caching (קריאה מהמטמון בכ-10% מהמחיר). שתי שאלות שחוזרות בראיונות "איך תוזיל את המערכת". נוסף למחשבון העלויות.</div>
+  </div>
+  <div class="note warn"><b>שימו לב:</b> שמות שירותים, מחירים ודגמים משתנים כל כמה חודשים. לפני ראיון, עברו 10 דקות על דפי התמחור והחדשות של AWS, Microsoft ושל ספקי המודלים. זה בדיוק סוג הדבר שמראיינים בודקים.</div>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="panel" id="map">
+  <h2>מפת הלמידה</h2>
+  <p class="small">כל שלב: למה הוא חשוב, מושגים, ורשימת "אני יודע/ת" לסימון. הסימונים נכנסים לפס ההתקדמות למעלה.</p>
+  <div id="phases"></div>
+</section>
+
+<!-- ============ PROJECT ============ -->
+<section class="panel" id="project">
+  <h2>הפרויקט הראשי: עוזר שירות וידע לארגון</h2>
+  <div class="note"><b>הרעיון:</b> במקום תרגיל נפרד לכל נושא, בונים מערכת אחת. בכל שלב מוסיפים שכבה, בלי לשבור מה שכבר עובד. כך עובדים בתעשייה, וזה הסיפור שתספרו בראיון.</div>
+  <div class="grid g2">
+    <div class="card"><h4>אפשרות א': לקוח אמיתי (מומלץ)</h4><ul><li>עמותה, עסק קטן, מחלקה באוניברסיטה או מקום עבודה של מכר.</li><li>מציעים POC בחינם לבעיה אמיתית: מענה לשאלות נפוצות, סיווג פניות, חיפוש בנהלים.</li><li>צריך: מסמכים אמיתיים, איש קשר, 3–4 פגישות קצרות, ואישור להציג.</li><li>בראיון: "בניתי לעמותה X, ו-40 מתנדבים משתמשים בזה".</li></ul></div>
+    <div class="card"><h4>אפשרות ב': לקוח מדומה, נתונים אמיתיים</h4><ul><li>ארגון דמיוני עם מסמכים ציבוריים בעברית: תקנונים, נהלים, שאלות נפוצות של קופת חולים, רשות מקומית, ביטוח לאומי.</li><li>את נתוני ה"מערכות" (פניות, הזמנות) מייצרים בעצמכם ב-DB.</li></ul></div>
+  </div>
+  <div class="card"><h4>מבנה ריפו</h4>
+<pre><code>service-assistant/
+├── backend/            FastAPI
+│   ├── llm/            layer 1: classification, structured output
+│   ├── rag/            layer 2: ingestion, retrieval, citations
+│   ├── agent/          layer 3: tools, loop, approvals
+│   └── mcp_server/     layer 3: tools exposed over MCP
+├── frontend/           React chat + approval UI
+├── evals/              layer 4: golden sets, judges, CI runner
+├── infra/              layer 5: Docker, compose, AWS deploy
+├── automations/        layer 7: n8n workflow exports
+├── docs/               client brief, HLD, POC report, risks
+└── experiments/        throwaway spikes</code></pre>
+  <ul>
+    <li><b>מודולריות:</b> כל יכולת במודול נפרד, כדי שאם שלב נתקע אפשר להמשיך.</li>
+    <li><b>תגית git בסוף כל שכבה</b> (<code>v1-llm</code>, <code>v2-rag</code>…) ופסקה ב-README: מה נוסף, מה למדתם, מה הייתם עושים אחרת.</li>
+    <li><b>לכתוב כשצריך:</b> החלטה מוקדמת שהתבררה כשגויה היא חלק מהלמידה. מתעדים למה שיניתם.</li>
+  </ul></div>
+  <h3>השכבות — סמנו "סיימתם כש"</h3>
+  <div id="layers"></div>
+</section>
+
+<!-- ============ CARDS ============ -->
+<section class="panel" id="cards">
+  <h2>כרטיסיות מושגים</h2>
+  <div class="row">
+    <label for="fcFilter" class="small">שלב:</label>
+    <select id="fcFilter"></select>
+    <label class="small"><input type="checkbox" id="fcOnlyUnknown"> רק מה שעוד לא יודע/ת</label>
+    <button class="btn" id="fcShuffle" type="button">ערבוב</button>
+  </div>
+  <div class="fc-stage"><div class="fc" id="fc" tabindex="0" role="button" aria-label="הפוך כרטיס">
+    <div class="front"><div class="small" id="fcPhase"></div><div class="term" id="fcTerm"></div><div class="small" style="margin-top:14px">לחצו או רווח כדי להפוך</div></div>
+    <div class="back"><div class="def" id="fcDef"></div></div>
+  </div></div>
+  <div class="row" style="justify-content:space-between">
+    <button class="btn" id="fcPrev" type="button">→ הקודם</button>
+    <span class="small" id="fcCount"></span>
+    <button class="btn" id="fcNext" type="button">הבא ←</button>
+  </div>
+  <div class="row" style="justify-content:center;margin-top:12px">
+    <button class="btn" id="fcKnow" type="button">✓ יודע/ת</button>
+    <button class="btn" id="fcDont" type="button">✗ צריך לחזור</button>
+  </div>
+  <p class="small" style="text-align:center">קיצורים: <span class="kbd">←</span> <span class="kbd">→</span> ניווט · <span class="kbd">רווח</span> הפיכה</p>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="panel" id="quiz">
+  <h2>מבחנים לפי שלב</h2>
+  <div class="row">
+    <label for="qFilter" class="small">שלב:</label>
+    <select id="qFilter"></select>
+    <button class="btn" id="qReset" type="button">התחלה מחדש</button>
+    <span class="score" id="qScore"></span>
+  </div>
+  <div id="qList"></div>
+</section>
+
+<!-- ============ INTERVIEW ============ -->
+<section class="panel" id="interview">
+  <h2>סימולציית ראיון</h2>
+  <p class="small">שאלה אקראית, טיימר, תשובה בקול רם (או בכתב), ורק אז חשיפת נקודות לתשובה טובה. הקפידו לענות במבנה: הקשר → החלטה → למה → מה הייתי מודד.</p>
+  <div class="card">
+    <div class="row">
+      <select id="ivCat"></select>
+      <button class="btn primary" id="ivNext" type="button">שאלה חדשה</button>
+      <span class="timer" id="ivTimer">2:00</span>
+      <button class="btn" id="ivStart" type="button">הפעל טיימר</button>
+    </div>
+    <div class="small" id="ivMeta" style="margin-top:10px"></div>
+    <div class="iv-q" id="ivQ">לחצו "שאלה חדשה"</div>
+    <textarea id="ivDraft" rows="4" style="width:100%;font:inherit;color:var(--text);background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:8px" placeholder="טיוטת תשובה (לא נשמרת)"></textarea>
+    <div class="row" style="margin-top:8px"><button class="btn" id="ivReveal" type="button">הצג נקודות לתשובה</button></div>
+    <div id="ivA" class="note ok hidden"></div>
+  </div>
+  <h3>כל השאלות</h3>
+  <div id="ivAll"></div>
+  <h3>רשימת בדיקה לפני ראיון</h3>
+  <div class="card" id="preInterview"></div>
+</section>
+
+<!-- ============ CODE ============ -->
+<section class="panel" id="code">
+  <h2>תרגילי קוד</h2>
+  <div class="note">כל תרגיל: משימה, רמז, ופתרון מוסתר. נסו קודם לבד 20–30 דקות. הדוגמאות ב-Python עם ה-SDK של Anthropic (<code>pip install anthropic</code>); העקרונות זהים אצל כל ספק.</div>
+  <div id="exercises"></div>
+  <h3>תרגילי בית בסגנון ראיון</h3>
+  <p class="small">החל משבוע 5, תרגיל אחד כל 2–3 שבועות, בריפו נפרד ובמגבלת זמן.</p>
+  <div class="grid g3" id="takehome"></div>
+</section>
+
+<!-- ============ CALC ============ -->
+<section class="panel" id="calc">
+  <h2>מחשבון עלות חודשית</h2>
+  <p class="small">השאלה "כמה זה יעלה בחודש?" מגיעה בכל פגישת אפיון. תרגלו לענות עליה תוך דקה. המחירים כאן לדוגמה בלבד; בדקו את דף התמחור העדכני של הספק.</p>
+  <div class="card calc">
+    <div class="grid g3">
+      <div><label for="cReq">פניות בחודש</label><input type="number" id="cReq" value="30000" min="0"></div>
+      <div><label for="cIn">טוקני קלט לפנייה (כולל הקשר RAG)</label><input type="number" id="cIn" value="4000" min="0"></div>
+      <div><label for="cOut">טוקני פלט לפנייה</label><input type="number" id="cOut" value="500" min="0"></div>
+      <div><label for="cPin">מחיר קלט ($ למיליון)</label><input type="number" id="cPin" value="2" step="0.1" min="0"></div>
+      <div><label for="cPout">מחיר פלט ($ למיליון)</label><input type="number" id="cPout" value="10" step="0.1" min="0"></div>
+      <div><label for="cHeb">מכפיל עברית (טוקנים)</label><input type="number" id="cHeb" value="1.4" step="0.1" min="1"></div>
+      <div><label for="cCache">% מהקלט שנקרא מ-cache</label><input type="number" id="cCache" value="0" min="0" max="100"></div>
+      <div><label for="cBatch">% מהפניות דרך Batch</label><input type="number" id="cBatch" value="0" min="0" max="100"></div>
+      <div><label for="cCalls">קריאות למודל לפנייה (סוכן)</label><input type="number" id="cCalls" value="1" min="1"></div>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--border);margin:16px 0">
+    <div class="grid g3">
+      <div><div class="small">עלות חודשית משוערת</div><div class="out" id="cTotal">—</div></div>
+      <div><div class="small">עלות לפנייה</div><div class="out" id="cPer">—</div></div>
+      <div><div class="small">פירוט</div><div id="cBreak" class="small"></div></div>
+    </div>
+  </div>
+  <div class="note"><b>איך לנסח ללקוח:</b> "בהערכה של 30 אלף פניות בחודש, עם RAG של כ-4,000 טוקנים, העלות היא בסביבות X דולר בחודש. אפשר להוריד אותה ב-Y% עם caching ומודל קטן לסיווג. זה לעומת Z שעות עבודה שנחסכות." תמיד להציג טווח, לא מספר אחד.</div>
+  <h4>מנופי הוזלה, לפי סדר</h4>
+  <ol>
+    <li><b>Prompt caching</b> להנחיית מערכת ולהקשר קבוע. חינם כמעט, חיסכון גדול.</li>
+    <li><b>לקצר הקשר:</b> פחות קטעים, reranking טוב יותר, ניקוי היסטוריה.</li>
+    <li><b>Batch</b> לכל מה שלא דחוף (סיווג לילי, סיכומים).</li>
+    <li><b>מודל קטן למשימות פשוטות</b> (ניתוב/סיווג), מודל חזק רק במקום שצריך. למדוד באיכות, לא להניח.</li>
+    <li><b>להגביל לולאות סוכן:</b> מקסימום צעדים ותקציב טוקנים.</li>
+  </ol>
+</section>
+
+<!-- ============ PLAN ============ -->
+<section class="panel" id="plan">
+  <h2>לוח זמנים: 16 שבועות</h2>
+  <p class="small">בהנחה של 10–15 שעות בשבוע, בערך חצי לימוד וחצי עבודה על הפרויקט. אפשר לקצר אם לומדים במשרה מלאה.</p>
+  <div class="card" id="weeks"></div>
+  <h3>סיכום הפרויקט (שבוע 16)</h3>
+  <div class="card"><ul>
+    <li><b>README מצוין:</b> מה הבעיה, מי מריצים, תרשים ארכיטקטורה, איך מריצים, תוצאות ה-evals, עלות לשאלה, ויומן השכבות.</li>
+    <li><b>תיקיית docs:</b> תקציר הלקוח, מסמך הארכיטקטורה, דוח ה-POC ומסמך הסיכונים.</li>
+    <li><b>סרטון דמו של 3–5 דקות</b> שמספר סיפור עסקי, לא רק מראה טכנולוגיה.</li>
+    <li><b>עם לקוח אמיתי:</b> מספרי שימוש וציטוט קצר מהלקוח.</li>
+  </ul></div>
+</section>
+
+</main>
+
+<script>
+(function(){
+"use strict";
+/* ---------- storage (safe) ---------- */
+const KEY="aise-prep-v1";
+let state={checks:{},known:{},quiz:{}};
+try{const s=localStorage.getItem(KEY); if(s){state=Object.assign(state,JSON.parse(s));}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){} updateProgress();}
+
+/* ---------- theme ---------- */
+const root=document.documentElement;
+try{const t=localStorage.getItem(KEY+"-theme"); if(t) root.dataset.theme=t;}catch(e){}
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  const cur=root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");
+  root.dataset.theme=cur==="dark"?"light":"dark";
+  try{localStorage.setItem(KEY+"-theme",root.dataset.theme);}catch(e){}
+});
+
+/* ---------- tabs ---------- */
+const tabs=[...document.querySelectorAll("#tablist button")];
+function openTab(id){
+  tabs.forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===id)));
+  document.querySelectorAll("section.panel").forEach(p=>p.classList.toggle("active",p.id===id));
+  try{sessionStorage.setItem(KEY+"-tab",id);}catch(e){}
+  window.scrollTo({top:0});
+}
+tabs.forEach(b=>b.addEventListener("click",()=>openTab(b.dataset.tab)));
+try{const t=sessionStorage.getItem(KEY+"-tab"); if(t) openTab(t);}catch(e){}
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* =========================================================
+   DATA
+   ========================================================= */
+const PHASES=[
+{id:1,title:"LLMs והנדסת הנחיות",when:"שבועות 1–2 · כ-25 שעות",
+ why:"זו שכבת הבסיס. כל פתרון, מ-RAG ועד סוכן, הוא בסוף רצף של קריאות למודל. מי שמבין טוקנים, עלויות ופלט מובנה, יודע גם להעריך פרויקט מול לקוח.",
+ concepts:[
+  ["Token","יחידת הבסיס של טקסט במודל. קובע עלות ומגבלות אורך. בעברית נדרשים בדרך כלל יותר טוקנים מאשר באנגלית לאותו תוכן."],
+  ["Context Window","כמות הטוקנים המקסימלית בקריאה אחת (קלט + פלט). חריגה מחזירה בדרך כלל שגיאה, ולכן ניהול ההיסטוריה וקיצוצה הם באחריותכם. היום חלונות של מיליון טוקנים נפוצים, אבל יותר הקשר = יותר עלות ולפעמים פחות דיוק."],
+  ["Temperature / Effort","טמפרטורה שלטה באקראיות. במודלי reasoning החדשים היא מוגבלת או הוסרה, והשליטה עברה ל-effort (כמה המודל חושב). צריך להכיר את שניהם."],
+  ["System / User / Assistant","שלושת התפקידים בשיחה: הוראות מערכת, הקלט של המשתמש, ותשובות המודל בהיסטוריה."],
+  ["Hallucination","המודל ממציא עובדות בביטחון. ממזערים עם עיגון במקורות (RAG), הוראה מפורשת לומר 'לא יודע', ובדיקות אוטומטיות."],
+  ["Zero-shot / Few-shot","משימה בלי דוגמאות, או עם כמה דוגמאות קלט-פלט בתוך ההנחיה."],
+  ["Reasoning models","מודלים שחושבים לפני שהם עונים. טובים במשימות מורכבות, אבל איטיים ויקרים יותר. רמת ה-effort היא חלק מהבחירה."],
+  ["Multimodal","מודלים שמקבלים גם תמונות ו-PDF. שימושי מאוד בארגונים: חשבוניות, טפסים, צילומי מסך."],
+  ["Context Engineering","ניהול כל מה שנכנס לחלון: הנחיות, כלים, תוצאות, היסטוריה וזיכרון. כולל compaction וניקוי תוצאות כלים ישנות."]
+ ],
+ bullets:[
+  "<b>הנחיה ברורה ומובנית:</b> תפקיד, הקשר, משימה, פורמט פלט ודוגמאות. הפרדת חלקים עם תגיות (XML).",
+  "<b>Chain-of-Thought:</b> בקשה לחשוב שלב אחר שלב. במודלי reasoning זה מובנה, ושולטים בו דרך effort.",
+  "<b>Structured Output:</b> אכיפת JSON Schema בצד הספק + ולידציה עם Pydantic אצלכם. לא \"לבקש יפה JSON\".",
+  "<b>Prompt Chaining:</b> פירוק משימה לשרשרת קריאות, כשהפלט של אחת הוא הקלט של הבאה.",
+  "<b>ניהול גרסאות הנחיות:</b> בקבצים או במערכת ניהול, וכל שינוי נבדק מול סט בדיקות (שלב 4).",
+  "<b>עבודה עם API:</b> לפחות שני ספקים דרך ה-SDK הרשמי; מפתחות במשתני סביבה, אף פעם לא בקוד; timeouts, rate limits ו-exponential backoff; streaming; ספירת טוקנים, prompt caching ובחירת מודל לפי איכות/מהירות/עלות."
+ ],
+ checks:["להסביר טוקן ולמה עברית יקרה יותר","לקרוא ל-API של שני ספקים מקוד","להחזיר JSON מובנה שעובר ולידציה תמיד","לממש retry עם backoff ולהבין מה ה-SDK כבר עושה","להפעיל streaming בצ'אט","להראות cache hit ב-usage של התשובה","להסביר temperature מול effort"]},
+{id:2,title:"RAG",when:"שבועות 3–5 · כ-40 שעות",
+ why:"\"צ'אט על המסמכים שלנו\" היא הבקשה הנפוצה ביותר מארגונים. POC קל; להביא אותו לאיכות שאפשר להעמיד מול משתמשים זו העבודה האמיתית.",
+ concepts:[
+  ["Retrieval","שליפת קטעי מידע רלוונטיים ממאגר חיצוני לפני העברתם למודל."],
+  ["Grounding","עיגון התשובה במקורות שנשלפו, כדי לצמצם הזיות."],
+  ["Citations","ציון המקור בתשובה (מסמך, עמוד, פסקה). קריטי לאמון של המשתמשים."],
+  ["Embedding","המרת טקסט לווקטור מספרי שמייצג משמעות. בעברית חשוב לבחור מודל רב-לשוני ולבדוק אותו על הנתונים שלכם."],
+  ["Cosine Similarity","מדד הדמיון בין שני וקטורים (הזווית ביניהם)."],
+  ["Vector Database","אחסון וקטורים וחיפוש שכנים קרובים. מומלץ להתחיל ב-pgvector על Postgres; להכיר גם Pinecone, Qdrant ו-OpenSearch."],
+  ["Chunking","חלוקת מסמכים לקטעים. המטרה העיקרית היא דיוק השליפה. לחתוך לפי מבנה (כותרות, סעיפים) עם חפיפה, לא רק לפי מספר תווים."],
+  ["Hybrid Search","שילוב חיפוש סמנטי (וקטורים) עם חיפוש מילות מפתח (BM25). חיוני למספרי מוצר, שמות ומונחים מדויקים."],
+  ["Reranking","מודל שני שמדרג מחדש את התוצאות. שיפור איכות משמעותי בעלות נמוכה."]
+ ],
+ flow:[["טעינת מסמכים","חילוץ טקסט וטבלאות","חלוקה + מטא-דאטה","Embedding ושמירה"],["שאלה","שכתוב השאלה","חיפוש היברידי + סינון","Reranking","מודל + קטעים","תשובה עם ציטוטים"]],
+ bullets:[
+  "<b>חילוץ מסמכים:</b> PDF עם טבלאות, סריקות ו-Word הם המקום שבו רוב המערכות נכשלות. התאמנו על מסמכים אמיתיים ומבולגנים.",
+  "<b>סינון לפי מטא-דאטה והרשאות:</b> עובד במחלקה אחת לא אמור לקבל תשובה ממסמך שאין לו גישה אליו. זו שאלה שכל לקוח ארגוני ישאל.",
+  "<b>שכתוב שאלות:</b> הפיכת שאלת המשך (\"ומה לגבי השנה שעברה?\") לשאלה עצמאית לפני החיפוש.",
+  "<b>עדכון המאגר:</b> מה קורה כשמסמך משתנה או נמחק.",
+  "<b>הערכת איכות:</b> מדדים נפרדים לשליפה (האם הקטע הנכון נמצא?) ולתשובה (האם היא נאמנה למקורות?). כלים: RAGAS או סט בדיקות משלכם.",
+  "<b>מתי RAG ומתי משהו אחר:</b> הנחיה בלבד כשהידע קטן ונכנס בהנחיה; RAG כשהידע גדול, משתנה או דורש ציטוט והרשאות; Fine-tuning לשינוי סגנון/פורמט או להוזלה עם מודל קטן, לא להוספת ידע.",
+  "<b>כלים:</b> קודם RAG \"מאפס\" בלי ספריות; אחר כך LlamaIndex או LangChain לעומק; שירותים מנוהלים: Bedrock Knowledge Bases ו-Azure AI Search."
+ ],
+ checks:["לבנות RAG מאפס בלי ספריות","להסביר למה chunking לפי מבנה עדיף","לממש חיפוש היברידי עם RRF","להוסיף reranking ולמדוד את ההבדל","לסנן לפי הרשאות משתמש","לגרום למערכת לומר 'לא מצאתי' כשאין תשובה","להסביר RAG מול fine-tuning בשתי דקות"]},
+{id:3,title:"סוכני AI ו-MCP",when:"שבועות 6–8 · כ-35 שעות",
+ why:"כאן ה-AI עובר מ\"לענות\" ל\"לעשות\": לעדכן רשומות, לשלוח הודעות, להפעיל מערכות. זה גם המקום שבו הכי קל לבנות משהו מסוכן או יקר, ולכן צריך לדעת מתי לא לבנות סוכן.",
+ concepts:[
+  ["Tool / Function Calling","המודל מחליט לקרוא לפונקציה שהגדרתם (שם, תיאור וסכמת פרמטרים), הקוד שלכם מריץ אותה ומחזיר את התוצאה. תיאורים טובים של כלים חשובים כמו ההנחיה עצמה."],
+  ["Agent מול Workflow","זרימת עבודה: אתם קובעים את סדר הצעדים בקוד. צפויה, זולה וקלה לבדיקה. סוכן: המודל מחליט על הצעדים בלולאה. גמיש, אבל פחות צפוי. ההמלצה: להתחיל בזרימת עבודה ולעבור לסוכן רק כשבאמת צריך."],
+  ["Agent Loop (ReAct)","חשיבה, ביצוע פעולה, צפייה בתוצאה, וחוזר חלילה עד שהמשימה הושלמה."],
+  ["תנאי עצירה ומגבלות","מקסימום צעדים, תקציב טוקנים ו-timeout. בלעדיהם סוכן יכול להיתקע בלולאה ולעלות הרבה כסף."],
+  ["Human-in-the-loop","אישור אנושי לפני פעולות בלתי הפיכות (שליחת מייל ללקוח, מחיקה, תשלום). דרישה כמעט קבועה בארגונים."],
+  ["Memory / State","מה הסוכן זוכר בתוך שיחה ובין שיחות, ואיפה זה נשמר."],
+  ["MCP","Model Context Protocol: תקן פתוח לחיבור מודלים לכלים ולמקורות מידע, היום תחת Agentic AI Foundation של Linux Foundation. כותבים שרת MCP פעם אחת וכל לקוח תומך יכול להשתמש בו."],
+  ["A2A","Agent2Agent: פרוטוקול לתקשורת בין סוכנים של מערכות שונות. משלים ל-MCP (סוכן↔סוכן, לעומת סוכן↔כלי)."],
+  ["Multi-Agent","כמה סוכנים עם תפקידים שונים. מוסיף מורכבות ועלות; להשתמש רק כשסוכן יחיד באמת לא מספיק."]
+ ],
+ bullets:[
+  "<b>LangGraph:</b> זרימות וסוכנים כגרף מצבים, שליטה גבוהה. נפוץ בארגונים.",
+  "<b>SDKs של הספקים:</b> OpenAI Agents SDK, Claude Agent SDK, Google ADK. פשוטים להתחלה.",
+  "<b>בענן:</b> Amazon Bedrock AgentCore להרצה וניהול של סוכנים בייצור (שלב 5).",
+  "<b>חשוב:</b> לבנות קודם סוכן אחד בלולאה פשוטה בלי שום מסגרת, כדי להבין מה המסגרת עושה בשבילכם.",
+  "<b>דוגמאות מעשיות:</b> סוכן שמקבל מייל מלקוח, מסווג, שולף תשובה ומכין טיוטה לאישור; סוכן שבודק מלאי ומצב הזמנה במערכת חיצונית; סוכן שמתזמן פגישות לפי זמינות."
+ ],
+ checks:["לכתוב לולאת סוכן ידנית בלי מסגרת","לכתוב תיאורי כלים טובים","להוסיף אישור אנושי לפעולה מסוכנת","להגדיר מגבלות צעדים ותקציב","לבנות שרת MCP פשוט ב-Python","להסביר מתי workflow עדיף על סוכן","להסביר MCP מול A2A"]},
+{id:4,title:"הערכה, אבטחה ותצפיתיות",when:"שבועות 9–10 · כ-25 שעות",
+ why:"השאלה הראשונה של כל לקוח אחרי דמו מוצלח היא \"איך אני יודע שזה עובד?\", והשנייה \"זה בטוח?\". זה ההבדל בין דמו נחמד למשהו שעולה לייצור, וזה מה שמבדיל מועמדים בראיונות.",
+ concepts:[
+  ["Golden dataset","אוסף שאלות/קלטים עם תשובה נכונה או קריטריונים. מתחילים ב-20–50, רצוי מהלקוח עצמו."],
+  ["בדיקות דטרמיניסטיות","האם ה-JSON תקין, האם הכלי הנכון נקרא, האם יש ציטוט. זול ומהיר."],
+  ["LLM-as-judge","מודל שמדרג תשובות לפי קריטריונים ברורים. חובה לכייל אותו מול שיפוט אנושי."],
+  ["בדיקות רגרסיה ב-CI","כל שינוי בהנחיה, במודל או בחיתוך רץ מול הסט; לא עולה אם הציון יורד."],
+  ["Tracing","מעקב אחרי כל קריאה למודל, כל שליפה וכל קריאה לכלי: קלט, פלט, זמן ועלות. כלים: Langfuse (קוד פתוח), LangSmith, OpenTelemetry."],
+  ["Prompt Injection ישיר","משתמש מנסה לגרום למודל להתעלם מההוראות. אין פתרון מלא; מצמצמים נזק."],
+  ["Prompt Injection עקיף","הוראות זדוניות בתוך מסמך, מייל או דף שהמערכת קוראת. מסוכן במיוחד בסוכנים עם כלים."],
+  ["Lethal Trifecta","גישה למידע פרטי + חשיפה לתוכן לא אמין + יכולת לשלוח החוצה. כשהשלושה יחד, סוכן יכול להדליף מידע. שוברים לפחות צלע אחת."],
+  ["Guardrails","סינון קלט ופלט (נושאים אסורים, תוכן פוגעני, דליפת מידע). לדוגמה Bedrock Guardrails."],
+  ["PII","מידע אישי: זיהוי והסתרה לפני שליחה למודל או לפני שמירה בלוגים."],
+  ["OWASP Top 10 for LLM","רשימת הסיכונים המקובלת אצל צוותי אבטחה: injection, דליפת מידע, הרשאות יתר לסוכנים, צריכה לא מוגבלת ועוד."]
+ ],
+ bullets:[
+  "<b>מדדים תפעוליים:</b> זמן תגובה, עלות לשאלה, שיעור שגיאות, שיעור \"לא מצאתי\", משוב משתמשים (אגודל למעלה/למטה).",
+  "<b>הרשאות מינימליות:</b> הסוכן מקבל רק את הכלים וההרשאות שהוא צריך; פעולות רגישות דורשות אישור.",
+  "<b>רגולציה ומיקום נתונים:</b> איפה הנתונים נשמרים ומעובדים, האם הספק מתאמן עליהם, ועמידה בדרישות פרטיות (בישראל: חוק הגנת הפרטיות ותיקון 13; באירופה: GDPR ו-EU AI Act)."
+ ],
+ checks:["לבנות סט של 30+ בדיקות","לכתוב LLM-as-judge ולכייל אותו מול 20 שיפוטים שלי","להריץ evals ב-GitHub Actions","להוסיף tracing מלא","לבצע התקפת prompt injection עקיף על המערכת שלי ולתעד","להסתיר PII לפני לוגים","להסביר את ה-Lethal Trifecta"]},
+{id:5,title:"ענן ופריסה לייצור",when:"שבועות 11–13 · כ-35 שעות",
+ why:"בתפקיד הזה בונים POC מהר ומעבירים אותו לייצור בתוך הענן של הארגון. לא צריך להיות איש DevOps, אבל צריך לדעת לפרוס, לאבטח ולהסביר ארכיטקטורה.",
+ concepts:[
+  ["Amazon Bedrock","גישה למודלים של ספקים שונים (Claude, Nova, Llama ועוד) דרך API אחד, בלי לנהל תשתית. הנתונים נשארים בחשבון ה-AWS של הלקוח — יתרון גדול מול ארגונים."],
+  ["Bedrock Knowledge Bases","RAG מנוהל: חיבור למקורות כמו S3, SharePoint ו-Confluence, וחיפוש היברידי מובנה."],
+  ["Bedrock Guardrails","סינון קלט ופלט, הסתרת PII ונושאים אסורים."],
+  ["Bedrock AgentCore","הרצה וניהול סוכנים בייצור: זהות, זיכרון, Gateway לכלים, ניטור. מחליף את Bedrock Agents Classic, שנסגר ללקוחות חדשים ביולי 2026."],
+  ["Lambda / ECS Fargate","Lambda לאירועים וזרימות קצרות; Fargate להרצת קונטיינרים בלי לנהל שרתים — הדרך הפשוטה להעלות FastAPI."],
+  ["IAM / Secrets Manager","הרשאות ומפתחות. כל פרויקט ארגוני מתחיל ונתקע כאן."],
+  ["Microsoft Foundry","המקבילה של Microsoft (לשעבר Azure AI Foundry), כולל מודלים של OpenAI ו-Anthropic, עם Azure AI Search ל-RAG."],
+  ["Docker multi-stage","בניית image בשלבים כדי לקבל תמונה סופית קטנה ונקייה."],
+  ["SSE","Server-Sent Events: הזרמת התשובה מהשרת לדפדפן מילה אחרי מילה."]
+ ],
+ bullets:[
+  "<b>להכיר בלבד:</b> SageMaker, EC2, EKS — אימון ואירוח מודלים עצמאי. מספיק לדעת מתי צריך אותם.",
+  "<b>אם הלקוח על Azure:</b> הרבה ארגונים בישראל עובדים עם מיקרוסופט. מספיק להכיר את המקבילות: Microsoft Foundry, Azure AI Search, Azure Container Apps ו-Azure Functions. העקרונות זהים, רק השמות שונים.",
+  "<b>Docker:</b> Dockerfile, image מול container, docker compose להרצה מקומית (שרת, Postgres עם pgvector, Langfuse).",
+  "<b>FastAPI:</b> endpoints, Pydantic לקלט ופלט, async, streaming ב-SSE, אימות משתמשים (לפחות API key או JWT; להכיר SSO/OAuth ארגוני).",
+  "<b>CI/CD:</b> GitHub Actions — בדיקות, evals, בניית image ופריסה בכל push. סודות רק במשתני סביבה או במנהל סודות. להכיר Terraform או AWS CDK."
+ ],
+ checks:["להריץ את כל המערכת ב-docker compose","לפרוס FastAPI ל-ECS Fargate","לקרוא למודל דרך Bedrock","להחזיק מפתחות ב-Secrets Manager","פייפליין CI שמריץ evals לפני פריסה","להשוות RAG שלי ל-Bedrock Knowledge Bases באיכות, עלות ומאמץ","לשרטט ארכיטקטורה בעמוד אחד"]},
+{id:6,title:"ארכיטקטורת פתרונות ועבודה מול לקוח",when:"לאורך כל התוכנית + שבוע 14 · כ-15 שעות ממוקדות",
+ why:"זה החצי שמגדיר את התפקיד. מפתח AI בונה מה שביקשו ממנו; מי שבתפקיד ההיברידי מבין מה הלקוח באמת צריך, מחליט אם AI הוא הפתרון בכלל, ומוביל עד שאנשים משתמשים בזה.",
+ flow:[["אפיון וגילוי צרכים","בדיקת היתכנות וערך","מסמך ארכיטקטורה","POC עם מדדי הצלחה"],["דמו והחלטה","פיילוט עם משתמשים","העברה לייצור","הטמעה ושיפור מתמשך"]],
+ concepts:[
+  ["Discovery","פגישת אפיון: מה התהליך היום, כמה זמן ועלות הוא לוקח, מי המשתמשים, איפה הנתונים, מה ייחשב הצלחה. להבחין בין מה שהלקוח מבקש (\"צ'אטבוט\") לבין הבעיה (\"נציגים מבזבזים שעה ביום על חיפוש נהלים\")."],
+  ["HLD","מסמך ארכיטקטורה: תרשים רכיבים וזרימת נתונים, בחירות מנומקות (מודל, Build מול Buy, ענן, אחסון), אבטחה והרשאות, סיכונים פתוחים והנחות."],
+  ["POC","היקף מוגדר וזמן קצוב (2–4 שבועות), מדדי הצלחה שהוסכמו מראש, נתונים אמיתיים של הלקוח, ותוצאה ברורה: ממשיכים, משנים כיוון או עוצרים."],
+  ["ROI","חישוב פשוט: שעות שנחסכות × עלות שעה, מול עלות המערכת (טוקנים × נפח × מחיר, ותשתית)."],
+  ["Change Management","פיילוט עם קבוצה קטנה ואיסוף משוב, הדרכה ותיעוד, מדידת אימוץ בפועל ולא רק איכות טכנית, ותוכנית handoff מסודרת."]
+ ],
+ bullets:[
+  "<b>היתכנות וערך:</b> מטריצת ערך מול מורכבות לבחירת מקרי שימוש; זמינות ואיכות הנתונים — לרוב זה צוואר הבקבוק.",
+  "<b>אינטגרציה:</b> REST ו-webhooks; מערכות נפוצות: SharePoint, Confluence, Salesforce, SAP, Jira, ServiceNow; SSO וניהול הרשאות; עבודה עם צוותי IT ואבטחת מידע.",
+  "<b>לזהות מתי AI הוא לא התשובה, ולהגיד את זה.</b> זה בונה אמון יותר מכל דמו.",
+  "<b>כישורים רכים שנבדקים בראיונות:</b> להסביר מושג טכני למנהל לא טכני בשתי דקות; דמו שמספר סיפור עסקי; לנהל ציפיות (מה המערכת לא תעשה ומה שיעור הטעות הצפוי); כתיבה ברורה."
+ ],
+ checks:["לנהל פגישת אפיון מדומה ולכתוב סיכום של חצי עמוד","לכתוב HLD של 2–3 עמודים","להגדיר 3 מדדי הצלחה מספריים ל-POC","לחשב ROI ועלות חודשית","להסביר RAG למנהל לא טכני בשתי דקות","להציג דמו של 5 דקות עם סיפור עסקי"]},
+{id:7,title:"כלי אוטומציה",when:"שבוע 15 · כ-10 שעות · רמה בסיסית",
+ why:"לא כל פתרון צריך קוד. הרבה פעמים POC מהיר, או אוטומציה שהלקוח יתחזק בעצמו, נבנים טוב יותר בכלי ויזואלי. צריך לדעת מתי לבחור בו ומתי לא.",
+ concepts:[
+  ["n8n","הכלי העיקרי: אפשר לאחסן בעצמכם (self-hosted), כך שהנתונים נשארים אצל הארגון. צמתים לאפליקציות נפוצות, טריגרים (webhook, תזמון, מייל), צמתי AI Agent ו-MCP, ושילוב קוד JS/Python."],
+  ["Make","דומה, ענני בלבד, נוח לצוותים לא טכניים."],
+  ["Power Automate / Copilot Studio","נפוצים בארגונים שעובדים עם Microsoft 365. כדאי לדעת שהם קיימים ומה הם יודעים לעשות."]
+ ],
+ bullets:[
+  "<b>כלי ויזואלי מתאים כש...</b> צריך POC מהיר, הלוגיקה פשוטה, או שהלקוח רוצה לתחזק לבד.",
+  "<b>קוד מתאים כש...</b> יש לוגיקה מורכבת, דרישות ביצועים, בדיקות אוטומטיות ובקרת גרסאות."
+ ],
+ checks:["להתקין n8n מקומית ב-Docker","לבנות זרימה: מייל → API שלי → הודעה לערוץ צוות","להסביר מתי n8n ומתי קוד"]}
+];
+
+const LAYERS=[
+ {n:1,tag:"v1-llm",t:"שלד המערכת וסיווג פניות",d:"נקודת ההתחלה. אפשר לבנות על הסטאק של האתר הקיים שלכם.",items:["endpoint ב-FastAPI שמקבל פנייה בטקסט חופשי ומחזיר JSON מובנה: קטגוריה, דחיפות, סיכום ותשובה מוצעת","ממשק צ'אט ב-React עם streaming","שמירת כל פנייה ב-DB, כולל טוקנים ועלות לכל קריאה","תקציר לקוח של עמוד אחד ב-docs"],done:"הפלט תמיד עובר ולידציה של Pydantic, ואתם יודעים להגיד כמה עולות 1,000 פניות."},
+ {n:2,tag:"v2-rag",t:"בסיס ידע עם ציטוטים",d:"שאלות שהסיווג מזהה כ\"שאלת מידע\" נענות מתוך המסמכים של הארגון.",items:["תהליך קליטה למסמכים של הלקוח, כולל PDF עם טבלאות, אל pgvector","חיפוש היברידי, reranking, ותשובות עם ציטוט וקישור לעמוד","תגיות מטא-דאטה לפי מחלקה, וסינון לפי הרשאות המשתמש","סט של 30 שאלות אמיתיות עם תשובות נכונות, ומדידה לפני ואחרי כל שיפור"],done:"יש טבלה שמראה איך כל שיפור שינה את הציון, והמערכת אומרת \"לא מצאתי\" כשהתשובה לא במסמכים."},
+ {n:3,tag:"v3-agent",t:"סוכן שמבצע פעולות",d:"המערכת עוברת מ\"לענות\" ל\"לעשות\". הסיווג משכבה 1 הופך לניתוב, ובסיס הידע משכבה 2 הופך לאחד הכלים.",items:["כלים: חיפוש בבסיס הידע, סטטוס פנייה או הזמנה מה-DB, פתיחת קריאה, טיוטת מייל","לפחות כלי אחד חשוף כשרת MCP","כל פעולה שיוצאת החוצה עוברת אישור בממשק; מגבלת צעדים ותקציב","לכל סוג פנייה: החלטה מנומקת אם זו זרימת עבודה קבועה או סוכן"],done:"יש לוג מלא של כל צעד שהסוכן עשה, ואתם יכולים להסביר כל החלטה בין סוכן לזרימת עבודה."},
+ {n:4,tag:"v4-evals",t:"מוכנות לייצור",d:"לא מוסיפים פיצ'רים. מוכיחים שמה שקיים עובד ובטוח.",items:["Langfuse על כל המערכת: כל קריאה, שליפה וכלי","סט בדיקות לשלוש השכבות (דיוק סיווג, איכות RAG, בחירת כלי נכון) שרץ ב-GitHub Actions על כל שינוי","הסתרת PII לפני שליחה למודל ולפני שמירה בלוג, ו-guardrails על הקלט והפלט","התקפה מכוונת: מסמך עם prompt injection שנכנס לבסיס הידע. מתעדים מה קרה ומה עצר את זה"],done:"אפשר לפתוח dashboard ולהראות איכות, עלות וזמן תגובה, ויש מסמך \"סיכונים ומה עשינו לגביהם\"."},
+ {n:5,tag:"v5-cloud",t:"עלייה לענן",d:"המערכת עוברת מהמחשב שלכם לסביבה שלקוח יכול להשתמש בה.",items:["FastAPI בקונטיינר על ECS Fargate, מודלים דרך Bedrock, מסמכים ב-S3, מפתחות ב-Secrets Manager","פריסה אוטומטית מ-GitHub Actions, אחרי שסט הבדיקות משכבה 4 עבר","ענף ניסיוני עם Bedrock Knowledge Bases במקום ה-RAG שלכם, והשוואה עם אותו סט בדיקות: איכות, עלות ומאמץ"],done:"יש כתובת עובדת, תרשים ארכיטקטורה של עמוד אחד, והשוואה כתובה בין \"בנינו לבד\" לבין \"שירות מנוהל\"."},
+ {n:6,tag:"v6-pilot",t:"סגירת מעגל מול הלקוח",d:"השכבה הזו היא מסמכים ושיחות, לא קוד. היא הופכת פרויקט טכני לפרויקט לקוח.",items:["עדכון תקציר הלקוח ומסמך הארכיטקטורה (2–3 עמודים) כך שישקפו את מה שנבנה בפועל","דוח POC: התוצאות מול מדדי ההצלחה שהוגדרו בשבוע 1, הערכת עלות חודשית, והמלצה: להמשיך, לשנות או לעצור","דמו של 5 דקות למנהל לא טכני","עם לקוח אמיתי: פיילוט עם כמה משתמשים, איסוף משוב ותיקון"],done:"מישהו שלא מכיר את הפרויקט מבין מהמסמכים מה הבעיה, מה הפתרון, כמה זה עולה ואיך יודעים שזה עובד."},
+ {n:7,tag:"v7-automation",t:"חיבור לעולם האמיתי",d:"המערכת מתחברת לכלים שהארגון כבר משתמש בהם.",items:["זרימה ב-n8n: מייל חדש נכנס, נשלח ל-API של המערכת לסיווג ולטיוטת תשובה, ונשלחת הודעה לערוץ הצוות עם הטיוטה לאישור","פסקה ב-README: מה בניתם ב-n8n ומה בקוד, ולמה"],done:"פנייה שנשלחת במייל מגיעה לערוץ הצוות עם טיוטה מוכנה, בלי שאף אחד נגע בה בדרך."}
+];
+
+/* flashcards: built from phase concepts + extras */
+const EXTRA_CARDS=[
+ [1,"Prompt Caching","שמירת חלק קבוע מתחילת ההנחיה (הנחיית מערכת, מסמך) במטמון של הספק. קריאה מהמטמון עולה כ-10% מהמחיר הרגיל. התנאי: התחילית זהה בדיוק — כל שינוי בבייט מבטל את המטמון מאותה נקודה."],
+ [1,"Streaming","הצגת התשובה תוך כדי יצירתה. משפר מאוד את תחושת המהירות; כמעט חובה בממשק משתמש."],
+ [1,"Batch API","שליחת הרבה בקשות לעיבוד אסינכרוני, בדרך כלל בכ-50% הנחה. מתאים לכל מה שלא דחוף."],
+ [1,"Exponential backoff","בכל ניסיון חוזר מכפילים את זמן ההמתנה (ומוסיפים אקראיות). ה-SDKs כבר מבצעים retry ל-429 ו-5xx כברירת מחדל."],
+ [2,"RRF","Reciprocal Rank Fusion: מיזוג תוצאות של שני חיפושים לפי הדירוג: ציון = Σ 1/(k + rank), בדרך כלל k=60. לא צריך לנרמל ציונים."],
+ [2,"HNSW","אינדקס לחיפוש שכנים קרובים משוער (ANN) שנפוץ במאגרי וקטורים, כולל pgvector. מהיר מאוד במחיר דיוק קטן."],
+ [2,"Faithfulness","מדד RAG: האם כל טענה בתשובה נתמכת בקטעים שנשלפו."],
+ [2,"Recall@k","מדד שליפה: באיזה אחוז מהשאלות הקטע הנכון נמצא בתוך k התוצאות הראשונות."],
+ [2,"LoRA","שיטת fine-tuning יעילה שמאמנת רק מטריצות קטנות במקום כל המשקלים. מספיק להכיר את המושג."],
+ [3,"Tool description","התיאור של הכלי הוא בפועל הנחיה: מתי להשתמש, מה כל פרמטר, מה מוחזר, ומה לא לעשות."],
+ [3,"MCP: Tools / Resources / Prompts","שלושת סוגי היכולות ששרת MCP חושף: פעולות שהמודל מפעיל, מידע לקריאה, ותבניות הנחיה."],
+ [3,"Agent Skills","חבילה של הוראות, סקריפטים וקבצים שסוכן טוען רק כשהמשימה דורשת. חוסך הקשר."],
+ [4,"Golden set drift","הסט הישן כבר לא מייצג את מה שמשתמשים שואלים. מוסיפים אליו באופן קבוע מקרים אמיתיים, במיוחד כישלונות."],
+ [4,"Presidio","ספריית קוד פתוח של Microsoft לזיהוי והסתרת PII. אפשר להוסיף לה מזהים ישראליים (ת\"ז, טלפון)."],
+ [5,"Cold start","ההשהיה בהפעלה הראשונה של Lambda או קונטיינר. חשוב כשיש דרישת זמן תגובה."],
+ [5,"Terraform / CDK","תשתית כקוד: הלקוח יכול לשחזר את הסביבה, ויש בקרת גרסאות על התשתית."],
+ [6,"Build מול Buy","לבנות לבד (שליטה, התאמה, עלות פיתוח) מול שירות מנוהל או מוצר מדף (מהיר, פחות שליטה, נעילה לספק)."],
+ [6,"Success criteria","מדד מספרי שהוסכם לפני ה-POC, למשל \"85% תשובות נכונות על 50 שאלות אמיתיות\" או \"קיצור זמן טיפול ב-30%\"."]
+];
+
+const QUIZ=[
+ {p:1,q:"לקוח מתלונן שהחשבונית החודשית גבוהה פי 1.5 ממה שהערכתם. המערכת עונה בעברית. מה הסיבה הסבירה ביותר שלא נלקחה בחשבון?",o:["המודל משתמש ב-temperature גבוה","טקסט בעברית דורש בדרך כלל יותר טוקנים מאשר באנגלית","ה-streaming מכפיל את העלות","ה-system prompt לא נספר בחיוב"],a:1,e:"הטוקנייזרים מאומנים בעיקר על אנגלית, ולכן עברית מתפרקת ליותר טוקנים לאותו תוכן. תמיד למדוד על טקסט אמיתי של הלקוח (count_tokens)."},
+ {p:1,q:"מה הדרך האמינה ביותר לקבל JSON תקין בכל פעם?",o:["לכתוב בהנחיה 'החזר רק JSON' באותיות גדולות","Prefill של '{' בתשובת ה-assistant","Structured Outputs עם סכמה שנאכפת אצל הספק + ולידציה ב-Pydantic","temperature=0"],a:2,e:"אכיפת סכמה בצד הספק (constrained decoding) מבטיחה מבנה תקין. Prefill הוסר במודלים החדשים של Claude, ו-temperature לא מבטיח פורמט."},
+ {p:1,q:"הנחיית מערכת של 8,000 טוקנים נשלחת בכל קריאה, אבל cache_read_input_tokens תמיד 0. מה הכי סביר?",o:["המודל לא תומך ב-caching","יש בתחילת ההנחיה משהו שמשתנה בכל קריאה, כמו תאריך ושעה","הנחיה של 8,000 טוקנים קצרה מדי","צריך להפעיל streaming"],a:1,e:"Caching הוא התאמת תחילית. חותמת זמן, מזהה בקשה או JSON לא ממוין בתחילת ההנחיה מבטלים את המטמון. תוכן משתנה הולך לסוף."},
+ {p:1,q:"ב-API מתקבלת שגיאה 400 (Bad Request). מה נכון לעשות?",o:["retry עם exponential backoff","לתקן את הבקשה — retry לא יעזור","לעבור לספק אחר","להגדיל timeout"],a:1,e:"מנסים שוב רק על שגיאות זמניות: 429, 5xx וניתוקי רשת. 4xx (חוץ מ-429) אומר שהבקשה עצמה שגויה."},
+ {p:1,q:"מה הדרך הנכונה לשלוט בכמה מודל reasoning חדש 'חושב' לפני תשובה?",o:["temperature","top_k","effort / reasoning level","max_tokens בלבד"],a:2,e:"במודלים החדשים השליטה היא דרך effort. במודלי Claude האחרונים temperature/top_p אף מחזירים שגיאה."},
+ {p:2,q:"משתמשים מחפשים מק\"ט כמו 'AX-4471' וה-RAG לא מוצא, למרות שהמסמך קיים. מה הפתרון הראשון?",o:["להחליף מודל embedding","להוסיף חיפוש מילות מפתח (BM25) ולמזג — חיפוש היברידי","להגדיל את גודל הקטעים","fine-tuning"],a:1,e:"חיפוש סמנטי חלש במזהים מדויקים. BM25 מוצא אותם בקלות, ו-RRF ממזג את שתי הרשימות."},
+ {p:2,q:"לקוח רוצה שהמודל 'יכיר' את 3,000 הנהלים שלו, שמתעדכנים כל שבוע. מה מתאים?",o:["Fine-tuning","RAG","להכניס הכל להנחיה","Few-shot"],a:1,e:"ידע גדול ומשתנה, עם צורך בציטוט והרשאות = RAG. Fine-tuning לא מתאים להוספת ידע עובדתי ומתעדכן."},
+ {p:2,q:"מה המטרה העיקרית של chunking טוב?",o:["להתאים לחלון ההקשר","לחסוך באחסון","לשפר את דיוק השליפה","להאיץ את ה-embedding"],a:2,e:"זה התיקון מהגרסה המקורית: החלונות היום גדולים מאוד, והמטרה היא שהקטע שנשלף יהיה ממוקד ושלם מבחינת משמעות."},
+ {p:2,q:"עובד במחלקת שיווק קיבל תשובה שמבוססת על מסמך שכר. מה היה חסר?",o:["Reranking","סינון לפי הרשאות ומטא-דאטה לפני או בזמן השליפה","מודל גדול יותר","שכתוב שאלות"],a:1,e:"ההרשאות חייבות להיאכף בשכבת השליפה — לא לבקש מהמודל 'לא לחשוף'."},
+ {p:2,q:"איך בודקים בנפרד אם בעיה ב-RAG נובעת מהשליפה או מהיצירה?",o:["אי אפשר להפריד","מודדים recall@k של השליפה בנפרד מ-faithfulness/correctness של התשובה","מגדילים את k עד שעובד","בודקים רק את התשובה הסופית"],a:1,e:"אם הקטע הנכון לא נשלף, אין טעם לכוונן את ההנחיה. מדדים נפרדים מראים איפה לתקן."},
+ {p:3,q:"לקוח מבקש 'סוכן' שמקבל טופס, מחלץ שדות ושומר ב-CRM. הצעדים תמיד זהים. מה להמליץ?",o:["סוכן אוטונומי עם LangGraph","Multi-agent","Workflow קבוע בקוד עם קריאת LLM לחילוץ","Fine-tuning"],a:2,e:"כשהצעדים ידועים מראש, workflow זול, צפוי וקל לבדיקה. סוכן מוצדק רק כשהמסלול לא ידוע מראש."},
+ {p:3,q:"המודל החזיר שתי בקשות tool_use באותה תשובה. מה עושים?",o:["מריצים רק את הראשונה","מריצים את שתיהן ומחזירים את שני ה-tool_result בהודעת user אחת","שולחים כל תוצאה בהודעה נפרדת","מחזירים שגיאה"],a:1,e:"קריאות מקבילות: מבצעים את כולן ומחזירים את כל התוצאות יחד. כלי שנכשל מחזיר tool_result עם is_error."},
+ {p:3,q:"מה הבעיה העיקרית שסוכן בלי max_steps ותקציב עלול ליצור?",o:["תשובות קצרות מדי","לולאה אינסופית ועלות לא מוגבלת","שגיאות JSON","בעיות הרשאה"],a:1,e:"סוכן שלא מצליח עלול לנסות שוב ושוב. תנאי עצירה הם חובה."},
+ {p:3,q:"מה היתרון המרכזי של חשיפת כלי כשרת MCP?",o:["הוא מהיר יותר","כותבים פעם אחת וכל לקוח תואם MCP (IDE, צ'אט, פלטפורמת סוכנים) יכול להשתמש בו","הוא מאובטח אוטומטית","הוא חוסך טוקנים"],a:1,e:"MCP הוא תקן פתוח וניטרלי (היום תחת Linux Foundation). שימו לב: הוא לא מאובטח 'אוטומטית' — צריך אימות והרשאות."},
+ {p:3,q:"לפני שליחת מייל ללקוח הסוכן צריך…",o:["לשלוח ולתעד","לבקש אישור אנושי (human-in-the-loop)","להריץ פעמיים","לשאול מודל אחר"],a:1,e:"פעולות בלתי הפיכות או חיצוניות עוברות אישור. זו דרישה כמעט קבועה בארגונים."},
+ {p:4,q:"שיניתם הנחיה, והדמו נראה טוב יותר. איך יודעים שלא שברתם משהו?",o:["שואלים 3 שאלות ובודקים","מריצים את ה-golden set ב-CI ומשווים ציון לפני ואחרי","שואלים את המודל אם זה טוב יותר","מחכים לתלונות"],a:1,e:"בדיקות רגרסיה אוטומטיות הן מה שמאפשר לשנות בביטחון."},
+ {p:4,q:"איך יודעים שה-LLM-as-judge אמין?",o:["משתמשים במודל הכי גדול","משווים את הציונים שלו לשיפוט אנושי על מדגם ומודדים הסכמה","נותנים לו לשפוט את עצמו","אי אפשר לדעת"],a:1,e:"מכיילים את השופט: 20–50 דוגמאות עם שיפוט אנושי, ובודקים התאמה. מכווננים את הקריטריונים עד שההסכמה גבוהה."},
+ {p:4,q:"סוכן קורא מיילים נכנסים, יש לו גישה ל-CRM, ויכול לשלוח מיילים. מה הסיכון?",o:["Hallucination","Lethal trifecta: מייל זדוני יכול לגרום לו להדליף נתוני CRM החוצה","עלות גבוהה","Latency"],a:1,e:"תוכן לא אמין + מידע פרטי + ערוץ יציאה. שוברים צלע: אישור אנושי לשליחה, הגבלת נמענים, או הפרדת הקשרים."},
+ {p:4,q:"מה צריך לקרות ל-PII לפני שהוא נשמר בלוגים של ה-tracing?",o:["כלום, הלוגים פרטיים","הסתרה/מיסוך","הצפנה בלבד","מחיקה של כל הלוג"],a:1,e:"לוגים נגישים ליותר אנשים ונשמרים זמן רב. מסתירים PII לפני שמירה, ומגדירים מדיניות שמירה."},
+ {p:5,q:"מה היתרון העיקרי של Bedrock בעיני ארגון שכבר ב-AWS?",o:["הוא תמיד הכי זול","הנתונים נשארים בחשבון ה-AWS שלהם, עם IAM, VPC ולוגים קיימים, וגישה לכמה ספקי מודלים","יש בו רק מודל אחד","לא צריך הרשאות"],a:1,e:"זה טיעון המכירה החזק: אבטחה, ציות וחיוב בתוך הסביבה הקיימת."},
+ {p:5,q:"לקוח חדש רוצה לבנות סוכנים מנוהלים ב-AWS בנובמבר 2026. מה מציעים?",o:["Bedrock Agents (Classic)","Amazon Bedrock AgentCore","Amazon Kendra","SageMaker"],a:1,e:"Bedrock Agents Classic סגור ללקוחות חדשים מאז 30 ביולי 2026 ונמצא במצב תחזוקה. AgentCore הוא הכיוון."},
+ {p:5,q:"מה המקבילה של Microsoft ל-Bedrock, ומה השם הנוכחי שלה?",o:["Azure ML Studio","Microsoft Foundry (לשעבר Azure AI Foundry)","Azure Cognitive Search","Power Platform"],a:1,e:"השם שונה ל-Microsoft Foundry בנובמבר 2025. Azure AI Search היא המקבילה לחלק ה-RAG."},
+ {p:5,q:"איפה שומרים את מפתח ה-API של המודל בייצור?",o:["בקוד, בקובץ config","ב-README","ב-Secrets Manager / Key Vault, ומוזרק כמשתנה סביבה","ב-frontend"],a:2,e:"אף פעם לא בקוד או בריפו. מנהל סודות + IAM להרשאת גישה."},
+ {p:6,q:"לקוח פותח: 'אנחנו צריכים צ'אטבוט'. מה הצעד הראשון?",o:["לבחור מודל","לבנות דמו מהיר","לשאול על הבעיה: איזה תהליך, מי משתמש, כמה זמן זה לוקח היום, ומה ייחשב הצלחה","לשלוח הצעת מחיר"],a:2,e:"להבחין בין הבקשה לבין הבעיה. לפעמים התשובה בכלל לא צ'אטבוט — ולפעמים לא AI."},
+ {p:6,q:"מה מאפיין POC טוב?",o:["כמה שיותר פיצ'רים","היקף מוגדר, זמן קצוב, נתונים אמיתיים, ומדדי הצלחה שהוסכמו מראש","נתונים סינתטיים בלבד","ללא תאריך סיום"],a:1,e:"POC שמוביל להחלטה: ממשיכים, משנים כיוון או עוצרים."},
+ {p:6,q:"מנהל שואל 'כמה טעויות זה יעשה?'. מה התשובה הטובה?",o:["'אף אחת, זה AI מתקדם'","מספר מהמדידה על הסט שלהם, מה סוג הטעויות, ומה המנגנון שתופס אותן","'קשה לדעת'","'כמו בן אדם'"],a:1,e:"ניהול ציפיות עם נתונים. זה בונה אמון יותר מהבטחות."},
+ {p:7,q:"לקוח רוצה אוטומציה פשוטה שצוות התפעול יתחזק בלי מתכנתים. מה מתאים?",o:["מיקרו-שירות ב-Python","n8n או Power Automate","LangGraph","Kubernetes"],a:1,e:"כלי ויזואלי מתאים כשהלוגיקה פשוטה והלקוח רוצה לתחזק לבד. n8n self-hosted משאיר נתונים אצל הארגון."},
+ {p:7,q:"מתי עדיף קוד על פני n8n?",o:["תמיד","כשיש לוגיקה מורכבת, דרישות ביצועים, צורך בבדיקות אוטומטיות ובקרת גרסאות","כשהלקוח קטן","אף פעם"],a:1,e:"זו בדיוק הטבלה 'מתי כלי ויזואלי ומתי קוד' מהמפה."}
+];
+
+const INTERVIEW=[
+ {c:"טכני",q:"תסביר/י RAG מקצה לקצה, כולל מה עושים כשהאיכות נמוכה.",a:["קליטה: חילוץ (כולל טבלאות), chunking לפי מבנה, מטא-דאטה, embedding","שאילתה: שכתוב, חיפוש היברידי, סינון הרשאות, reranking, יצירה עם ציטוטים","איכות נמוכה: קודם מבודדים — שליפה (recall@k) או יצירה (faithfulness)","תיקונים לפי הממצא: chunking, היברידי, reranker, הנחיה, 'לא מצאתי'","הכל נמדד מול golden set לפני ואחרי"]},
+ {c:"טכני",q:"הנחיה, RAG או fine-tuning — איך מחליטים?",a:["הנחיה: ידע קטן ויציב, מתחילים תמיד מכאן","RAG: ידע גדול/משתנה, צריך ציטוטים והרשאות","Fine-tuning: סגנון/פורמט/התנהגות, או הוזלה עם מודל קטן — לא להוספת ידע","לרוב משלבים; ההחלטה מבוססת מדידה"]},
+ {c:"טכני",q:"מתי סוכן ומתי זרימת עבודה?",a:["Workflow: הצעדים ידועים — צפוי, זול, נבדק בקלות","סוכן: המסלול תלוי בקלט ולא ניתן לתכנן מראש","ארבע שאלות: מורכבות, ערך מצדיק עלות, יכולת המודל, עלות טעות","מתחילים ב-workflow ומוסיפים אוטונומיה רק במקום שצריך","בסוכן: מגבלות צעדים, תקציב, אישור לפעולות מסוכנות, tracing"]},
+ {c:"טכני",q:"איך מגינים על סוכן מפני prompt injection?",a:["אין פתרון מלא — מצמצמים נזק","הרשאות מינימליות, כלים מצומצמים","אישור אנושי לפעולות חיצוניות/בלתי הפיכות","הפרדה בין הוראות לתוכן לא אמין; guardrails על קלט ופלט","לשבור את ה-lethal trifecta","בדיקות התקפה כחלק מסט ה-evals"]},
+ {c:"טכני",q:"איך תוזיל/י מערכת LLM ב-50% בלי לפגוע באיכות?",a:["למדוד קודם: פרופיל טוקנים לפי סוג קריאה","prompt caching להקשר קבוע","לקצר הקשר: פחות קטעים, reranking, ניקוי היסטוריה","Batch למה שלא דחוף","מודל קטן לסיווג/ניתוב; effort נמוך כשאפשר","כל שינוי נבדק מול evals; מודדים עלות למשימה שהושלמה, לא לבקשה"]},
+ {c:"טכני",q:"מה זה MCP ולמה ארגון צריך להתעניין בזה?",a:["תקן פתוח לחיבור מודלים לכלים ולמידע","כותבים שרת פעם אחת, משתמשים מכל לקוח תואם","ניטרלי לספק — היום תחת Linux Foundation","שיקולי אבטחה: אימות, הרשאות, רשימת שרתים מאושרים","להבדיל מ-A2A (סוכן↔סוכן)"]},
+ {c:"System Design",q:"בנק רוצה עוזר AI לנציגי שירות. תאר/י ארכיטקטורה והערכת עלות חודשית.",a:["אפיון: כמה נציגים, כמה פניות, אילו מערכות, מה מותר לחשוף","ענן קיים (AWS/Azure), נתונים לא יוצאים; SSO והרשאות לפי תפקיד","RAG על נהלים + כלים לקריאה בלבד מהמערכות; פעולות כתיבה באישור","PII masking, guardrails, tracing, evals ב-CI","עלות: פניות × טוקנים × מחיר, עם caching; להציג טווח","פיילוט עם צוות אחד ומדדי הצלחה מוגדרים"]},
+ {c:"System Design",q:"עירייה רוצה 'צ'אט על כל המסמכים שלנו' — 50,000 PDFs, חלקם סרוקים. מה התוכנית?",a:["לא להתחיל מהכל: מקרה שימוש אחד ותת-קבוצת מסמכים","OCR ו-parsing לטבלאות; מדידת איכות חילוץ","מטא-דאטה (מחלקה, תאריך, תוקף) וסינון","חיפוש היברידי (עברית + מזהים) ו-reranking","עדכון המאגר כשמסמך משתנה","שירות מנוהל (Bedrock KB / Azure AI Search) מול בנייה עצמית — לפי השוואה"]},
+ {c:"לקוח",q:"הסבר/י למנהלת כספים לא טכנית מה זה hallucination ואיך מתמודדים, בשתי דקות.",a:["אנלוגיה: עובד חדש ובטוח בעצמו שלפעמים מנחש","פתרון: לתת לו 'לקרוא מהתיק' לפני שעונה (RAG) ולהראות מקור","לאפשר לו לומר 'לא יודע'","מודדים את שיעור הטעויות על השאלות שלכם, ומדווחים","בלי ז'רגון; לסיים במה זה אומר עבורה"]},
+ {c:"לקוח",q:"לקוח רוצה AI לבעיה שבעצם נפתרת בטופס ובחוק פשוט. מה עושים?",a:["אומרים את זה, בעדינות ועם נימוק","מציעים את הפתרון הפשוט ומראים חיסכון בעלות ובסיכון","מציעים איפה AI כן יכול להוסיף ערך בהמשך","זה בונה אמון לטווח ארוך"]},
+ {c:"לקוח",q:"ה-POC עמד ב-70% דיוק, והמטרה שהוסכמה הייתה 85%. איך מציגים?",a:["שקיפות: התוצאה מול היעד","ניתוח הכישלונות: איפה ולמה (שליפה? מסמכים חסרים? שאלות מחוץ לתחום?)","מה צפוי לשפר ובכמה, ומה העלות","אפשרויות: להמשיך עם תיקונים, לצמצם היקף, או לעצור","המלצה ברורה"]},
+ {c:"לקוח",q:"צוות אבטחת המידע חוסם את הפרויקט. איך ניגשים?",a:["לפגוש אותם מוקדם, לא בסוף","מסמך: זרימת נתונים, איפה נשמר, מי ניגש, האם הספק מאמן על הנתונים","שימוש בשפה שלהם: OWASP LLM Top 10, הרשאות מינימליות","פתרונות: אזור גאוגרפי, ענן קיים, PII masking, לוגים","להפוך אותם לשותפים"]},
+ {c:"התנהגותי",q:"ספר/י על החלטה טכנית בפרויקט שהתבררה כשגויה.",a:["מבנה STAR: מצב, משימה, פעולה, תוצאה","ההחלטה ולמה נראתה נכונה אז","איך גיליתם (מדידה!)","מה שיניתם ומה למדתם","דוגמה מהפרויקט: למשל chunking לפי תווים שהוחלף בחלוקה לפי מבנה"]},
+ {c:"התנהגותי",q:"למה התפקיד ההיברידי ולא מפתח/ת AI 'נקי/ה'?",a:["אוהב/ת להבין את הבעיה העסקית, לא רק לבנות","דוגמה מהפרויקט: פגישת אפיון ששינתה כיוון","הערך: לחבר בין מה שאפשר טכנית למה שבאמת צריך","הנכונות לעבוד מול אנשים, לא רק מול קוד"]},
+ {c:"System Design",q:"שרטט/י בעשר דקות את ארכיטקטורת המערכת שלך והסבר/י כל בחירה.",a:["Frontend → FastAPI → נתב (סיווג) → RAG / סוכן עם כלים / MCP","Postgres + pgvector; S3; Bedrock; Secrets Manager; Fargate","Langfuse ו-evals ב-CI","n8n לחיבור מייל וערוץ צוות","לכל בחירה: למה, ומה החלופה ששקלתם"]}
+];
+
+const PRE_INTERVIEW=["להסביר RAG מקצה לקצה, כולל מה עושים כשהאיכות נמוכה","להשוות בין הנחיה, RAG ו-fine-tuning, ולדעת מתי כל אחד","להסביר מתי סוכן ומתי זרימת עבודה","להעריך עלות חודשית של מערכת לפי נפח שימוש","לפרט איך מגינים מ-prompt injection","לשרטט ארכיטקטורה על הלוח תוך 10 דקות","להציג איך מודדים איכות ומה הציון של המערכת שלכם","לנהל סימולציה של פגישת אפיון עם \"לקוח\"","להסביר מושג טכני למנהל לא טכני","לספר על החלטה שגויה שקיבלתם בפרויקט ומה למדתם","לבדוק חדשות אחרונות: שמות שירותים, מודלים ומחירים עדכניים"];
+
+const WEEKS=[
+ ["1–2","LLMs והנדסת הנחיות","תקציר לקוח, שלד המערכת, סיווג פניות"],
+ ["3–5","RAG","בסיס ידע עם ציטוטים + סט בדיקות"],
+ ["6–8","סוכנים ו-MCP","סוכן עם כלים ואישור אנושי"],
+ ["9–10","הערכה, אבטחה ותצפיתיות","ניטור, evals ב-CI, מסמך סיכונים"],
+ ["11–13","ענן ופריסה","מערכת חיה ב-AWS + השוואה לשירות מנוהל"],
+ ["14","ארכיטקטורה ועבודה מול לקוח","דוח POC, מסמך ארכיטקטורה, דמו"],
+ ["15","אוטומציה","חיבור למייל ולערוץ הצוות"],
+ ["16","סיכום","README, docs ודמו מוכנים לראיונות"]
+];
+
+const TAKEHOME=[
+ ["4 שעות · אחרי שלב 2","RAG על סט מסמכים לא מוכר","מקבלים תיקייה של 10–20 PDF. בונים מערכת שאלות-תשובות עם ציטוטים, וסט קטן של 10 שאלות שמודד אותה."],
+ ["3 שעות · אחרי שלב 1","חילוץ נתונים מטפסים","20 חשבוניות או טפסים סרוקים. מחלצים שדות ל-JSON עם מודל multimodal, ומודדים דיוק לכל שדה."],
+ ["4 שעות · אחרי שלב 3","סוכן מול API מדומה","סוכן עם 2–3 כלים מול API שאתם מדמים, עם טיפול בשגיאות ותנאי עצירה."],
+ ["2 שעות · אחרי שלב 4","דיבאג של RAG גרוע","לוקחים מערכת שעובדת לא טוב (אפשר גרסה מוקדמת שלכם), מאבחנים למה, ומתקנים עם מדידה לפני ואחרי."],
+ ["90 דקות · אחרי שלב 5","שאלת תכנון מערכת","\"בנק רוצה עוזר AI לנציגי שירות.\" עמוד ארכיטקטורה והערכת עלות חודשית, בלי לכתוב קוד."],
+ ["60 דקות · בכל שלב","סימולציית פגישת אפיון","חבר משחק \"לקוח\" עם בקשה מעורפלת. מנהלים את הפגישה וכותבים סיכום של חצי עמוד."]
+];
+
+const EXERCISES=[
+ {p:1,t:"סיווג פנייה עם Structured Output",task:"כתבו פונקציה שמקבלת טקסט פנייה בעברית ומחזירה אובייקט Pydantic עם: category (אחת מ-4 קבועות), urgency (1–5), summary ו-suggested_reply. הדפיסו גם כמה טוקנים נצרכו.",hint:"השתמשו ב-Literal לקטגוריות, וב-client.messages.parse עם output_format. ה-usage נמצא על התשובה.",sol:`from typing import Literal
+from pydantic import BaseModel, Field
+import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from env
+MODEL = "claude-opus-5-5"
+
+class Ticket(BaseModel):
+    category: Literal["billing", "technical", "account", "other"]
+    urgency: int = Field(ge=1, le=5)
+    summary: str
+    suggested_reply: str
+
+SYSTEM = """You classify customer service tickets for an Israeli company.
+The ticket is in Hebrew. Write summary and suggested_reply in Hebrew.
+Urgency: 5 = service down or money lost, 1 = general question."""
+
+def classify(text: str) -> Ticket:
+    resp = client.messages.parse(
+        model=MODEL,
+        max_tokens=2000,
+        system=SYSTEM,
+        messages=[{"role": "user", "content": f"<ticket>\\n{text}\\n</ticket>"}],
+        output_format=Ticket,
+    )
+    u = resp.usage
+    print(f"in={u.input_tokens} out={u.output_tokens}")
+    return resp.parsed_output
+
+print(classify("חויבתי פעמיים על אותו חודש ואף אחד לא עונה בטלפון"))`},
+ {p:1,t:"Streaming + מדידת עלות",task:"הזרימו תשובה למסך מילה אחרי מילה, ובסוף חשבו עלות בדולרים לפי מחיר קלט/פלט שתגדירו.",hint:"client.messages.stream(...) כ-context manager; stream.text_stream; stream.get_final_message().usage.",sol:`import anthropic
+
+client = anthropic.Anthropic()
+PRICE_IN, PRICE_OUT = 4.00, 20.00   # $ per 1M tokens - check the current pricing page
+
+with client.messages.stream(
+    model="claude-opus-5-5",
+    max_tokens=4000,
+    messages=[{"role": "user", "content": "הסבר בשלוש פסקאות מה זה RAG"}],
+) as stream:
+    for text in stream.text_stream:
+        print(text, end="", flush=True)
+    final = stream.get_final_message()
+
+u = final.usage
+cost = u.input_tokens / 1e6 * PRICE_IN + u.output_tokens / 1e6 * PRICE_OUT
+print(f"\\n\\ntokens in={u.input_tokens} out={u.output_tokens}  cost=\${cost:.5f}")`},
+ {p:1,t:"Prompt caching — להוכיח cache hit",task:"שלחו פעמיים שאלה שונה על אותו מסמך ארוך (כמה אלפי טוקנים) שנמצא ב-system. הראו שבקריאה השנייה cache_read_input_tokens גדול מאפס.",hint:"cache_control={'type':'ephemeral'} על בלוק ה-system. כל דבר שמשתנה — אחריו, לא לפניו.",sol:`import anthropic
+
+client = anthropic.Anthropic()
+policy = open("policy.txt", encoding="utf-8").read()   # a long, stable document
+
+def ask(q: str):
+    r = client.messages.create(
+        model="claude-opus-5-5",
+        max_tokens=1000,
+        system=[
+            {"type": "text", "text": "ענה רק לפי הנוהל המצורף."},
+            {"type": "text", "text": policy, "cache_control": {"type": "ephemeral"}},
+        ],
+        messages=[{"role": "user", "content": q}],   # the varying part goes last
+    )
+    u = r.usage
+    print(f"write={u.cache_creation_input_tokens} read={u.cache_read_input_tokens} uncached={u.input_tokens}")
+
+ask("כמה ימי חופשה מגיעים לעובד חדש?")
+ask("מה הנוהל לעבודה מהבית?")   # expect read > 0`},
+ {p:2,t:"RAG מאפס: chunking, cosine ו-RRF",task:"בלי ספריות RAG: (1) חלקו טקסט לקטעים לפי כותרות/פסקאות עם חפיפה; (2) חיפוש cosine על וקטורים; (3) מזגו חיפוש סמנטי וחיפוש מילות מפתח עם RRF.",hint:"embed() יכול להגיע מכל ספק embeddings (Bedrock Titan, Voyage, Cohere, OpenAI). RRF: score += 1/(k + rank).",sol:`import re
+import numpy as np
+
+def chunk(text: str, max_chars: int = 1200, overlap: int = 200) -> list[str]:
+    # split on headings / blank lines first, then pack into chunks
+    parts = [p.strip() for p in re.split(r"\\n(?=#+ )|\\n\\s*\\n", text) if p.strip()]
+    chunks, cur = [], ""
+    for p in parts:
+        if len(cur) + len(p) > max_chars and cur:
+            chunks.append(cur)
+            cur = cur[-overlap:]          # carry overlap into next chunk
+        cur = (cur + "\\n" + p).strip()
+    if cur:
+        chunks.append(cur)
+    return chunks
+
+def cosine_top_k(q_vec, doc_vecs, k=10):
+    q = q_vec / np.linalg.norm(q_vec)
+    d = doc_vecs / np.linalg.norm(doc_vecs, axis=1, keepdims=True)
+    scores = d @ q
+    return list(np.argsort(-scores)[:k])
+
+def keyword_top_k(query, chunks, k=10):
+    terms = set(re.findall(r"\\w+", query.lower()))
+    scores = [sum(c.lower().count(t) for t in terms) for c in chunks]
+    return [i for i in np.argsort(scores)[::-1][:k] if scores[i] > 0]
+
+def rrf(*rankings, k=60):
+    fused = {}
+    for ranking in rankings:
+        for rank, doc_id in enumerate(ranking):
+            fused[doc_id] = fused.get(doc_id, 0) + 1 / (k + rank + 1)
+    return sorted(fused, key=fused.get, reverse=True)
+
+# usage:
+# chunks = chunk(doc_text); vecs = np.array([embed(c) for c in chunks])
+# ids = rrf(cosine_top_k(embed(q), vecs), keyword_top_k(q, chunks))[:5]`},
+ {p:2,t:"pgvector: טבלה, אינדקס ושאילתה עם הרשאות",task:"כתבו SQL שיוצר טבלת קטעים עם embedding ומטא-דאטה, אינדקס HNSW, ושאילתה שמחזירה 5 קטעים קרובים רק ממחלקות שהמשתמש מורשה להן.",hint:"<=> הוא מרחק cosine ב-pgvector. הסינון ב-WHERE, לא בהנחיה.",sol:`CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE TABLE chunks (
+  id          bigserial PRIMARY KEY,
+  doc_id      text NOT NULL,
+  page        int,
+  department  text NOT NULL,
+  content     text NOT NULL,
+  embedding   vector(1024) NOT NULL   -- match your embedding model's dimension
+);
+
+CREATE INDEX ON chunks USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX ON chunks (department);
+
+-- $1 = query embedding, $2 = text[] of departments the user may read
+SELECT id, doc_id, page, content,
+       1 - (embedding <=> $1) AS similarity
+FROM chunks
+WHERE department = ANY($2)
+ORDER BY embedding <=> $1
+LIMIT 5;`},
+ {p:3,t:"לולאת סוכן ידנית עם אישור אנושי",task:"בנו סוכן עם שני כלים: get_order_status (קריאה בלבד) ו-send_email (דורש אישור). הלולאה מוגבלת ל-8 צעדים. החזירו את כל ה-tool_result בהודעה אחת.",hint:"stop_reason == 'tool_use' → מריצים כלים → מוסיפים את response.content כ-assistant ואת התוצאות כ-user. כלי שנדחה מחזיר is_error.",sol:`import json
+import anthropic
+
+client = anthropic.Anthropic()
+MODEL = "claude-opus-5-5"
+
+TOOLS = [
+    {"name": "get_order_status",
+     "description": "Look up the status of a customer order by order ID. Read-only.",
+     "input_schema": {"type": "object",
+                      "properties": {"order_id": {"type": "string"}},
+                      "required": ["order_id"]}},
+    {"name": "send_email",
+     "description": "Send an email to the customer. Requires human approval.",
+     "input_schema": {"type": "object",
+                      "properties": {"to": {"type": "string"}, "body": {"type": "string"}},
+                      "required": ["to", "body"]}},
+]
+NEEDS_APPROVAL = {"send_email"}
+
+def run_tool(name, args):
+    if name == "get_order_status":
+        return {"order_id": args["order_id"], "status": "shipped", "eta": "2026-11-18"}
+    if name == "send_email":
+        return {"sent": True}
+    raise ValueError(f"unknown tool {name}")
+
+def agent(user_msg: str, max_steps: int = 8):
+    messages = [{"role": "user", "content": user_msg}]
+    for _ in range(max_steps):
+        resp = client.messages.create(model=MODEL, max_tokens=4000,
+                                      tools=TOOLS, messages=messages)
+        messages.append({"role": "assistant", "content": resp.content})
+        if resp.stop_reason != "tool_use":
+            return next((b.text for b in resp.content if b.type == "text"), "")
+
+        results = []
+        for block in resp.content:
+            if block.type != "tool_use":
+                continue
+            if block.name in NEEDS_APPROVAL:
+                ok = input(f"Approve {block.name} {block.input}? [y/N] ").lower() == "y"
+                if not ok:
+                    results.append({"type": "tool_result", "tool_use_id": block.id,
+                                    "content": "User declined this action.", "is_error": True})
+                    continue
+            try:
+                out = run_tool(block.name, block.input)
+                results.append({"type": "tool_result", "tool_use_id": block.id,
+                                "content": json.dumps(out, ensure_ascii=False)})
+            except Exception as e:
+                results.append({"type": "tool_result", "tool_use_id": block.id,
+                                "content": str(e), "is_error": True})
+        messages.append({"role": "user", "content": results})   # all results in ONE message
+    return "Stopped: step limit reached."
+
+print(agent("מה הסטטוס של הזמנה 4471? ותשלח ללקוח dana@example.com עדכון."))`},
+ {p:3,t:"שרת MCP ב-Python",task:"חשפו את get_order_status כשרת MCP, וחברו אותו ל-Claude Desktop / Claude Code או ל-MCP Inspector.",hint:"pip install mcp. FastMCP הופך פונקציה עם type hints ו-docstring לכלי.",sol:`# server.py  -  run with:  python server.py   (stdio transport)
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("orders")
+
+@mcp.tool()
+def get_order_status(order_id: str) -> dict:
+    """Return the shipping status and ETA for an order ID. Read-only."""
+    # replace with a real DB query
+    return {"order_id": order_id, "status": "shipped", "eta": "2026-11-18"}
+
+if __name__ == "__main__":
+    mcp.run()
+
+# Test interactively:  npx @modelcontextprotocol/inspector python server.py`},
+ {p:4,t:"Eval runner: בדיקות דטרמיניסטיות + LLM-as-judge",task:"קובץ golden.jsonl עם question, expected. הריצו את המערכת על כל שורה, בדקו דטרמיניסטית שיש ציטוט, ובקשו משופט (מודל זול) ציון pass/fail עם נימוק מובנה. הדפיסו אחוז הצלחה וצאו עם קוד שגיאה אם הוא מתחת לסף.",hint:"שופט עם Structured Output: verdict + reason. סף כמו 0.85 ו-sys.exit(1) כדי שה-CI ייכשל.",sol:`import json, sys
+from typing import Literal
+from pydantic import BaseModel
+import anthropic
+
+from backend.rag import answer   # your system: returns {"text": ..., "citations": [...]}
+
+client = anthropic.Anthropic()
+JUDGE_MODEL = "claude-haiku-5-5"   # cheaper model for judging; calibrate against human labels
+THRESHOLD = 0.85
+
+class Verdict(BaseModel):
+    verdict: Literal["pass", "fail"]
+    reason: str
+
+def judge(q, expected, got) -> Verdict:
+    r = client.messages.parse(
+        model=JUDGE_MODEL, max_tokens=1000,
+        system="You grade answers. PASS only if the answer is factually consistent "
+               "with the expected answer and does not add unsupported claims.",
+        messages=[{"role": "user", "content":
+                   f"<question>{q}</question>\\n<expected>{expected}</expected>\\n<answer>{got}</answer>"}],
+        output_format=Verdict,
+    )
+    return r.parsed_output
+
+rows = [json.loads(l) for l in open("evals/golden.jsonl", encoding="utf-8")]
+passed = 0
+for row in rows:
+    out = answer(row["question"])
+    if not out["citations"]:
+        print("FAIL (no citation):", row["question"]); continue
+    v = judge(row["question"], row["expected"], out["text"])
+    passed += v.verdict == "pass"
+    if v.verdict == "fail":
+        print("FAIL:", row["question"], "-", v.reason)
+
+score = passed / len(rows)
+print(f"score={score:.2%}")
+sys.exit(0 if score >= THRESHOLD else 1)`},
+ {p:4,t:"הסתרת PII ישראלי לפני לוגים",task:"כתבו פונקציה שמסתירה ת\"ז (9 ספרות), טלפון נייד ישראלי ומייל, ובדקו אותה על 5 דוגמאות.",hint:"Regex מספיק לתרגיל; בייצור — Presidio עם recognizers מותאמים, ולהוסיף בדיקת ספרת ביקורת לת\"ז.",sol:`import re
+
+PATTERNS = [
+    ("EMAIL", re.compile(r"[\\w.+-]+@[\\w-]+\\.[\\w.-]+")),
+    ("PHONE", re.compile(r"(?:\\+972[-\\s]?|0)5\\d[-\\s]?\\d{3}[-\\s]?\\d{4}")),
+    ("ID",    re.compile(r"(?<!\\d)\\d{9}(?!\\d)")),
+]
+
+def mask_pii(text: str) -> str:
+    for label, rx in PATTERNS:
+        text = rx.sub(f"[{label}]", text)
+    return text
+
+tests = [
+    "ת.ז. 123456782, טלפון 052-123-4567",
+    "dana.k@example.co.il ביקשה החזר",
+    "+972 54 765 4321 התקשר",
+    "הזמנה מספר 4471 נשלחה",          # must stay untouched
+    "0501234567 / 987654321",
+]
+for t in tests:
+    print(mask_pii(t))`},
+ {p:5,t:"FastAPI עם SSE streaming",task:"endpoint POST /chat שמחזיר את תשובת המודל כ-Server-Sent Events.",hint:"StreamingResponse עם media_type='text/event-stream'; כל אירוע: 'data: ...\\n\\n'.",sol:`import json
+from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+import anthropic
+
+app = FastAPI()
+client = anthropic.Anthropic()
+
+class ChatIn(BaseModel):
+    message: str
+
+@app.post("/chat")
+def chat(body: ChatIn):
+    def events():
+        with client.messages.stream(
+            model="claude-opus-5-5",
+            max_tokens=4000,
+            messages=[{"role": "user", "content": body.message}],
+        ) as stream:
+            for text in stream.text_stream:
+                yield f"data: {json.dumps({'text': text}, ensure_ascii=False)}\\n\\n"
+        yield "data: [DONE]\\n\\n"
+    return StreamingResponse(events(), media_type="text/event-stream")
+
+# run:  uvicorn main:app --reload`},
+ {p:5,t:"Dockerfile multi-stage + GitHub Actions עם evals",task:"Dockerfile קטן לאפליקציית FastAPI, ו-workflow שמריץ בדיקות ו-evals לפני בניית image.",hint:"שלב build מתקין תלויות ל-venv; שלב runtime מעתיק רק אותו. ב-CI הסוד מגיע מ-secrets.",sol:`# ---------- Dockerfile ----------
+FROM python:3.12-slim AS build
+WORKDIR /app
+RUN python -m venv /venv
+COPY requirements.txt .
+RUN /venv/bin/pip install --no-cache-dir -r requirements.txt
+
+FROM python:3.12-slim
+WORKDIR /app
+COPY --from=build /venv /venv
+COPY backend/ backend/
+ENV PATH="/venv/bin:$PATH"
+USER nobody
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+# ---------- .github/workflows/ci.yml ----------
+name: ci
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt
+      - run: pytest -q
+      - run: python evals/run.py          # exits 1 if score < threshold
+        env:
+          ANTHROPIC_API_KEY: \${{ secrets.ANTHROPIC_API_KEY }}
+      - run: docker build -t service-assistant .`}
+];
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function checkHTML(id,label){
+  const on=!!state.checks[id];
+  return `<label class="check${on?" done":""}"><input type="checkbox" data-check="${id}"${on?" checked":""}><span>${label}</span></label>`;
+}
+// phases
+document.getElementById("phases").innerHTML=PHASES.map(ph=>{
+  const flow=(ph.flow||[]).map(r=>`<div class="flow">${r.map(s=>`<span>${esc(s)}</span>`).join("<b>←</b>")}</div>`).join("");
+  return `<details${ph.id===1?" open":""}><summary><span class="num">${ph.id}</span><span>${esc(ph.title)}<br><span class="small" style="font-weight:400">${esc(ph.when)}</span></span></summary>
+  <div class="body">
+   <div class="note"><b>למה זה חשוב:</b> ${esc(ph.why)}</div>
+   ${flow?`<h4>זרימת עבודה</h4>${flow}`:""}
+   <h4>מושגים</h4>
+   <div class="tbl"><table><thead><tr><th>מושג</th><th>מה צריך לדעת</th></tr></thead><tbody>
+   ${ph.concepts.map(c=>`<tr><td>${esc(c[0])}</td><td>${esc(c[1])}</td></tr>`).join("")}
+   </tbody></table></div>
+   <h4>בפועל</h4><ul>${ph.bullets.map(b=>`<li>${b}</li>`).join("")}</ul>
+   <h4>אני יודע/ת ל…</h4>
+   ${ph.checks.map((c,i)=>checkHTML(`p${ph.id}-${i}`,esc(c))).join("")}
+  </div></details>`;
+}).join("");
+
+// layers
+document.getElementById("layers").innerHTML=LAYERS.map(l=>`
+ <div class="layer"><div class="lh">שכבה ${l.n} · <code>${l.tag}</code></div>
+ <h4 style="margin:4px 0">${esc(l.t)}</h4><div class="small">${esc(l.d)}</div>
+ ${l.items.map((it,i)=>checkHTML(`l${l.n}-${i}`,esc(it))).join("")}
+ <div style="margin-top:6px"><b>סיימתם כש:</b> ${esc(l.done)}</div></div>`).join("");
+
+// pre-interview
+document.getElementById("preInterview").innerHTML=PRE_INTERVIEW.map((c,i)=>checkHTML(`pre-${i}`,esc(c))).join("");
+
+// weeks
+document.getElementById("weeks").innerHTML=`<div class="tbl" style="border:0;margin:0"><table><thead><tr><th>שבועות</th><th>שלב</th><th>מה נוסף לפרויקט</th><th>✓</th></tr></thead><tbody>${
+ WEEKS.map((w,i)=>{const id=`w-${i}`,on=!!state.checks[id];return `<tr><td>${w[0]}</td><td>${esc(w[1])}</td><td>${esc(w[2])}</td><td><input type="checkbox" data-check="${id}"${on?" checked":""} aria-label="סיום שבועות ${w[0]}" style="width:18px;height:18px;accent-color:var(--accent)"></td></tr>`;}).join("")
+}</tbody></table></div>`;
+
+// takehome
+document.getElementById("takehome").innerHTML=TAKEHOME.map((t,i)=>`<div class="card" style="margin:0"><div class="small" style="color:var(--accent);font-weight:700">${esc(t[0])}</div><h4 style="margin:4px 0">${esc(t[1])}</h4><div>${esc(t[2])}</div>${checkHTML(`th-${i}`,"בוצע")}</div>`).join("");
+
+// exercises
+document.getElementById("exercises").innerHTML=EXERCISES.map((x,i)=>`
+ <details><summary><span class="num">${x.p}</span><span>${esc(x.t)}</span></summary><div class="body">
+  <p><b>המשימה:</b> ${esc(x.task)}</p>
+  <details style="box-shadow:none"><summary>רמז</summary><div class="body">${esc(x.hint)}</div></details>
+  <details style="box-shadow:none"><summary>פתרון</summary><div class="body"><div class="row"><button class="btn" type="button" data-copy="${i}">העתק קוד</button></div><pre><code>${esc(x.sol)}</code></pre></div></details>
+  ${checkHTML(`ex-${i}`,"פתרתי לבד")}
+ </div></details>`).join("");
+document.getElementById("exercises").addEventListener("click",e=>{
+  const b=e.target.closest("[data-copy]"); if(!b) return;
+  const txt=EXERCISES[+b.dataset.copy].sol;
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{b.textContent="הועתק ✓";setTimeout(()=>b.textContent="העתק קוד",1500);}).catch(()=>{b.textContent="העתקה נכשלה";});
+});
+
+// checks handler (delegated)
+document.addEventListener("change",e=>{
+  const id=e.target.dataset&&e.target.dataset.check; if(!id) return;
+  state.checks[id]=e.target.checked;
+  const lab=e.target.closest(".check"); if(lab) lab.classList.toggle("done",e.target.checked);
+  save();
+});
+
+/* ---------- progress ---------- */
+function updateProgress(){
+  const all=[...document.querySelectorAll("[data-check]")].map(x=>x.dataset.check);
+  const uniq=[...new Set(all)];
+  const done=uniq.filter(id=>state.checks[id]).length;
+  const pct=uniq.length?Math.round(done/uniq.length*100):0;
+  document.getElementById("pbar").style.width=pct+"%";
+  const qd=Object.keys(state.quiz).length, qr=Object.values(state.quiz).filter(v=>v.ok).length;
+  document.getElementById("ptext").textContent=`${pct}% הושלם (${done}/${uniq.length}) · מבחנים: ${qr}/${qd} נכונות מתוך ${QUIZ.length}`;
+}
+
+/* ---------- flashcards ---------- */
+const CARDS=[];
+PHASES.forEach(ph=>ph.concepts.forEach(c=>CARDS.push({p:ph.id,term:c[0],def:c[1]})));
+EXTRA_CARDS.forEach(c=>CARDS.push({p:c[0],term:c[1],def:c[2]}));
+const phaseName=id=>{const p=PHASES.find(x=>x.id===id);return p?`שלב ${id} · ${p.title}`:"";};
+const phaseOpts='<option value="all">הכל</option>'+PHASES.map(p=>`<option value="${p.id}">${p.id}. ${esc(p.title)}</option>`).join("");
+document.getElementById("fcFilter").innerHTML=phaseOpts;
+document.getElementById("qFilter").innerHTML=phaseOpts;
+let deck=[],fi=0;
+const fcEl=document.getElementById("fc");
+function buildDeck(shuffle){
+  const f=document.getElementById("fcFilter").value, onlyU=document.getElementById("fcOnlyUnknown").checked;
+  deck=CARDS.filter(c=>(f==="all"||String(c.p)===f)&&(!onlyU||!state.known[c.term]));
+  if(shuffle){for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}}
+  fi=0; showCard();
+}
+function showCard(){
+  fcEl.classList.remove("flipped");
+  const c=deck[fi];
+  document.getElementById("fcTerm").textContent=c?c.term:"אין כרטיסים — כל הכבוד!";
+  document.getElementById("fcDef").textContent=c?c.def:"";
+  document.getElementById("fcPhase").textContent=c?phaseName(c.p)+(state.known[c.term]?" · ✓ יודע/ת":""):"";
+  const known=CARDS.filter(x=>state.known[x.term]).length;
+  document.getElementById("fcCount").textContent=deck.length?`${fi+1} / ${deck.length} · ידועים: ${known}/${CARDS.length}`:"";
+}
+const flip=()=>fcEl.classList.toggle("flipped");
+fcEl.addEventListener("click",flip);
+fcEl.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();flip();}});
+document.getElementById("fcNext").onclick=()=>{if(deck.length){fi=(fi+1)%deck.length;showCard();}};
+document.getElementById("fcPrev").onclick=()=>{if(deck.length){fi=(fi-1+deck.length)%deck.length;showCard();}};
+document.getElementById("fcShuffle").onclick=()=>buildDeck(true);
+document.getElementById("fcFilter").onchange=()=>buildDeck(false);
+document.getElementById("fcOnlyUnknown").onchange=()=>buildDeck(false);
+function mark(k){const c=deck[fi]; if(!c) return; if(k) state.known[c.term]=true; else delete state.known[c.term]; save();
+  if(document.getElementById("fcOnlyUnknown").checked&&k){deck.splice(fi,1); if(fi>=deck.length) fi=0; showCard();} else {fi=(fi+1)%deck.length;showCard();}}
+document.getElementById("fcKnow").onclick=()=>mark(true);
+document.getElementById("fcDont").onclick=()=>mark(false);
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("cards").classList.contains("active")) return;
+  if(e.target.matches("input,select,textarea")) return;
+  if(e.key==="ArrowLeft"){document.getElementById("fcNext").click();}
+  else if(e.key==="ArrowRight"){document.getElementById("fcPrev").click();}
+  else if(e.key===" "&&e.target!==fcEl){e.preventDefault();flip();}
+});
+buildDeck(false);
+
+/* ---------- quiz ---------- */
+function renderQuiz(){
+  const f=document.getElementById("qFilter").value;
+  const list=QUIZ.map((q,i)=>({q,i})).filter(x=>f==="all"||String(x.q.p)===f);
+  document.getElementById("qList").innerHTML=list.map(({q,i})=>{
+    const st=state.quiz[i];
+    return `<div class="card q${st?" answered":""}" data-q="${i}"><div class="small">${esc(phaseName(q.p))}</div><b>${esc(q.q)}</b>
+      <div class="opts">${q.o.map((o,j)=>{let cls="opt";if(st){if(j===q.a)cls+=" right";else if(j===st.pick)cls+=" wrong";}
+        return `<button class="${cls}" type="button" data-opt="${j}"${st?" disabled":""}>${esc(o)}</button>`;}).join("")}</div>
+      <div class="exp note ${st&&st.ok?"ok":"warn"}">${esc(q.e)}</div></div>`;
+  }).join("");
+  const ans=list.filter(x=>state.quiz[x.i]), ok=ans.filter(x=>state.quiz[x.i].ok).length;
+  document.getElementById("qScore").textContent=ans.length?`${ok}/${ans.length} נכונות (מתוך ${list.length})`:"";
+}
+document.getElementById("qList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-opt]"); if(!b) return;
+  const i=+b.closest("[data-q]").dataset.q, pick=+b.dataset.opt;
+  state.quiz[i]={pick,ok:pick===QUIZ[i].a}; save(); renderQuiz();
+});
+document.getElementById("qFilter").onchange=renderQuiz;
+document.getElementById("qReset").onclick=()=>{
+  const f=document.getElementById("qFilter").value;
+  QUIZ.forEach((q,i)=>{if(f==="all"||String(q.p)===f) delete state.quiz[i];}); save(); renderQuiz();
+};
+renderQuiz();
+
+/* ---------- interview ---------- */
+const cats=["הכל",...new Set(INTERVIEW.map(x=>x.c))];
+document.getElementById("ivCat").innerHTML=cats.map(c=>`<option>${esc(c)}</option>`).join("");
+let cur=null,timer=null,left=120;
+const tEl=document.getElementById("ivTimer");
+const fmt=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+function stopTimer(){clearInterval(timer);timer=null;document.getElementById("ivStart").textContent="הפעל טיימר";}
+document.getElementById("ivNext").onclick=()=>{
+  const c=document.getElementById("ivCat").value;
+  const pool=INTERVIEW.filter(x=>c==="הכל"||x.c===c);
+  let n; do{n=pool[Math.floor(Math.random()*pool.length)];}while(pool.length>1&&n===cur);
+  cur=n; document.getElementById("ivQ").textContent=cur.q; document.getElementById("ivMeta").textContent=cur.c;
+  document.getElementById("ivA").classList.add("hidden"); document.getElementById("ivDraft").value="";
+  stopTimer(); left=cur.c==="System Design"?600:120; tEl.textContent=fmt(left);
+};
+document.getElementById("ivStart").onclick=()=>{
+  if(timer){stopTimer();return;}
+  document.getElementById("ivStart").textContent="עצור";
+  timer=setInterval(()=>{left--;tEl.textContent=fmt(Math.max(left,0));if(left<=0){stopTimer();tEl.textContent="נגמר הזמן";}},1000);
+};
+document.getElementById("ivReveal").onclick=()=>{
+  if(!cur) return; const a=document.getElementById("ivA");
+  a.innerHTML="<b>נקודות לתשובה טובה:</b><ul>"+cur.a.map(x=>`<li>${esc(x)}</li>`).join("")+"</ul>"; a.classList.remove("hidden");
+};
+document.getElementById("ivAll").innerHTML=INTERVIEW.map(x=>`<details><summary><span class="tag">${esc(x.c)}</span><span>${esc(x.q)}</span></summary><div class="body"><ul>${x.a.map(y=>`<li>${esc(y)}</li>`).join("")}</ul></div></details>`).join("");
+
+/* ---------- calculator ---------- */
+const ids=["cReq","cIn","cOut","cPin","cPout","cHeb","cCache","cBatch","cCalls"];
+function calc(){
+  const v=Object.fromEntries(ids.map(id=>[id,Math.max(0,parseFloat(document.getElementById(id).value)||0)]));
+  const calls=v.cReq*Math.max(1,v.cCalls), heb=Math.max(1,v.cHeb);
+  const inTok=calls*v.cIn*heb, outTok=calls*v.cOut*heb;
+  const cacheFrac=Math.min(100,v.cCache)/100, batchFrac=Math.min(100,v.cBatch)/100;
+  // cached input ~10% of base price; batch ~50% off
+  const inCost=(inTok/1e6)*v.cPin*((1-cacheFrac)+cacheFrac*0.1);
+  const outCost=(outTok/1e6)*v.cPout;
+  const total=(inCost+outCost)*(1-batchFrac*0.5);
+  const money=n=>"$"+n.toLocaleString("en-US",{maximumFractionDigits:n<10?3:0});
+  document.getElementById("cTotal").textContent=money(total);
+  document.getElementById("cPer").textContent=v.cReq?money(total/v.cReq):"—";
+  document.getElementById("cBreak").innerHTML=`קלט: ${(inTok/1e6).toFixed(1)}M טוקנים → ${money(inCost)}<br>פלט: ${(outTok/1e6).toFixed(1)}M טוקנים → ${money(outCost)}<br>הנחת cache ≈ 90% על החלק שנקרא מהמטמון; Batch ≈ 50%. בלי עלות תשתית.`;
+}
+ids.forEach(id=>document.getElementById(id).addEventListener("input",calc));
+calc();
+
+updateProgress();
+})();
+</script>
+</body>
+</html>
