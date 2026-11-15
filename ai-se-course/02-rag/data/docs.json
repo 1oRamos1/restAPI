@@ -1,0 +1,6 @@
+[
+  {"doc_id": "hr-leave", "department": "hr", "path": "hr-leave.md"},
+  {"doc_id": "it-vpn", "department": "all", "path": "it-vpn.md"},
+  {"doc_id": "finance-expenses", "department": "finance", "path": "finance-expenses.md"},
+  {"doc_id": "general-office", "department": "all", "path": "general-office.md"}
+]
